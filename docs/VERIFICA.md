@@ -1,5 +1,7 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.1.1: comandi locali START.bat e STOP.bat, con AVVIA.bat compatibile. 37 test automatici superati; avvio reale sulla porta predefinita e su una porta alternativa, arresto selettivo senza chiudere l'altra istanza, arresto completo e stop ripetuto su server gia fermo verificati. Il processo viene identificato attraverso interprete, percorso esatto di run.py e data di creazione, senza affidarsi soltanto al PID salvato. Lo stop chiude anche i processi figli del server; progetti e output salvati rimangono sul disco.
+
 Aggiornamento 1.1.0: libreria immagini e riquadri, 35 test automatici, controlli nel browser e MP4 dimostrativo reale. Vedi [Immagini e riquadri](IMMAGINI.md) per il rapporto aggiornato. I controlli seguenti documentano la distribuzione iniziale 1.0.0.
 
 Prima installazione autonoma verificata su Windows x64, Intel i7-1165G7 e 16 GB di RAM, senza GPU NVIDIA.

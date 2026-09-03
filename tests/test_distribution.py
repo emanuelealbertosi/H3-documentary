@@ -31,7 +31,7 @@ def test_assets_have_source_license_and_checksum():
             assert hashlib.sha256((ROOT/'pipeline'/r['path']).read_bytes()).hexdigest()==r['sha256']
 
 def test_bat_uses_own_directory_and_inbox_powershell():
-    assert sorted(p.name for p in ROOT.glob('*.bat'))==['AVVIA.bat','INSTALLA.bat']
+    assert sorted(p.name for p in ROOT.glob('*.bat'))==['AVVIA.bat','INSTALLA.bat','START.bat','STOP.bat']
     for p in ROOT.glob('*.bat'):
         data=p.read_text()
         assert '%~dp0' in data and '%SystemRoot%' in data and '-NoProfile' in data

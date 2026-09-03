@@ -50,7 +50,7 @@ def health():
     from .pipeline import verify_pipeline
     try:verify_pipeline(root);ready=True
     except ValueError:ready=False
-    return {"ok":True,"service":"h3-documentary","instance":str(ROOT),"configured":bool(cfg["model"]),"pipeline_ready":ready,"local":True,"version":"1.1.0"}
+    return {"ok":True,"service":"h3-documentary","instance":str(ROOT),"configured":bool(cfg["model"]),"pipeline_ready":ready,"local":True,"version":(ROOT/'VERSION').read_text().strip()}
 
 @app.get("/api/settings")
 def get_settings():return store.settings()

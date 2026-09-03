@@ -8,10 +8,14 @@ Il progetto riunisce DocumentariAI Studio e il suo motore già funzionante. Il r
 
 1. Clona questo repository oppure scarica lo ZIP ed **estrailo completamente** in una cartella scrivibile.
 2. Apri **INSTALLA.bat**. Scarica gratuitamente Python, le dipendenze, FFmpeg e la voce italiana; verifica i componenti prima di terminare.
-3. Apri **AVVIA.bat**. L'app si apre nel browser su `http://127.0.0.1:8775`.
+3. Apri **START.bat** (oppure **AVVIA.bat**, mantenuto compatibile). L'app si apre nel browser su `http://127.0.0.1:8775`.
 4. In **Amministrazione**, inserisci indirizzo e modello del server LLM, prova la connessione e salva.
 
 Se apri direttamente AVVIA.bat, l'installazione parte automaticamente quando manca. Non servono privilegi amministrativi. L'installazione resta nella cartella dell'app e non modifica il Python di sistema. I download già validi sono riutilizzati dopo un'interruzione. Chiudere il browser non interrompe il server o un rendering.
+
+Per **chiudere il server prima dei test**, apri **STOP.bat** nella stessa cartella. Ferma quella copia dell'app e i suoi processi di rendering, conservando progetti e materiali già salvati. Dopo puoi avviare i test oppure riaprire START.bat. Se il server è già fermo, lo stop non fa nulla. Non serve un collegamento a GitHub e lo stop non installa dipendenze.
+
+Se usi porte diverse, `START.bat -Port 8776` avvia su quella porta e `STOP.bat -Port 8776` ferma solo quell'istanza. Senza `-Port`, STOP ferma tutte le istanze avviate da questa cartella. Ogni copia locale ha i propri comandi: vengono verificati percorso del programma e identità del processo, senza chiudere indiscriminatamente altri processi Python. Una produzione interrotta può essere ripresa dai passaggi salvati.
 
 **Piattaforma verificata:** Windows x64 Intel/AMD, esecuzione CPU. Consigliati 16 GB di RAM e almeno 15–20 GB liberi per lavorare con video e mappe. L'ambiente di base occupa alcuni GB; ogni produzione richiede spazio aggiuntivo. GPU NVIDIA, account a pagamento e abbonamenti non sono necessari.
 

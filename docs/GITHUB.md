@@ -11,7 +11,7 @@ git push -u origin main
 
 Se esiste già un remote `origin`, controlla `git remote -v` e usa `git remote set-url origin URL-COPIATO-DA-GITHUB` solo se vuoi cambiarlo. Non serve forzare il push. L'eventuale autenticazione GitHub è gestita da Git sul tuo PC.
 
-Chi clona il progetto apre INSTALLA.bat e AVVIA.bat. Chi scarica lo ZIP deve prima estrarlo. I modelli LLM restano sul server che ogni utente configura; voce italiana, Python e librerie sono preparati automaticamente.
+Chi clona il progetto apre INSTALLA.bat e START.bat; STOP.bat chiude il server locale prima dei test. AVVIA.bat resta un alias compatibile per l'avvio. Chi scarica lo ZIP deve prima estrarlo. I modelli LLM restano sul server che ogni utente configura; voce italiana, Python e librerie sono preparati automaticamente.
 
 ## Creare un nuovo ZIP sorgente
 
