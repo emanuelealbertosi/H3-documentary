@@ -42,7 +42,7 @@ def studio(topic,duration,kind,wait=True):
             except requests.RequestException:pass
         else:raise ValueError('Studio non si avvia; consulta data/cli-launcher.log')
     if r.json().get('service')!='h3-documentary' or Path(r.json().get('instance','')).resolve()!=ROOT.parent:raise ValueError('La porta locale è occupata da un altro servizio o un’altra copia di H3')
-    if not r.json().get('configured'):raise ValueError('Collega una volta il tuo modello gratuito in http://127.0.0.1:8775/admin (LM Studio, Ollama, vLLM o API compatibile). Nessun modello esterno è attualmente configurato.')
+    if not r.json().get('configured'):raise ValueError(f'Collega una volta il tuo modello gratuito in {endpoint}/admin (LM Studio, Ollama, vLLM o API compatibile). Nessun modello esterno è attualmente configurato.')
     if duration!=int(duration):raise ValueError('Per una nuova produzione da argomento usa minuti interi')
     response=session.post(endpoint+'/api/projects',json={'topic':topic,'minutes':int(duration),'documentary_type':kind,'start':True},timeout=30)
     if not response.ok:raise ValueError(response.text)

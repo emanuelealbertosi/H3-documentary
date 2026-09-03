@@ -9,11 +9,22 @@ def main():
     dest=ROOT/'dist';dest.mkdir(exist_ok=True)
     archive=dest/f'H3-documentary-{version}.zip'
     subprocess.run(['git','archive','--format=zip','--prefix=H3-documentary/','--output',str(archive),'HEAD'],cwd=ROOT,check=True)
+    # Git archives contain repository LF blobs; double-clickable BAT files use CRLF.
+    temporary=archive.with_suffix('.zip.part')
+    with zipfile.ZipFile(archive) as source,zipfile.ZipFile(temporary,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as target:
+        target.comment=source.comment
+        for item in source.infolist():
+            data=source.read(item.filename)
+            if item.filename.endswith('.bat'):data=data.replace(b'\r\n',b'\n').replace(b'\n',b'\r\n')
+            target.writestr(item,data)
+    temporary.replace(archive)
     with zipfile.ZipFile(archive) as source:
         assert source.testzip() is None
         names=source.namelist()
         for forbidden in ['/data/','/.venv/','/.runtimes/','/.cache/','/tests/output/']:
             assert not any(forbidden in n for n in names),forbidden
+        for name in names:
+            if name.endswith('.bat'):assert b'\n' not in source.read(name).replace(b'\r\n',b'')
     info={'version':version,'commit':commit,'archive':archive.name,'sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'bytes':archive.stat().st_size,'files':len(names)}
     archive.with_suffix('.json').write_text(json.dumps(info,indent=2),encoding='utf-8')
     print(json.dumps(info,indent=2))
