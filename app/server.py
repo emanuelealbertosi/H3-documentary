@@ -10,6 +10,7 @@ from . import store
 from .models import Settings,ProjectRequest
 from .llm import LLM,ModelError
 from .library import library
+from .media_routes import router as media_router
 
 @asynccontextmanager
 async def lifespan(app):
@@ -18,6 +19,7 @@ async def lifespan(app):
     from .runner import shutdown
     shutdown()
 app=FastAPI(title="H3-documentary",docs_url=None,redoc_url=None,lifespan=lifespan)
+app.include_router(media_router)
 
 @app.middleware("http")
 async def local_boundary(request:Request,call_next):
@@ -48,7 +50,7 @@ def health():
     from .pipeline import verify_pipeline
     try:verify_pipeline(root);ready=True
     except ValueError:ready=False
-    return {"ok":True,"service":"h3-documentary","instance":str(ROOT),"configured":bool(cfg["model"]),"pipeline_ready":ready,"local":True,"version":"1.0.0"}
+    return {"ok":True,"service":"h3-documentary","instance":str(ROOT),"configured":bool(cfg["model"]),"pipeline_ready":ready,"local":True,"version":"1.1.0"}
 
 @app.get("/api/settings")
 def get_settings():return store.settings()
@@ -129,11 +131,12 @@ def library_file(slug:str,kind:str):
 PUBLIC_EXT={".mp4",".jpg",".png",".srt",".md",".json",".txt"}
 def output_files(pid):
     store.project(pid);work=JOBS/pid/"workspace";items=[]
-    roots=[work/"output",work/"battles",work/"documentaries",JOBS/pid/"checkpoints"]
+    roots=[work/"output",work/"battles",work/"documentaries",work/"assets/user",JOBS/pid/"checkpoints"]
     for root in roots:
         if not root.exists():continue
         for f in sorted(root.rglob("*")):
-            if not f.is_file() or f.suffix not in PUBLIC_EXT:continue
+            if not f.is_file() or f.suffix not in (PUBLIC_EXT|({'.webp'} if root==work/'assets/user' else set())):continue
+            if not f.resolve().is_relative_to((JOBS/pid).resolve()):continue
             if root.name=="checkpoints" and f.name not in ("sources.json","outline.json","review.json"):continue
             rel=f.relative_to(JOBS/pid).as_posix()
             items.append({"path":rel,"name":f.name,"bytes":f.stat().st_size})
@@ -173,4 +176,6 @@ app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/admin")
 @app.get("/projects/{pid}")
 @app.get("/library")
+@app.get("/media")
+@app.get("/projects/{pid}/media")
 def shell(pid:str=""):return FileResponse(ROOT/"static/index.html",media_type="text/html")

@@ -25,6 +25,11 @@ def render_scenes(timeline,only=None,preview_seconds=None,jobs=2):
     files=['visuals.py','cartography.py','render.py']+(['atlas.py'] if timeline.get('visual_style')=='atlas' else [])
     if timeline.get('visual_style')=='history':files+=['atlas.py','history_visuals.py','history_schema.py','history_profiles.py']
     source=''.join((ROOT/'engine'/f).read_text(encoding='utf-8') for f in files)
+    # BEGIN H3 IMAGE INSETS
+    if timeline.get('user_media'):
+        from .image_insets import signature
+        source+=(ROOT/'engine/image_insets.py').read_text(encoding='utf-8')+json.dumps(signature(timeline))
+    # END H3 IMAGE INSETS
     asset_signature=None
     if timeline.get('visual_style') in ('atlas','history'):
         atlas=read_json(ROOT/timeline['atlas'])

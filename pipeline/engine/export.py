@@ -81,6 +81,11 @@ def export_documents(timeline):
     if timeline.get('documentary_schema_version')==2:
         from .history_export import asset_credits
         credits+=asset_credits(timeline)
+    # BEGIN H3 IMAGE INSETS
+    if timeline.get('user_media'):
+        from .image_insets import credits as image_credits
+        credits+=image_credits(timeline)
+    # END H3 IMAGE INSETS
     (ROOT/'credits.md').write_text('\n\n'.join(credits),encoding='utf-8')
     description=[timeline['title'],'',timeline.get('description','Un documentario storico in italiano attraverso mappe animate e ritratti storici.'),'', 'CAPITOLI']
     description.extend(f'{stamp(s["start"])[3:]} {s["title"]}' for s in timeline['scenes'])

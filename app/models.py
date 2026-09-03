@@ -41,6 +41,7 @@ class ProjectRequest(BaseModel):
     notes: str = Field("", max_length=5000)
     source_urls: list[str] = Field(default_factory=list,max_length=12)
     start: bool = True
+    use_media: bool = True
     documentary_type: Literal["auto","battle","war","territorial_expansion","migration","cultural_movement","religious_expansion","trade_network","exploration","political_history","revolution","economic_history","technology_history","biography","general_history"] = "auto"
 
 class GeoPoint(BaseModel):

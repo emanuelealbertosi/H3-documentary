@@ -33,6 +33,8 @@ def enqueue(pid):
     with LOCK:
         if pid in FUTURES and not FUTURES[pid].done():raise ValueError("Questo progetto è già in coda o in esecuzione.")
         if p["status"]=="completed":raise ValueError("Il documentario è già completato.")
+        from .media import freeze
+        freeze(pid,bool(p.get('use_media')))
         FLAGS[pid]=threading.Event()
         store.update(pid,status="queued",error="",stage="In coda")
         store.event(pid,"Produzione in coda. Il motore esegue un documentario alla volta.")
@@ -139,7 +141,14 @@ def produce(pid,cfg):
         # Write once after successful review. Later visual repairs are retained on resume.
         if not packpath.exists():
             compiler=compile_pack if kind=="battle" else history_compile
-            pack,geo=compiler(outline,narration,sources,p,cfg);store.write_json(packpath,pack);store.write_json(geopath,geo)
+            pack,geo=compiler(outline,narration,sources,p,cfg)
+            from .media import attach,freeze
+            selection=freeze(pid,bool(p.get('use_media')))
+            n=attach(pack,selection,work)
+            if n and not (work/'engine/image_insets.py').is_file():
+                raise ValueError('Il motore esterno configurato non supporta i riquadri. Seleziona il motore incluso in Amministrazione e crea una nuova revisione.')
+            if selection:log(f'Immagini personali: {n} riquadri associati alle frasi. Le immagini senza corrispondenza restano nella libreria.')
+            store.write_json(packpath,pack);store.write_json(geopath,geo)
         pack=store.read_json(packpath);geo=store.read_json(geopath)
         rel=str(packpath.relative_to(work));georel=str(geopath.relative_to(work))
         cmd=lambda name,*extra:run(pid,python,work,["documentary.py",name,"--battle",rel,*extra],cancel,log)
@@ -156,7 +165,7 @@ def produce(pid,cfg):
             if kind=="battle":run(pid,python,work,[str(ROOT/"app/layout_worker.py"),str(packpath)],cancel,log)
             else:run(pid,python,work,["tools/history_layout.py",rel],cancel,log)
             cmd("preview")
-            if cfg.get("vision"):
+            if cfg.get("vision") and not pack.get('user_media'):
                 images=sorted((work/"build"/slug/"previews").glob("*-0.55.jpg"))
                 for first in range(0,len(images),4):
                     cancel();content=[{"type":"text","text":"Controlla la leggibilità di queste mappe. Rispondi JSON: {acceptable:boolean, issues:[string]}. Rileva solo difetti visivi gravi: testi importanti sovrapposti, luoghi focali fuori campo, immagini corrotte. Non giudicare la verità dei fatti dalla sola immagine."}]
@@ -167,7 +176,7 @@ def produce(pid,cfg):
                     store.write_json(cp/f"vision-{first:03}.json",r)
                     if not isinstance(r,dict) or r.get("acceptable") is not True:raise ValueError("Anteprime da rivedere: "+str(r.get("issues",[]))[:900])
                 log("Controllo visivo del modello completato.")
-            else:log("Anteprime salvate. Il modello non è configurato per le immagini: verifica grafica AI non eseguita.")
+            else:log("Anteprime salvate. Controllo visivo AI non eseguito: modello non visivo oppure immagini personali, mantenute sul PC.")
         stage("preview",preview)
         stage("render",lambda:cmd("render","--jobs",str(cfg["render_jobs"])))
         stage("finalize",lambda:cmd("finalize"))
@@ -176,7 +185,7 @@ def produce(pid,cfg):
             run(pid,python,work,["tools/check_history_final.py" if kind!="battle" else "tools/check_atlas_final.py",slug],cancel,log)
         stage("verify",verify)
         report=store.read_json(work/"output"/pack["verification_dir"]/"report.json")
-        store.update(pid,status="completed",stage="Documentario completato",progress=100,error="",result={"duration":report["video_duration"],"bytes":report["bytes"],"sha256":report["sha256"],"llm_calls":llm.calls,"visual_ai_review":cfg["vision"]})
+        store.update(pid,status="completed",stage="Documentario completato",progress=100,error="",result={"duration":report["video_duration"],"bytes":report["bytes"],"sha256":report["sha256"],"llm_calls":llm.calls,"visual_ai_review":bool(cfg["vision"] and not pack.get('user_media'))})
         log("Video pronto: MP4, sottotitoli, fonti, sceneggiatura, timeline, crediti e rapporto di verifica.")
     except Cancelled:
         store.update(pid,status="cancelled",stage="Interrotto",error="Puoi riprendere dai passaggi già completati.");log("Produzione interrotta. Materiali conservati.")

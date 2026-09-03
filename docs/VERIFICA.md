@@ -1,5 +1,7 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.1.0: libreria immagini e riquadri, 35 test automatici, controlli nel browser e MP4 dimostrativo reale. Vedi [Immagini e riquadri](IMMAGINI.md) per il rapporto aggiornato. I controlli seguenti documentano la distribuzione iniziale 1.0.0.
+
 Prima installazione autonoma verificata su Windows x64, Intel i7-1165G7 e 16 GB di RAM, senza GPU NVIDIA.
 
 - Scaricati nella nuova cartella: uv 0.12.9, Python 3.13.13 gestito, dipendenze fissate, Kokoro e voci. Python, eSpeak e FFmpeg esterni non sono stati usati.

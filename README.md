@@ -50,6 +50,10 @@ Ogni nuova produzione salva il proprio workspace in `data/jobs/<id>/workspace/`.
 
 La ricerca conserva le pagine consultate e il modello esegue una revisione; l'esito automatico non equivale a una verifica indipendente di ogni affermazione storica. Se fonti, dati o risposta del modello sono insufficienti, la produzione si ferma con un errore visibile e conserva il lavoro.
 
+## Immagini personali insieme alle mappe
+
+Apri **Immagini e riquadri** per caricare JPG, PNG e WebP tramite drag and drop, collegarli a persone, luoghi, argomenti, eventi, organizzazioni o scene, e posizionare il riquadro nell’anteprima. Le immagini appaiono durante le frasi che citano il nome associato o le sue varianti. Originali e crediti vengono conservati; i progetti già avviati mantengono la propria copia. [Guida e verifiche](docs/IMMAGINI.md).
+
 ## Voce e Chatterbox
 
 La voce predefinita è **Kokoro `if_sara`**, italiana, gratuita e locale; i suoi pesi vengono scaricati automaticamente. L'eSpeak usato per la pronuncia e FFmpeg arrivano con le librerie: non vanno installati a mano.

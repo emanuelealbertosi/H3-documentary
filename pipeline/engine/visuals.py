@@ -60,6 +60,11 @@ def portrait(path,framing=None):
 
 class Visuals:
     def __new__(cls,timeline):
+        # BEGIN H3 IMAGE INSETS
+        if timeline.get('user_media'):
+            from .image_insets import InsetVisuals
+            return InsetVisuals(timeline)
+        # END H3 IMAGE INSETS
         if timeline.get('visual_style')=='history':
             from .history_visuals import HistoryVisuals
             return HistoryVisuals(timeline)

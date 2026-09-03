@@ -38,6 +38,7 @@ def test_old_database_migration(tmp_path,monkeypatch):
         c.execute("INSERT INTO projects(id,topic,minutes,notes,source_urls,status,stage,created,updated) VALUES ('old','Waterloo',10,'','[]','draft','','','')")
     store.init()
     assert store.project('old')['documentary_type']=='battle'
+    assert store.project('old')['use_media']==0
     new=store.create(ProjectRequest(topic='Rinascimento',start=False))
     assert new['documentary_type']=='auto'
 
