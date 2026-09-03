@@ -10,6 +10,7 @@ from .research import collect,evidence,assessment
 from .research_policy import author_system,validate_references,review_instruction,annotate_review
 from .compiler import compile_pack
 from .general import history_tools,HistoryOutline
+from .outline_builder import build_history_outline
 from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine
 
 POOL=ThreadPoolExecutor(max_workers=1,thread_name_prefix="documentary")
@@ -63,6 +64,7 @@ def produce(pid,cfg):
         path=folder/"model-audit";path.mkdir(exist_ok=True)
         store.write_json(path/(str(time.time_ns())+".json"),item)
     llm=LLM(cfg,cancel,audit);system=SYSTEM+"\n"+cfg.get("instructions","")
+    llm.progress=log
     def stage(key,fn):
         cancel();i=next(i for i,x in enumerate(STAGES) if x[0]==key)
         store.update(pid,status="running",stage=STAGES[i][1],progress=round(i/len(STAGES)*100,1))
@@ -101,13 +103,16 @@ def produce(pid,cfg):
                 prompt=history_prompt(p["topic"],p["minutes"],kind,p["notes"],**options)+"\nFONTI:\n"+ev
             if research['fallback_used']:
                 prompt+='\nLe fonti possono essere assenti: usa source_ids=[] per scene basate sulla conoscenza interna, senza inventare riferimenti.'
-            obj=llm.structured(system,prompt,Outline if kind=="battle" else HistoryOutline)
+            if kind=='battle':obj=llm.structured(system,prompt,Outline)
+            else:obj=build_history_outline(llm,system,p,kind,sources,research,cp,history_prompt,log,cancel)
             if kind!="battle" and p.get("documentary_type","auto")!="auto":obj["documentary_type"]=kind
             if not max(3,count-3)<=len(obj["scenes"])<=count+4:raise ValueError("Il numero di scene prodotto dal modello non è adatto alla durata. Riprendi con un modello capace di risposte più lunghe.")
             validate_references(obj,sources,research)
             store.write_json(cp/"outline.json",obj)
         stage("outline",do_outline)
         outline=store.read_json(cp/"outline.json")
+        if outline.get('narrative_basis')=='literary_tradition':
+            system+='\nIl documentario racconta una tradizione letteraria o mitologica. Dichiara questa cornice, distingui luoghi accertati e localizzazioni leggendarie e non trasformare episodi narrativi in fatti storici verificati.'
         def do_narration():
             all_rows=[];count=len(outline["scenes"]);target=round(p["minutes"]*170/count)
             for first in range(0,count,3):
@@ -156,6 +161,7 @@ def produce(pid,cfg):
         if not packpath.exists():
             compiler=compile_pack if kind=="battle" else history_compile
             pack,geo=compiler(outline,narration,sources,p,{**cfg,'research_context':research})
+            if outline.get('narrative_basis'):pack.setdefault('metadata',{})['narrative_basis']=outline['narrative_basis']
             if kind=='battle' and research['fallback_used']:
                 from engine.research_provenance import apply_context
                 apply_context(pack,research)

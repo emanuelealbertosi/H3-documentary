@@ -75,6 +75,7 @@ def test_generic_runner_dispatch_with_explicit_stubs(tmp_path,monkeypatch):
     work=jobs/project['id']/'workspace';work.mkdir()
     monkeypatch.setattr(runner,'isolate',lambda *a:(work,Path('python')))
     monkeypatch.setattr(runner,'LLM',Model);monkeypatch.setattr(runner,'collect',lambda *a,**k:sources)
+    monkeypatch.setattr(runner,'build_history_outline',lambda *a,**k:copy.deepcopy(outline))
     monkeypatch.setattr(runner,'reuse_atlas',lambda *a:True)
     commands=[]
     def command(pid,python,folder,args,*a,**k):

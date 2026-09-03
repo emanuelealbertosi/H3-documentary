@@ -100,6 +100,7 @@ def test_resume_failed_research_reaches_delivery_and_preserves_policy(tmp_path,m
             else:raise AssertionError(schema)
             return schema.model_validate(value).model_dump()
     monkeypatch.setattr(runner,'LLM',Model)
+    monkeypatch.setattr(runner,'build_history_outline',lambda *a,**k:HistoryOutline.model_validate(copy.deepcopy(outline)).model_dump())
     p=store.create(ProjectRequest(topic='Test della ricerca',minutes=2,start=False,documentary_type=kind))
     work=jobs/p['id']/'workspace';(work/'engine').mkdir(parents=True)
     (work/'engine/old-marker.txt').write_text('preserve old engine')

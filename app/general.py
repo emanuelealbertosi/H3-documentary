@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from pydantic import BaseModel,Field,ConfigDict,model_validator
 from .models import GeoPoint
+from .outline_normalization import collections,place_references
 
 def history_tools(path):
     root=str(Path(path).resolve())
@@ -17,7 +18,7 @@ class HistoryScene(BaseModel):
     date:str=Field(max_length=65)
     historical_range:tuple[int,int]
     scene_type:str
-    focus:list[str]=Field(default_factory=list,max_length=8)
+    focus:list[str]=Field(default_factory=list,max_length=8,description="Solo ID geografici di places, mai temi o nomi di eventi. Usa [] per scene senza un luogo identificabile.")
     event:str=Field(max_length=1400)
     source_ids:list[str]=Field(default_factory=list)
     person_ids:list[str]=Field(default_factory=list)
@@ -43,10 +44,18 @@ class HistoryOutline(BaseModel):
     visual_assets:list[dict]=Field(default_factory=list)
     scenes:list[HistoryScene]=Field(min_length=3,max_length=120)
     uncertainties:list[str]=Field(default_factory=list)
+    @model_validator(mode="before")
+    @classmethod
+    def normalize(cls,value):
+        data=collections(value)
+        if isinstance(data,dict) and isinstance(data.get('places'),list) and all(isinstance(p,dict) and 'id' in p and 'name' in p for p in data['places']):
+            data=place_references(data,data['places'])
+        return data
     @model_validator(mode="after")
     def references(self):
         ids={p.id for p in self.places}
         if len(ids)!=len(self.places):raise ValueError("Luoghi duplicati")
-        for s in self.scenes:
-            if not set(s.focus)<=ids:raise ValueError("Luogo della scena inesistente")
+        for i,s in enumerate(self.scenes):
+            missing=set(s.focus)-ids
+            if missing:raise ValueError(f"Scena {i+1} ({s.title}): focus contiene riferimenti non geografici o sconosciuti {sorted(missing)}. Usa soltanto gli ID {sorted(ids)}; per una scena tematica senza luogo usa focus=[]. Non creare coordinate per un tema.")
         return self

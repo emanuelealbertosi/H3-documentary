@@ -50,6 +50,8 @@ class GeoPoint(BaseModel):
     id: str = Field(pattern=r"^[a-z0-9_-]{1,50}$")
     name: str = Field(min_length=1,max_length=65)
     pos: tuple[float,float]
+    uncertain: bool = False
+    note: str = Field("",max_length=500)
     @field_validator("pos")
     @classmethod
     def position(cls,v):

@@ -56,6 +56,8 @@ La ricerca conserva le pagine consultate e il modello esegue una revisione; l'es
 
 In **Amministrazione → Produzione locale e ricerca → Se le fonti non bastano** puoi scegliere di attendere altre fonti (`strict`), ripristinando il comportamento precedente. SearXNG resta facoltativo. I progetti fermati durante la ricerca possono usare **Riprendi** dopo il riavvio dell'app aggiornata; scene già create conservano la politica editoriale salvata. [Dettagli e verifiche](docs/RICERCA.md).
 
+La versione **1.1.3** costruisce i nuovi piani storici generali in passaggi salvati: concetto, catalogo dei luoghi e gruppi di due scene. Se la risposta supera lo spazio disponibile, il gruppo viene diviso in scene singole. Riferimenti geografici errati ricevono indicazioni precise per la correzione; nomi equivalenti vengono collegati solo quando identificano un luogo univoco. Il diario mostra le richieste al modello, i tentativi di correzione, le scene salvate e un messaggio d'attesa ogni 20 secondi. Il limite token configurato non viene aumentato automaticamente; un server che tronca anche una singola scena può ancora richiedere una diversa configurazione. Gli outline e i pack precedenti restano compatibili.
+
 ## Immagini personali insieme alle mappe
 
 Apri **Immagini e riquadri** per caricare JPG, PNG e WebP tramite drag and drop, collegarli a persone, luoghi, argomenti, eventi, organizzazioni o scene, e posizionare il riquadro nell’anteprima. Le immagini appaiono durante le frasi che citano il nome associato o le sue varianti. Originali e crediti vengono conservati; i progetti già avviati mantengono la propria copia. [Guida e verifiche](docs/IMMAGINI.md).
