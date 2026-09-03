@@ -72,7 +72,7 @@ def test_example_portraits_are_downloadable_without_original_assets():
 def test_preserved_engine_baseline():
     baseline=json.loads((ROOT/'docs/engine-baseline.json').read_text())
     for name,expected in baseline['normalized_sha256'].items():
-        # Two authoring/schema modules have explicit, tested 1.1.2 extensions.
+        # Two authoring/schema modules have explicit, tested 1.1.2/1.1.4 extensions.
         expected=baseline.get('hybrid_extensions_sha256',{}).get(name,expected)
         data=(ROOT/'pipeline/engine'/name).read_bytes().replace(b'\r\n',b'\n')
         # Strip only named additive hooks; all other original renderer/TTS bytes are checked.

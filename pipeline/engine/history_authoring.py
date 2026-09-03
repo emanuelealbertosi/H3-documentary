@@ -2,6 +2,7 @@
 import copy,math
 from .history_profiles import PROFILES
 from .history_schema import validate_document,fit
+from .history_contract import normalize_document
 
 ANALYSIS_FIELDS=['period','geography','protagonists','cities','entities','key_events','chronology','causes','consequences','territorial_changes','movements','networks','routes','flows','alliances','conflicts','cultural_changes','political_changes','quantitative_data','uncertainties']
 
@@ -60,6 +61,7 @@ def compile_outline(outline,narration,sources,project,settings):
     if not project['minutes']*145<=words<=project['minutes']*195:raise ValueError('Lunghezza della sceneggiatura non adatta alla durata')
     from .research_provenance import apply_context
     apply_context(d,settings.get('research_context'))
+    d=normalize_document(d)
     validate_document(d)
     views=[overview]+[s['camera_end'] for s in scenes]
     def merc(y):return math.degrees(math.asinh(math.tan(math.radians(y))))

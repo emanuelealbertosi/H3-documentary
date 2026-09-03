@@ -2,6 +2,7 @@
 import copy,math,re
 from pathlib import PurePosixPath
 from .history_profiles import PROFILES,SCENE_TYPES,MOVEMENTS,EVENT_TYPES,choose_scene
+from .history_contract import normalize_document,validate_cue_records
 
 def year_label(year):
     year=int(round(year))
@@ -27,6 +28,7 @@ def fit(points):
     return [(max(xs)+min(xs))/2,math.degrees(math.atan(math.sinh(math.radians((max(ys)+min(ys))/2)))),width]
 
 def validate_document(doc):
+    doc=normalize_document(doc)
     if doc.get('schema_version')!=2:raise ValueError('Schema storico atteso: 2')
     if not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,79}',doc.get('slug','')):raise ValueError('Slug non valido')
     kind=doc.get('documentary_type','general_history')
@@ -65,6 +67,7 @@ def validate_document(doc):
         refs(s)
         if s.get('scene_type') and s['scene_type'] not in SCENE_TYPES:raise ValueError('Tipo scena sconosciuto')
         if not s.get('lines') or any(not str(l).strip() for l in s['lines']):raise ValueError('Narrazione mancante')
+        validate_cue_records(s)
         for key,valid in [('location_ids',locations),('person_ids',people),('event_ids',events),('asset_ids',assets),('territory_ids',layers)]:
             if not set(s.get(key,[]))<=valid:raise ValueError('Riferimenti sconosciuti: '+key)
         for y in s.get('historical_range',[s.get('year',1)]):historical_value(y)
@@ -98,6 +101,7 @@ def validate_document(doc):
 
 def adapt(doc):
     if doc.get('schema_version')!=2:return doc
+    doc=normalize_document(doc)
     validate_document(doc);d=copy.deepcopy(doc);kind=d.get('documentary_type','general_history');d['documentary_type']=kind
     d['documentary_schema_version']=2;d['schema_version']=1;d['visual_style']='history'
     d['documentary']={'type':kind,'title':d['title'],'slug':d['slug']};d.setdefault('metadata',{})

@@ -27,3 +27,13 @@ Il contratto visivo del motore viene controllato prima di salvare ogni gruppo, c
 Per temi letterari o mitologici il piano può dichiarare `narrative_basis=literary_tradition`; questa cornice accompagna la scrittura e le note editoriali. Non converte il mito in storia accertata né garantisce l'accuratezza geografica del modello.
 
 I vecchi piani salvati vengono riutilizzati. Il percorso battle precedente rimane operativo; beneficia della diagnostica LLM aggiornata, mentre la costruzione a gruppi riguarda i nuovi piani generali. La prova opzionale `tests/outline_local_smoke.py` può usare un modello già installato su localhost: non legge chiavi o impostazioni private e non chiama endpoint remoti a pagamento.
+
+## Passaggio dal piano al motore (1.1.4)
+
+L'errore `'str' object has no attribute 'get'` in `validate_pack`, durante **Ritratti e materiali**, derivava da due significati diversi di `focus`: nel piano generale elencava ID di luoghi, mentre il vecchio motore attende effetti grafici con un cue. Il compilatore lasciava passare gli ID senza separarli. È un difetto dell'adattamento dell'app; non richiede di aumentare i token o cambiare modello.
+
+La conversione conserva gli ID in `location_ids` e rimuove soltanto la loro duplicazione nel campo degli effetti. I focus già espressi come oggetti vengono conservati. Riferimenti sconosciuti o ambigui vengono segnalati, senza inventare coordinate. Tutte le scene generali vengono controllate al confine con il contratto del motore prima di preparare mappe e asset. Il formato battle e il renderer restano invariati.
+
+Al primo **Riprendi**, il pack generale interessato viene riparato nello stesso workspace, con una copia `battle.before-focus-fix-<numero>.json`. Questa riparazione non sostituisce il motore isolato già presente e funziona anche con la versione precedente. Checkpoint editoriali e cartografia già completata vengono riutilizzati; non occorrono nuove chiamate al modello per ripetere queste fasi. Ritratti e successive fasi ancora da eseguire proseguono normalmente, con i rispettivi controlli.
+
+Aggiorna il codice a server fermo, conservando `data/` e gli ambienti installati; riavvia e usa **Riprendi** sullo stesso progetto. La prova opzionale `tests/focus_resume_smoke.py --base-work <workspace> --previews` riproduce il problema su una copia isolata, controlla entrambi i motori e genera anteprime usando i raster salvati in sola lettura. Non modifica il workspace indicato, non chiama il modello e non produce un nuovo filmato completo.

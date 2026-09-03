@@ -11,6 +11,7 @@ from .research_policy import author_system,validate_references,review_instructio
 from .compiler import compile_pack
 from .general import history_tools,HistoryOutline
 from .outline_builder import build_history_outline
+from .pack_migrations import repair_pack
 from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine
 
 POOL=ThreadPoolExecutor(max_workers=1,thread_name_prefix="documentary")
@@ -172,9 +173,13 @@ def produce(pid,cfg):
                 raise ValueError('Il motore esterno configurato non supporta i riquadri. Seleziona il motore incluso in Amministrazione e crea una nuova revisione.')
             if selection:log(f'Immagini personali: {n} riquadri associati alle frasi. Le immagini senza corrispondenza restano nella libreria.')
             store.write_json(packpath,pack);store.write_json(geopath,geo)
+        repair_pack(packpath,work,log)
         pack=store.read_json(packpath);geo=store.read_json(geopath)
         rel=str(packpath.relative_to(work));georel=str(geopath.relative_to(work))
         cmd=lambda name,*extra:run(pid,python,work,["documentary.py",name,"--battle",rel,*extra],cancel,log)
+        if pack.get('schema_version')==2:
+            log('Controllo del passaggio al motore grafico prima di preparare asset e mappe.')
+            cmd('validate')
         def geography():
             if reuse_atlas(work,src,geo):log("Mappe compatibili già disponibili: riuso i raster in sola lettura.")
             else:

@@ -21,6 +21,11 @@ def test_shared_compiler_real_editorial_example():
     assert all('sources' in s for s in pack['scenes'])
     assert geo['output']=='assets/geography/atlas-film'
     assert all(a['path'].startswith('assets/history/film-history-test/') for a in pack['visual_assets'])
+    # Validate the actual CLI boundary, not just the general authoring schema.
+    from engine.common import validate_pack
+    legacy=validate_pack(pack)
+    assert all(isinstance(f,dict) for s in legacy['scenes'] for f in s['focus'])
+    assert all(s['location_ids']==o['focus'] for s,o in zip(pack['scenes'],outline['scenes']))
 
 def test_type_and_source_guard():
     from engine.history_schema import validate_document
