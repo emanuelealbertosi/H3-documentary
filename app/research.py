@@ -67,6 +67,17 @@ def discover_wikipedia(topic):
     text,_=fetch(url);data=json.loads(text)
     return [{"url":"https://en.wikipedia.org/wiki/"+requests.utils.quote(x["title"].replace(" ","_")),"title":x["title"]} for x in data.get("query",{}).get("search",[])]
 
+def assessment(sources, mode="hybrid"):
+    hosts={(urlsplit(s["url"]).hostname or "").lower().removeprefix("www.") for s in sources}
+    hosts={"wikipedia.org" if h=="wikipedia.org" or h.endswith(".wikipedia.org") else h for h in hosts}
+    sufficient=len(sources)>=3 and len(hosts)>=2 and bool(hosts-{"wikipedia.org", ""})
+    fallback=not sufficient and mode=="hybrid"
+    return {"mode":mode, "source_count":len(sources), "domains":sorted(hosts),
+            "sufficient_sources":sufficient, "fallback_used":fallback,
+            "status":"mixed_unverified" if fallback and sources else "model_knowledge_unverified" if fallback else "consulted_sources",
+            "notice":("Fonti consultabili insufficienti: il racconto usa anche la conoscenza del modello. "
+                       "I contenuti non sono verificati integralmente; la revisione automatica non è una verifica storica indipendente.") if fallback else ""}
+
 def collect(topic,urls,config,folder,cancel,log):
     folder.mkdir(exist_ok=True,parents=True);candidates=[{"url":u,"title":""} for u in urls];errors=[]
     for query in [topic+" history museum archive",topic+" fonti storiche musei archivi"]:
@@ -93,11 +104,12 @@ def collect(topic,urls,config,folder,cancel,log):
             sources.append(page);write_json(folder/(page["id"]+".json"),page)
             log("Consultata: "+page["title"])
         except Exception as e:errors.append(url+": "+str(e)[:140])
-    write_json(folder/"acquisition.json",{"errors":errors,"candidates":candidates,"retrieved":len(sources)})
-    hosts={"wikipedia.org" if "wikipedia.org" in (urlsplit(x["url"]).hostname or "") else urlsplit(x["url"]).hostname for x in sources}
-    nonwiki=[x for x in sources if "wikipedia.org" not in (urlsplit(x["url"]).hostname or "")]
-    if len(sources)<3 or len(hosts)<2 or not nonwiki:
+    cancel()
+    report=assessment(sources,config.get("research_mode","hybrid"))
+    write_json(folder/"acquisition.json",{"errors":errors,"candidates":candidates,"retrieved":len(sources),"research":report})
+    if not report["sufficient_sources"] and not report["fallback_used"]:
         raise ValueError("Fonti consultabili insufficienti. Aggiungi link a musei, archivi o testi storici, oppure configura SearXNG; poi riprendi la ricerca.")
+    if report["fallback_used"]:log(report["notice"]+" Proseguo con la modalità ibrida.")
     return sources
 
 def evidence(sources):return "\n\n".join("["+s["id"]+"] "+s["title"]+"\n"+s["url"]+"\n"+s["text"][:12000] for s in sources)

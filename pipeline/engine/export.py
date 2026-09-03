@@ -96,6 +96,11 @@ def export_documents(timeline):
         description+=['','LICENZA E RITRATTI',timeline['video_license'],*portrait_credits,
           'Licenze ritratti: https://creativecommons.org/licenses/by/4.0/ ; https://creativecommons.org/licenses/by-sa/3.0/de/ . Fonti complete e crediti nel progetto.']
     (out/'youtube_description.txt').write_text('\n'.join(description),encoding='utf-8')
+    # BEGIN H3 RESEARCH PROVENANCE
+    if timeline.get('research', {}).get('fallback_used'):
+        from .research_provenance import export_provenance
+        export_provenance(ROOT, timeline)
+    # END H3 RESEARCH PROVENANCE
     archive=ROOT/('documentaries' if timeline.get('documentary_schema_version')==2 else 'battles')/timeline['slug'];archive.mkdir(exist_ok=True,parents=True)
     for name in ['script.md','sources.md','credits.md','timeline.json']:
         shutil.copy2(ROOT/name,archive/name)

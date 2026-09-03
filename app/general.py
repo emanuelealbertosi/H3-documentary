@@ -19,7 +19,7 @@ class HistoryScene(BaseModel):
     scene_type:str
     focus:list[str]=Field(default_factory=list,max_length=8)
     event:str=Field(max_length=1400)
-    source_ids:list[str]=Field(min_length=1)
+    source_ids:list[str]=Field(default_factory=list)
     person_ids:list[str]=Field(default_factory=list)
     event_ids:list[str]=Field(default_factory=list)
     asset_ids:list[str]=Field(default_factory=list)

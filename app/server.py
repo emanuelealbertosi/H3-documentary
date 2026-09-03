@@ -116,7 +116,7 @@ async def revise_project(pid:str,request:Request):
     if workspace.exists():
         assert workspace.resolve().is_relative_to(JOBS.resolve())
         workspace.rename(JOBS/pid/("workspace-previous-"+revision))
-    store.update(pid,status="draft",progress=0,stage="Pronto per ripartire",error="")
+    store.update(pid,status="draft",progress=0,stage="Pronto per ripartire",error="",result={})
     return store.project(pid)
 
 @app.get("/api/library")
@@ -137,7 +137,7 @@ def output_files(pid):
         for f in sorted(root.rglob("*")):
             if not f.is_file() or f.suffix not in (PUBLIC_EXT|({'.webp'} if root==work/'assets/user' else set())):continue
             if not f.resolve().is_relative_to((JOBS/pid).resolve()):continue
-            if root.name=="checkpoints" and f.name not in ("sources.json","outline.json","review.json"):continue
+            if root.name=="checkpoints" and f.name not in ("sources.json","outline.json","review.json","research.json"):continue
             rel=f.relative_to(JOBS/pid).as_posix()
             items.append({"path":rel,"name":f.name,"bytes":f.stat().st_size})
     return items

@@ -20,6 +20,7 @@ class Settings(BaseModel):
     fps: Literal[24,30] = 30
     request_limit: int = Field(100, ge=10, le=500)
     search_url: str = ""
+    research_mode: Literal["hybrid", "strict"] = "hybrid"
     instructions: str = Field("", max_length=12000)
 
     @field_validator("base_url")
@@ -77,7 +78,7 @@ class OutlineScene(BaseModel):
     date: str = Field(max_length=65)
     focus: list[str] = Field(min_length=1,max_length=7)
     event: str = Field(max_length=1400)
-    source_ids: list[str] = Field(min_length=1,max_length=8)
+    source_ids: list[str] = Field(default_factory=list,max_length=8)
     routes: list[Route] = Field(default_factory=list,max_length=4)
     commander_ids: list[str] = Field(default_factory=list,max_length=2)
 

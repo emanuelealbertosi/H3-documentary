@@ -37,5 +37,10 @@
     "verify.py": "587e1ad8da96c9f5227bd2f49658664e8ad7f9c4b312a9752d90c5e05385e109",
     "visuals.py": "1e2e24a67033963a5d235d7f9848be29c1b55895c1b9005e9255cd25bb4c0a3a",
     "__init__.py": "e30f968d8d2aa6dec40db521982c34e2a33f768ebf9b863339e85d5b820e8918"
+  },
+  "hybrid_extensions_note": "1.1.2: only history_authoring.py and history_schema.py change their authoring contract; original hashes are retained above. Legacy rendering, TTS and battle validation stay identical. Export adds an optional provenance hook.",
+  "hybrid_extensions_sha256": {
+    "history_authoring.py": "f9522c37b1f478dbb9eb0177206924ec8e9075bba550c5bd413e6f0b30ead9cb",
+    "history_schema.py": "55c4f61369122a47e304dbb9e1ba318e1677c54d3c20cc9dc1def352f5872503"
   }
 }

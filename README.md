@@ -52,7 +52,9 @@ I `battle.json` precedenti continuano a funzionare. Nel repository sono inclusi 
 
 Ogni nuova produzione salva il proprio workspace in `data/jobs/<id>/workspace/`. Contiene video 1920×1080, SRT, `sources.md`, `script.md`, `timeline.json`, `credits.md`, asset con provenienza e rapporto di verifica. Dall'app puoi aprire i materiali e scaricare il pacchetto del progetto. Nessun caricamento automatico su YouTube.
 
-La ricerca conserva le pagine consultate e il modello esegue una revisione; l'esito automatico non equivale a una verifica indipendente di ogni affermazione storica. Se fonti, dati o risposta del modello sono insufficienti, la produzione si ferma con un errore visibile e conserva il lavoro.
+La ricerca conserva le pagine consultate e il modello esegue una revisione; l'esito automatico non equivale a una verifica indipendente di ogni affermazione storica. Per impostazione predefinita, se le pagine consultabili non bastano, la **modalità ibrida** prosegue usando anche la conoscenza interna del modello. Il progetto, `sources.md`, la sceneggiatura, la timeline e la descrizione YouTube segnalano il livello di verifica. La conoscenza interna non viene trasformata in fonti bibliografiche; grafici quantitativi e citazioni richiedono ancora riscontri. Errori materiali, riferimenti inventati o risposte non valide continuano a fermare la produzione, conservando il lavoro.
+
+In **Amministrazione → Produzione locale e ricerca → Se le fonti non bastano** puoi scegliere di attendere altre fonti (`strict`), ripristinando il comportamento precedente. SearXNG resta facoltativo. I progetti fermati durante la ricerca possono usare **Riprendi** dopo il riavvio dell'app aggiornata; scene già create conservano la politica editoriale salvata. [Dettagli e verifiche](docs/RICERCA.md).
 
 ## Immagini personali insieme alle mappe
 

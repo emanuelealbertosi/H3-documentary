@@ -38,6 +38,23 @@ def isolate(pid,source):
             except OSError:shutil.copy2(original,dest)
     return work,source/".venv/Scripts/python.exe"
 
+def prepare_hybrid_engine(work,source,checkpoints):
+    """Upgrade only a bundled workspace stopped before authoring; preserve its old engine."""
+    work=Path(work).resolve();source=Path(source).resolve();checkpoints=Path(checkpoints)
+    if (work/'engine/research_provenance.py').is_file():return
+    if source!=(ROOT/'pipeline').resolve() or not (source/'engine/research_provenance.py').is_file():
+        raise ValueError('Il motore esterno non supporta la ricerca ibrida. Seleziona il motore incluso in Amministrazione e crea una nuova revisione.')
+    if (checkpoints/'outline.json').exists() or any((work/'battles').glob('*/battle.json')):
+        raise ValueError('Questo progetto contiene già scene del motore precedente. Crea una nuova revisione per usare la ricerca ibrida.')
+    if not work.is_relative_to(JOBS.resolve()) or work.name!='workspace':
+        raise ValueError('Aggiornamento consentito soltanto nello spazio isolato del progetto.')
+    engine=(work/'engine').resolve()
+    if engine.parent!=work:raise ValueError('Cartella del motore non valida.')
+    backup=work/('engine-before-hybrid-'+str(time.time_ns()))
+    if engine.exists():shutil.copytree(engine,backup)
+    shutil.copytree(source/'engine',engine,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__'))
+
+
 def reuse_atlas(work,source,geo):
     """Reuse existing Europe rasters by absolute read-only paths when they cover the view."""
     candidate=source/"assets/geography/atlas-v2/atlas.json"

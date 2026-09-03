@@ -1,5 +1,7 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.1.2: ricerca ibrida predefinita, con modalità rigorosa opzionale. 53 test automatici superati: nessuna fonte, fonti parziali, errore di rete, interruzione, ripresa del vecchio blocco, entrambe le famiglie di documentario, correzione editoriale, riferimenti inventati e conservazione della provenienza. Ricerca web e LLM sono simulati in queste prove; compilatori ed esportazione dei documenti sono reali. Verificati nel browser il salvataggio delle modalità e l'avviso nel progetto, usando dati di prova separati. Renderizzate e ispezionate due anteprime reali 1920×1080, mappa e confronto, con fonti vuote e fotogrammi identici allo stesso timestamp. Il vecchio pack Waterloo supera ancora la validazione. Nessuna nuova produzione completa MP4 né prova con un LLM remoto per questa correzione. Renderer, TTS e validazione battle rimangono invariati; il registro conserva gli hash originali e dichiara le estensioni a compilazione/validazione dei documenti generali.
+
 Aggiornamento 1.1.1: comandi locali START.bat e STOP.bat, con AVVIA.bat compatibile. 37 test automatici superati; avvio reale sulla porta predefinita e su una porta alternativa, arresto selettivo senza chiudere l'altra istanza, arresto completo e stop ripetuto su server gia fermo verificati. Il processo viene identificato attraverso interprete, percorso esatto di run.py e data di creazione, senza affidarsi soltanto al PID salvato. Lo stop chiude anche i processi figli del server; progetti e output salvati rimangono sul disco.
 
 Aggiornamento 1.1.0: libreria immagini e riquadri, 35 test automatici, controlli nel browser e MP4 dimostrativo reale. Vedi [Immagini e riquadri](IMMAGINI.md) per il rapporto aggiornato. I controlli seguenti documentano la distribuzione iniziale 1.0.0.
@@ -23,4 +25,4 @@ Il video dimostrativo dura 120,1667 secondi, contiene quattro capitoli, sottotit
 
 Lo ZIP è prodotto dal commit corrente, riaperto e controllato per integrità. Runtime, modelli, cartelle private, database, cache e video di prova sono esclusi. I due BAT nello ZIP mantengono i terminatori Windows. Lo SHA-256 dell'archivio e il commit sorgente sono nel JSON affiancato allo ZIP.
 
-Il repository remoto non è stato creato e nessun push è stato eseguito. La configurazione della CI è inclusa; l'esecuzione su GitHub avverrà dopo il push.
+Il repository è disponibile su GitHub come `emanuelealbertosi/H3-documentary`. I risultati di ogni nuova esecuzione CI sono consultabili nella scheda Actions; le verifiche locali descritte sopra restano distinte dalla CI remota.

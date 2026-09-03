@@ -48,10 +48,12 @@ def test_cross_site_mutations_blocked(client):
 def test_create_draft_and_preserve_on_revision(client):
     p=client.post("/api/projects",json={"topic":"Battaglia di prova","minutes":5,"start":False}).json()
     assert p["status"]=="draft"
+    store.update(p['id'],result={'research':{'fallback_used':True}})
     root=server.JOBS/p["id"];(root/"checkpoints").mkdir();(root/"workspace").mkdir()
     (root/"workspace/battle.json").write_text("old")
     r=client.patch("/api/projects/"+p["id"],json={"notes":"Nuove indicazioni"})
     assert r.status_code==200
+    assert r.json()['result']=={}
     assert not(root/"workspace").exists()
     assert list(root.glob("workspace-previous-*/battle.json"))[0].read_text()=="old"
 def test_file_routes_reject_traversal(client):

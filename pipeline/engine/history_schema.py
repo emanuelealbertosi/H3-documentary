@@ -32,9 +32,12 @@ def validate_document(doc):
     kind=doc.get('documentary_type','general_history')
     if kind not in PROFILES:raise ValueError('Tipo di documentario sconosciuto')
     sources={s['id'] for s in doc.get('sources',[])}
-    if not sources or len(sources)!=len(doc['sources']):raise ValueError('Fonti mancanti o duplicate')
-    def refs(item):
-        if not item.get('sources') or not set(item['sources'])<=sources:raise ValueError('Fonte mancante o sconosciuta: '+str(item.get('id',item.get('label',''))))
+    from .research_provenance import uses_model_knowledge
+    hybrid=uses_model_knowledge(doc)
+    if (not sources and not hybrid) or len(sources)!=len(doc.get('sources',[])):raise ValueError('Fonti mancanti o duplicate')
+    def refs(item,required=False):
+        references=item.get('sources',[])
+        if ((required or not hybrid) and not references) or not set(references)<=sources:raise ValueError('Fonte mancante o sconosciuta: '+str(item.get('id',item.get('label',''))))
     for collection in ['locations','persons','entities','events','visual_assets','visual_layers']:
         rows=doc.get(collection,[])
         if len({r['id'] for r in rows})!=len(rows):raise ValueError('ID duplicati: '+collection)
@@ -78,11 +81,12 @@ def validate_document(doc):
             if edge.get('semantic','connection') not in MOVEMENTS:raise ValueError('Semantica della rete sconosciuta')
             for p in edge.get('points',[]):position(p)
         if s.get('chart'):
-            refs(s['chart'])
+            refs(s['chart'],required=True)
             if s['chart']['kind'] not in ('bar','line','comparison'):raise ValueError('Grafico sconosciuto')
             for row in s['chart']['values']:
                 if row.get('value') is None or not math.isfinite(row['value']):raise ValueError('Non inventare quantità mancanti')
         if s.get('quote') and not s['quote'].get('source'):raise ValueError('Citazione senza provenienza')
+        if hybrid and s.get('quote'):refs(s,required=True)
         for item in s.get('movements',[])+s.get('network',{}).get('edges',[]):
             if not 0<=item.get('cue',0)<len(s['lines']):raise ValueError('Cue fuori intervallo')
     for a in doc.get('visual_assets',[]):

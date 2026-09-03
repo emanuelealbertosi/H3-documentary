@@ -24,6 +24,8 @@ def compile_pack(outline,narration,sources,project,settings):
     if set(rows)!=set(range(len(o["scenes"]))):raise ValueError("Sceneggiatura incompleta.")
     for s in o["scenes"]:
         if not set(s["source_ids"])<=sid:raise ValueError("La scena cita una fonte mai consultata.")
+        if not s['source_ids'] and not settings.get('research_context',{}).get('fallback_used'):
+            raise ValueError("La scena non indica fonti consultate.")
     overview=fit([p["pos"] for p in o["places"]],pad=1.6,min_width=7)
     poses=[fit([places[x]["pos"] for x in s["focus"]]+[p for r in s["routes"] for p in r["points"]],pad=1.75) for s in o["scenes"]]
     poses[0]=overview;poses[-1]=overview
