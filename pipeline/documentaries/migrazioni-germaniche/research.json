@@ -1,0 +1,26 @@
+[
+  {
+    "id": "M1",
+    "url": "https://lrc.la.utexas.edu/eieol/gotol/90",
+    "use": "Ingresso dei Goti nel 376, rapporti con Roma e conflitti successivi.",
+    "cache": "assets/research/history/b5fe153196595f9c.source",
+    "sha256": "8c5ed19b9a092eae9e97550336b57f497395bdf234fefa422a8b570fcac2bb43",
+    "cached": true
+  },
+  {
+    "id": "M2",
+    "url": "https://resources.metmuseum.org/resources/metpublications/pdf/Migration_Art_AD_300_800.pdf",
+    "use": "Movimenti e manufatti della tarda antichità; Vandali in Africa e Cartagine nel 439. Terminologia etnica trattata criticamente.",
+    "cache": "assets/research/history/c7f7b20765c41a94.source",
+    "sha256": "adb4c25287a42e754b91f5085267c5ce4070c23d27a831650255c0212ea89c15",
+    "cached": true
+  },
+  {
+    "id": "M3",
+    "url": "https://assets.cambridge.org/97805214/34911/frontmatter/9780521434911_frontmatter.pdf",
+    "use": "Frontespizio e presentazione editoriale consultati: quadro del dibattito sui rapporti tra crisi romana, migrazioni e identita. Volume non consultato integralmente; non usato per datare singoli eventi.",
+    "cached": false,
+    "error": "ConnectTimeout",
+    "note": "Pagina consultata via browser; download diretto non disponibile."
+  }
+]

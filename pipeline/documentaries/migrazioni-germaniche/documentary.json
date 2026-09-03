@@ -1,0 +1,427 @@
+{
+  "schema_version": 2,
+  "slug": "migrazioni-germaniche",
+  "title": "Migrazioni — Attraversare il mondo romano",
+  "short_title": "Migrazioni",
+  "documentary_type": "migration",
+  "historical_period": {
+    "start": 376,
+    "end": 476,
+    "calendar": "anni storici senza anno zero"
+  },
+  "target_minutes": 3,
+  "locations": [
+    {
+      "id": "danube",
+      "name": "Basso Danubio",
+      "pos": [
+        27.5,
+        44
+      ]
+    },
+    {
+      "id": "rome",
+      "name": "Roma",
+      "pos": [
+        12.5,
+        41.9
+      ]
+    },
+    {
+      "id": "toulouse",
+      "name": "Tolosa",
+      "pos": [
+        1.44,
+        43.6
+      ]
+    },
+    {
+      "id": "gibraltar",
+      "name": "Gibilterra",
+      "pos": [
+        -5.35,
+        36.14
+      ]
+    },
+    {
+      "id": "carthage",
+      "name": "Cartagine",
+      "pos": [
+        10.32,
+        36.85
+      ]
+    },
+    {
+      "id": "rhine",
+      "name": "Reno",
+      "pos": [
+        8.2,
+        50
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "M1",
+      "title": "University of Texas — Gothic historical context",
+      "url": "https://lrc.la.utexas.edu/eieol/gotol/90",
+      "use": "Ingresso dei Goti nel 376, rapporti con Roma e conflitti successivi.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "M2",
+      "title": "Met — Migration Art A.D. 300–800",
+      "url": "https://resources.metmuseum.org/resources/metpublications/pdf/Migration_Art_AD_300_800.pdf",
+      "use": "Movimenti e manufatti della tarda antichità; Vandali in Africa e Cartagine nel 439. Terminologia etnica trattata criticamente.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "M3",
+      "title": "Guy Halsall - Barbarian Migrations and the Roman West, 376-568",
+      "url": "https://assets.cambridge.org/97805214/34911/frontmatter/9780521434911_frontmatter.pdf",
+      "use": "Frontespizio e presentazione editoriale consultati: quadro del dibattito sui rapporti tra crisi romana, migrazioni e identita. Volume non consultato integralmente; non usato per datare singoli eventi.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    }
+  ],
+  "persons": [],
+  "entities": [
+    {
+      "id": "goths",
+      "name": "Gruppi gotici",
+      "color": [
+        129,
+        208,
+        186
+      ]
+    },
+    {
+      "id": "vandals",
+      "name": "Vandali e alleati",
+      "color": [
+        197,
+        173,
+        231
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "cross",
+      "year": 376,
+      "title": "Gruppi gotici attraversano il Danubio",
+      "description": "Gruppi gotici attraversano il Danubio",
+      "type": "migration",
+      "sources": [
+        "M1"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "rome",
+      "year": 410,
+      "title": "Sacco di Roma di Alarico",
+      "description": "Sacco di Roma di Alarico",
+      "type": "battle",
+      "sources": [
+        "M2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "africa",
+      "year": 429,
+      "title": "Passaggio dei Vandali in Africa",
+      "description": "Passaggio dei Vandali in Africa",
+      "type": "migration",
+      "sources": [
+        "M2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "carthage",
+      "year": 439,
+      "title": "Presa di Cartagine",
+      "description": "Presa di Cartagine",
+      "type": "territorial_change",
+      "sources": [
+        "M2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "end",
+      "year": 476,
+      "title": "Fine dell’impero romano d’Occidente",
+      "description": "Fine dell’impero romano d’Occidente",
+      "type": "political_event",
+      "sources": [
+        "M2"
+      ],
+      "certainty": "established"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "01",
+      "title": "Chi si mette in movimento?",
+      "scene_type": "map_overview",
+      "historical_range": [
+        376,
+        376
+      ],
+      "date": "376 d.C.",
+      "lines": [
+        "Le cosiddette migrazioni barbariche non sono il viaggio di popoli immutabili sopra una carta vuota. Uomini, donne e gruppi armati attraversano un mondo già abitato, governato e collegato. I nomi usati dalle fonti romane non descrivono necessariamente comunità omogenee.",
+        "Nel trecentosettantasei gruppi gotici chiedono di attraversare il Danubio. La pressione degli Unni è una parte del contesto; contano anche le decisioni romane e le condizioni dell’accoglienza. Raccontare questi movimenti richiede di distinguere migrazione, insediamento, servizio militare e guerra, senza attribuire a ogni percorso il significato automatico di invasione."
+      ],
+      "sources": [
+        "M1",
+        "M2"
+      ],
+      "location_ids": [
+        "danube",
+        "rome",
+        "rhine"
+      ],
+      "camera_end": [
+        14,
+        46,
+        53
+      ],
+      "kicker": "Gruppi e identità in trasformazione",
+      "facts": [
+        "Un movimento di popolazione non equivale automaticamente a un attacco."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "Attraversare il Danubio",
+      "scene_type": "animated_route",
+      "historical_range": [
+        376,
+        382
+      ],
+      "date": "376 d.C. – 382 d.C.",
+      "lines": [
+        "Il passaggio del fiume non risolve la crisi. Le relazioni con le autorità imperiali peggiorano; le difficoltà materiali e gli abusi contribuiscono al conflitto. Nel trecentosettantotto, ad Adrianopoli, l’esercito dell’imperatore Valente subisce una grave sconfitta.",
+        "Gli accordi successivi mostrano che guerra e negoziato rimangono intrecciati. I gruppi entrati nell’impero non seguono una sola traiettoria già decisa. Le linee sulla carta indicano direzioni generali e non numeri di persone: le fonti non permettono un conteggio preciso e omogeneo per tutte le fasi del movimento."
+      ],
+      "sources": [
+        "M1"
+      ],
+      "location_ids": [
+        "danube",
+        "rome"
+      ],
+      "camera_end": [
+        24,
+        43,
+        34
+      ],
+      "movements": [
+        {
+          "semantic": "migration",
+          "points": [
+            [
+              28.5,
+              45.5
+            ],
+            [
+              27.5,
+              44
+            ],
+            [
+              26.5,
+              42
+            ]
+          ],
+          "sources": [
+            "M1"
+          ],
+          "uncertain": true
+        }
+      ],
+      "kicker": "Dall’ingresso al conflitto",
+      "facts": [
+        "376–382 · Attraversamento, crisi e negoziato."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "Nuovi itinerari, nuovi accordi",
+      "scene_type": "animated_route",
+      "historical_range": [
+        400,
+        418
+      ],
+      "date": "400 d.C. – 418 d.C.",
+      "lines": [
+        "All’inizio del quinto secolo, le vicende dei gruppi gotici si intrecciano con le lotte politiche imperiali. Nel quattrocentodieci Alarico saccheggia Roma. È un evento traumatico, ma non coincide con la scomparsa immediata dell’impero d’Occidente.",
+        "Successivamente, gruppi visigoti si stabiliscono nella Gallia sudoccidentale. Il percorso unisce episodi differenti, distanti nel tempo: spostamento di persone, operazioni militari e insediamento non sono la stessa azione. Le identità politiche si ricompongono attraverso alleanze e leadership. Per questo la narrazione non presenta una freccia continua come se fosse un unico piano seguito per decenni."
+      ],
+      "sources": [
+        "M2"
+      ],
+      "location_ids": [
+        "rome",
+        "toulouse"
+      ],
+      "camera_end": [
+        7.5,
+        43.4,
+        31
+      ],
+      "movements": [
+        {
+          "semantic": "migration",
+          "points": [
+            [
+              12.5,
+              41.9
+            ],
+            [
+              10,
+              44
+            ],
+            [
+              5.4,
+              43.3
+            ],
+            [
+              1.44,
+              43.6
+            ]
+          ],
+          "sources": [
+            "M2"
+          ],
+          "uncertain": true
+        }
+      ],
+      "kicker": "410 non è la fine dell’impero",
+      "facts": [
+        "Conflitto e successivo insediamento appartengono a fasi diverse."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "I Vandali verso l’Africa",
+      "scene_type": "animated_route",
+      "historical_range": [
+        429,
+        439
+      ],
+      "date": "429 d.C. – 439 d.C.",
+      "lines": [
+        "Un altro itinerario attraversa la penisola iberica e raggiunge l’Africa settentrionale. Nel quattrocentoventinove i Vandali e i loro alleati passano il mare. Nel quattrocentotrentanove prendono Cartagine, nodo decisivo del Mediterraneo romano.",
+        "Questa vicenda non è identica a quella dei Goti. Cambiano le leadership, le opportunità politiche e i territori coinvolti. Due colori distinguono i gruppi senza assegnare loro una consistenza numerica. La perdita di regioni africane ha conseguenze sulle risorse dell’impero occidentale e mostra quanto i movimenti di popolazione possano trasformarsi in nuovi poteri territoriali."
+      ],
+      "sources": [
+        "M2"
+      ],
+      "location_ids": [
+        "gibraltar",
+        "carthage"
+      ],
+      "camera_end": [
+        3,
+        36.5,
+        40
+      ],
+      "movements": [
+        {
+          "semantic": "migration",
+          "color": [
+            197,
+            173,
+            231
+          ],
+          "points": [
+            [
+              -5.35,
+              36.14
+            ],
+            [
+              -5.5,
+              35.75
+            ],
+            [
+              -1,
+              35.5
+            ],
+            [
+              3.1,
+              36.7
+            ],
+            [
+              7.75,
+              36.9
+            ],
+            [
+              10.32,
+              36.85
+            ]
+          ],
+          "sources": [
+            "M2"
+          ],
+          "uncertain": true
+        }
+      ],
+      "kicker": "Un percorso distinto",
+      "facts": [
+        "429: passaggio in Africa. 439: presa di Cartagine."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "Trasformazioni, non sostituzione totale",
+      "scene_type": "summary",
+      "historical_range": [
+        439,
+        476
+      ],
+      "date": "439 d.C. – 476 d.C.",
+      "lines": [
+        "Nel corso del quinto secolo nuovi regni si consolidano entro territori prima imperiali. Il quattrocentosettantasei resta una data convenzionale per la fine dell’impero romano d’Occidente, mentre l’impero d’Oriente continua a esistere. Le popolazioni locali non scompaiono dal paesaggio.",
+        "Gli oggetti, le istituzioni e le pratiche mostrano incontri, continuità e trasformazioni. Il peso relativo delle migrazioni, delle crisi interne e delle guerre resta oggetto di discussione storiografica. Una carta utile non cancella questa complessità: distingue le tappe conosciute, segnala i percorsi schematici e lascia aperto ciò che le fonti non consentono di misurare."
+      ],
+      "sources": [
+        "M1",
+        "M2"
+      ],
+      "kicker": "Una tarda antichità plurale",
+      "facts": [
+        "Le identità si trasformano; le comunità locali continuano a partecipare alla storia."
+      ],
+      "highlights": [
+        "Movimenti e negoziati",
+        "Nuovi regni e continuità",
+        "Numeri e itinerari spesso incerti"
+      ]
+    }
+  ],
+  "visual_layers": [],
+  "visual_assets": [],
+  "metadata": {
+    "authoring": "Ricerca e sintesi editoriale assistita; fixture di accettazione verificata.",
+    "status": "researched"
+  },
+  "editorial_notes": [
+    "Date dei processi diffuse nel tempo: le scansioni delle scene servono alla narrazione, non descrivono trasformazioni istantanee.",
+    "Coordinate di città attuali per orientamento; connessioni e regioni esplicitamente schematiche. Nessuna quantità è dedotta dallo spessore dei flussi."
+  ],
+  "source_method": "Pagine di musei, biblioteche, istituzioni e opere storiche consultate il 3 settembre 2026. Distinzione fra fatti, stime e interpretazioni nei dati e nelle note. Narrazione originale.",
+  "territorial_note": "La cartografia fisica è moderna. Aree schematiche e reti non sono confini politici misurati.",
+  "map_notice": "Mappe illustrative su base fisica moderna; reti schematiche e date dei processi indicative.",
+  "fps": 24,
+  "overview": [
+    10,
+    43,
+    58
+  ]
+}

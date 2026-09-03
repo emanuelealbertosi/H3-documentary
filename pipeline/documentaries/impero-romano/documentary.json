@@ -1,0 +1,669 @@
+{
+  "schema_version": 2,
+  "slug": "impero-romano",
+  "title": "Roma — Dal potere italiano all’impero",
+  "short_title": "Roma",
+  "documentary_type": "territorial_expansion",
+  "historical_period": {
+    "start": -264,
+    "end": 117,
+    "calendar": "anni storici senza anno zero"
+  },
+  "target_minutes": 3,
+  "locations": [
+    {
+      "id": "rome",
+      "name": "Roma",
+      "pos": [
+        12.5,
+        41.9
+      ]
+    },
+    {
+      "id": "carthage",
+      "name": "Cartagine",
+      "pos": [
+        10.32,
+        36.85
+      ]
+    },
+    {
+      "id": "alexandria",
+      "name": "Alessandria",
+      "pos": [
+        29.92,
+        31.2
+      ]
+    },
+    {
+      "id": "athens",
+      "name": "Atene",
+      "pos": [
+        23.73,
+        37.98
+      ]
+    },
+    {
+      "id": "lyon",
+      "name": "Lugdunum",
+      "pos": [
+        4.84,
+        45.76
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "ROM1",
+      "title": "Met — The Roman Republic",
+      "url": "https://www.metmuseum.org/essays/the-roman-republic",
+      "use": "Conquiste e diplomazia, province e crisi della repubblica.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "ROM2",
+      "title": "Met — The Roman Empire",
+      "url": "https://www.metmuseum.org/essays/the-roman-empire-27-b-c-393-a-d",
+      "use": "Augusto, trasformazione istituzionale e massima espansione sotto Traiano.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "ROM3",
+      "title": "British Museum — Introduction to ancient Rome",
+      "url": "https://www.britishmuseum.org/exhibitions/nero-man-behind-myth/introduction-to-ancient-rome",
+      "use": "Estensione imperiale e lettura critica delle mappe.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "ROM4",
+      "title": "Polibio, Storie I–III",
+      "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Polybius/1*.html",
+      "use": "Testo antico: guerre puniche e Sicilia; confronto con la cronologia museale.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    }
+  ],
+  "persons": [],
+  "entities": [
+    {
+      "id": "rome",
+      "name": "Roma",
+      "color": [
+        228,
+        153,
+        96
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "sicily",
+      "year": -241,
+      "title": "Sicilia: prima provincia oltremare",
+      "description": "Sicilia: prima provincia oltremare",
+      "type": "territorial_change",
+      "sources": [
+        "ROM4"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "carthage",
+      "year": -146,
+      "title": "Distruzione di Cartagine",
+      "description": "Distruzione di Cartagine",
+      "type": "territorial_change",
+      "sources": [
+        "ROM1"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "augustus",
+      "year": -27,
+      "title": "Ottaviano diventa Augusto",
+      "description": "Ottaviano diventa Augusto",
+      "type": "political_event",
+      "sources": [
+        "ROM1"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "trajan",
+      "year": 117,
+      "title": "Morte di Traiano",
+      "description": "Morte di Traiano",
+      "type": "death",
+      "sources": [
+        "ROM2"
+      ],
+      "certainty": "established"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "01",
+      "title": "Roma guarda oltre l’Italia",
+      "scene_type": "territorial_change",
+      "historical_range": [
+        -264,
+        -241
+      ],
+      "date": "264 a.C. – 241 a.C.",
+      "lines": [
+        "Nel duecentosessantaquattro avanti Cristo Roma è una potenza italiana. Il suo dominio non è uno stato uniforme: comprende cittadini, comunità subordinate e alleati. La guerra contro Cartagine apre una lunga contesa per il controllo del Mediterraneo occidentale.",
+        "Dopo la prima guerra punica, conclusa nel duecentoquarantuno, la Sicilia diventa il primo possedimento provinciale romano oltre la penisola. La nostra carta evidenzia regioni indicative: non pretende di disegnare ogni confine né di equiparare tutti gli abitanti nella stessa condizione giuridica."
+      ],
+      "sources": [
+        "ROM1",
+        "ROM4"
+      ],
+      "location_ids": [
+        "rome",
+        "carthage"
+      ],
+      "camera_end": [
+        14,
+        39.8,
+        27
+      ],
+      "kicker": "Cittadini, alleati, province",
+      "facts": [
+        "264–241 a.C. · Dall’Italia alla Sicilia."
+      ],
+      "map_note": "Regioni schematiche · non confini storici esatti"
+    },
+    {
+      "id": "02",
+      "title": "Un Mediterraneo trasformato",
+      "scene_type": "territorial_change",
+      "historical_range": [
+        -240,
+        -146
+      ],
+      "date": "240 a.C. – 146 a.C.",
+      "lines": [
+        "Le vittorie non seguono un progetto perfettamente stabilito fin dall’inizio. Guerre, rivalità e accordi ampliano progressivamente il controllo romano. Nel centoquarantasei avanti Cristo Cartagine viene distrutta; anche il mondo greco è sottoposto a una crescente imposizione romana.",
+        "La mappa conserva le regioni già evidenziate mentre ne aggiunge altre. Il colore indica una tappa del racconto, non una conquista istantanea di ogni punto. Amministrare territori lontani richiede governatori, eserciti e rapporti con le élite locali. Le risorse ottenute modificano profondamente anche la società romana."
+      ],
+      "sources": [
+        "ROM1"
+      ],
+      "location_ids": [
+        "rome",
+        "carthage",
+        "athens"
+      ],
+      "camera_end": [
+        18,
+        39,
+        40
+      ],
+      "event_ids": [
+        "carthage"
+      ],
+      "kicker": "Conquiste e amministrazione",
+      "facts": [
+        "Il potere cresce per guerre e diplomazia."
+      ],
+      "map_note": "Campione di regioni · non superficie totale dell’impero"
+    },
+    {
+      "id": "03",
+      "title": "Conquiste e guerre civili",
+      "scene_type": "territorial_change",
+      "historical_range": [
+        -145,
+        -27
+      ],
+      "date": "145 a.C. – 27 a.C.",
+      "lines": [
+        "Nel primo secolo avanti Cristo la conquista della Gallia e l’assoggettamento dell’Egitto ampliano ancora gli orizzonti di Roma. Contemporaneamente, il sistema repubblicano attraversa crisi sociali e guerre civili. Il successo esterno non garantisce stabilità interna.",
+        "Dopo l’assassinio di Cesare, Ottaviano prevale sui rivali. Nel ventisette avanti Cristo riceve il titolo di Augusto. La trasformazione politica non coincide con l’inizio di tutte le conquiste: un vasto dominio esisteva già sotto la repubblica. Separare questi due processi evita di confondere l’impero territoriale con il governo personale degli imperatori."
+      ],
+      "sources": [
+        "ROM1",
+        "ROM2"
+      ],
+      "location_ids": [
+        "rome",
+        "lyon",
+        "alexandria"
+      ],
+      "camera_end": [
+        16,
+        41,
+        60
+      ],
+      "kicker": "Territorio e istituzioni",
+      "facts": [
+        "L’impero territoriale precede il principato di Augusto."
+      ],
+      "map_note": "Campione di regioni · non superficie totale dell’impero"
+    },
+    {
+      "id": "04",
+      "title": "Il massimo non è un equilibrio",
+      "scene_type": "territorial_change",
+      "historical_range": [
+        -26,
+        117
+      ],
+      "date": "26 a.C. – 117 d.C.",
+      "lines": [
+        "Sotto gli imperatori proseguono espansioni e consolidamenti. Traiano, al potere fra il novantotto e il centodiciassette dopo Cristo, conquista la Dacia e conduce campagne in Oriente. Alla sua morte il dominio romano ha raggiunto la massima estensione convenzionalmente rappresentata negli atlanti.",
+        "Ma il controllo non è ovunque stabile. Le conquiste orientali saranno in parte abbandonate da Adriano. Un’area colorata non basta a raccontare il governo effettivo: occorrono strade, guarnigioni, accordi e risorse. Per questo la massima estensione non deve essere scambiata per un confine duraturo."
+      ],
+      "sources": [
+        "ROM2",
+        "ROM3"
+      ],
+      "location_ids": [
+        "rome",
+        "athens",
+        "alexandria"
+      ],
+      "camera_end": [
+        22,
+        40,
+        72
+      ],
+      "kicker": "Espansione e fragilità",
+      "facts": [
+        "117 d.C. · Il massimo territoriale non implica controllo stabile."
+      ],
+      "map_note": "Regioni indicative · conquiste orientali contestate"
+    },
+    {
+      "id": "05",
+      "title": "Che cosa significa dominare?",
+      "scene_type": "comparison",
+      "historical_range": [
+        117,
+        117
+      ],
+      "date": "117 d.C.",
+      "lines": [
+        "Abbiamo seguito alcune tappe di quasi quattro secoli. Il risultato non è soltanto una superficie più grande. Cambiano istituzioni, rapporti sociali e possibilità di collegamento. Roma esercita il potere in modi diversi, negoziando, amministrando e ricorrendo alla forza.",
+        "La scelta di mostrare regioni schematiche rende leggibile la successione, ma non fornisce una misura dell’area imperiale. Per confrontare superfici servirebbero dati geografici storici omogenei. La conclusione è politica oltre che geografica: espandersi e governare sono problemi collegati, senza essere la stessa cosa."
+      ],
+      "sources": [
+        "ROM1",
+        "ROM2",
+        "ROM3"
+      ],
+      "kicker": "Una distinzione necessaria",
+      "facts": [
+        "Conquistare, amministrare e integrare sono processi distinti."
+      ],
+      "comparison": [
+        {
+          "title": "Estensione",
+          "text": "Quali territori sono rivendicati o conquistati in una determinata fase?"
+        },
+        {
+          "title": "Controllo",
+          "text": "Con quali istituzioni, risorse, accordi e costi viene esercitato il potere?"
+        }
+      ]
+    }
+  ],
+  "visual_layers": [
+    {
+      "id": "italy",
+      "kind": "territory",
+      "label": "Italia e alleati",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM1"
+      ],
+      "states": [
+        {
+          "year": -264,
+          "polygons": [
+            [
+              [
+                8,
+                44
+              ],
+              [
+                12,
+                44.7
+              ],
+              [
+                15.8,
+                41.6
+              ],
+              [
+                17.4,
+                40.1
+              ],
+              [
+                16.1,
+                38.1
+              ],
+              [
+                14.8,
+                40
+              ],
+              [
+                12,
+                42
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sicily",
+      "kind": "territory",
+      "label": "Sicilia",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM4"
+      ],
+      "states": [
+        {
+          "year": -241,
+          "polygons": [
+            [
+              [
+                12.4,
+                38
+              ],
+              [
+                15.6,
+                38.3
+              ],
+              [
+                15.1,
+                36.7
+              ],
+              [
+                13,
+                37
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "africa",
+      "kind": "territory",
+      "label": "Africa",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM1"
+      ],
+      "states": [
+        {
+          "year": -146,
+          "polygons": [
+            [
+              [
+                8,
+                36.7
+              ],
+              [
+                11,
+                37
+              ],
+              [
+                11.3,
+                34
+              ],
+              [
+                8,
+                34
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "greece",
+      "kind": "territory",
+      "label": "Grecia",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM1"
+      ],
+      "states": [
+        {
+          "year": -146,
+          "polygons": [
+            [
+              [
+                21,
+                40.5
+              ],
+              [
+                24.5,
+                40.5
+              ],
+              [
+                24,
+                37
+              ],
+              [
+                21.5,
+                36.8
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gaul",
+      "kind": "territory",
+      "label": "Gallia",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM1"
+      ],
+      "states": [
+        {
+          "year": -50,
+          "polygons": [
+            [
+              [
+                -0.8,
+                43.3
+              ],
+              [
+                6.5,
+                43.4
+              ],
+              [
+                8,
+                48.3
+              ],
+              [
+                4.5,
+                50.8
+              ],
+              [
+                -3.8,
+                48
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "egypt",
+      "kind": "territory",
+      "label": "Egitto",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM2"
+      ],
+      "states": [
+        {
+          "year": -30,
+          "polygons": [
+            [
+              [
+                29.4,
+                31.4
+              ],
+              [
+                32.5,
+                31.2
+              ],
+              [
+                33,
+                27
+              ],
+              [
+                31,
+                24
+              ],
+              [
+                29.7,
+                28
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dacia",
+      "kind": "territory",
+      "label": "Dacia",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM2"
+      ],
+      "states": [
+        {
+          "year": 106,
+          "polygons": [
+            [
+              [
+                22,
+                45
+              ],
+              [
+                27,
+                45
+              ],
+              [
+                26,
+                48
+              ],
+              [
+                23,
+                47.6
+              ]
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mesopotamia",
+      "kind": "territory",
+      "label": "Conquiste orientali",
+      "color": [
+        228,
+        153,
+        96
+      ],
+      "schematic": true,
+      "sources": [
+        "ROM2"
+      ],
+      "states": [
+        {
+          "year": 116,
+          "polygons": [
+            [
+              [
+                38,
+                37
+              ],
+              [
+                43,
+                37
+              ],
+              [
+                46,
+                32
+              ],
+              [
+                43,
+                31.5
+              ]
+            ]
+          ],
+          "contested": true
+        }
+      ]
+    }
+  ],
+  "visual_assets": [],
+  "metadata": {
+    "authoring": "Ricerca e sintesi editoriale assistita; fixture di accettazione verificata.",
+    "status": "researched"
+  },
+  "editorial_notes": [
+    "Date dei processi diffuse nel tempo: le scansioni delle scene servono alla narrazione, non descrivono trasformazioni istantanee.",
+    "Coordinate di città attuali per orientamento; connessioni e regioni esplicitamente schematiche. Nessuna quantità è dedotta dallo spessore dei flussi.",
+    "I poligoni evidenziano soltanto alcune regioni pertinenti, non la superficie totale né le frontiere imperiali. Nessun grafico di km² viene derivato da questi poligoni."
+  ],
+  "source_method": "Pagine di musei, biblioteche, istituzioni e opere storiche consultate il 3 settembre 2026. Distinzione fra fatti, stime e interpretazioni nei dati e nelle note. Narrazione originale.",
+  "territorial_note": "La cartografia fisica è moderna. Aree schematiche e reti non sono confini politici misurati.",
+  "map_notice": "Mappe illustrative su base fisica moderna; reti schematiche e date dei processi indicative.",
+  "fps": 24,
+  "overview": [
+    18,
+    40,
+    65
+  ]
+}

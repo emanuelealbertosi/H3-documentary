@@ -1,0 +1,34 @@
+[
+  {
+    "id": "S1",
+    "url": "https://www.unesco.org/en/silk-roads/about-silk-roads",
+    "use": "Reti terrestri e marittime, pluralità delle merci e diffusione di conoscenze. Il nome moderno è retrospettivo.",
+    "cache": "assets/research/history/23c34cbd640d2cdd.source",
+    "sha256": "353fd7bd1b5f8cfe082fe7877b2a6e8f6b41c64dfa0929aea22d728366564556",
+    "cached": true
+  },
+  {
+    "id": "S2",
+    "url": "https://whc.unesco.org/en/list/1442/",
+    "use": "Rete di corridoi, cronologia generale e ambienti attraversati.",
+    "cache": "assets/research/history/6ecaa5d563a27193.source",
+    "sha256": "7dde6f4cf16ed31d9f866cbe2f0a9344c0264e0c55ef9abb351d18103169e77b",
+    "cached": true
+  },
+  {
+    "id": "S3",
+    "url": "https://en.unesco.org/silkroad/silk-road-themes/cities-silk-roads",
+    "use": "Città come mercati, luoghi di riposo e scambio culturale.",
+    "cache": "assets/research/history/a55d3295d5db55b0.source",
+    "sha256": "f7d10cd0c634700285fc0475c4d839933685919454614e6951dc7d6fb478aa95",
+    "cached": true
+  },
+  {
+    "id": "S4",
+    "url": "https://en.unesco.org/silkroad/content/did-you-know-exchange-technical-knowledge-used-craft-silk-roads-goods",
+    "use": "Scambio di tecniche, merci comuni e beni di prestigio.",
+    "cache": "assets/research/history/5b4321fb9e26d07b.source",
+    "sha256": "f7d10cd0c634700285fc0475c4d839933685919454614e6951dc7d6fb478aa95",
+    "cached": true
+  }
+]

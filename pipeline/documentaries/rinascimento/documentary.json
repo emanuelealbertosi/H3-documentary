@@ -1,0 +1,823 @@
+{
+  "schema_version": 2,
+  "slug": "rinascimento",
+  "title": "Rinascimento — Un’Europa di scambi",
+  "short_title": "Rinascimento",
+  "documentary_type": "cultural_movement",
+  "historical_period": {
+    "start": 1400,
+    "end": 1550,
+    "calendar": "anni storici senza anno zero"
+  },
+  "target_minutes": 7,
+  "locations": [
+    {
+      "id": "florence",
+      "name": "Firenze",
+      "pos": [
+        11.2558,
+        43.7696
+      ]
+    },
+    {
+      "id": "venice",
+      "name": "Venezia",
+      "pos": [
+        12.3155,
+        45.4408
+      ],
+      "offset": [
+        55,
+        20
+      ]
+    },
+    {
+      "id": "rome",
+      "name": "Roma",
+      "pos": [
+        12.4964,
+        41.9028
+      ]
+    },
+    {
+      "id": "bruges",
+      "name": "Bruges",
+      "pos": [
+        3.2247,
+        51.2093
+      ]
+    },
+    {
+      "id": "mainz",
+      "name": "Magonza",
+      "pos": [
+        8.2473,
+        49.9929
+      ]
+    },
+    {
+      "id": "nuremberg",
+      "name": "Norimberga",
+      "pos": [
+        11.0767,
+        49.4521
+      ]
+    },
+    {
+      "id": "basel",
+      "name": "Basilea",
+      "pos": [
+        7.5886,
+        47.5596
+      ]
+    },
+    {
+      "id": "amboise",
+      "name": "Amboise",
+      "pos": [
+        0.984,
+        47.413
+      ]
+    },
+    {
+      "id": "london",
+      "name": "Londra",
+      "pos": [
+        -0.1276,
+        51.5072
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "R1",
+      "title": "V&A — Donatello’s Florence",
+      "url": "https://www.vam.ac.uk/articles/donatellos-florence",
+      "use": "Firenze, cantieri, contesto urbano e committenze; interpretazione del rapporto fra città e arte.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R2",
+      "title": "Met — Painting in Oil in the Low Countries",
+      "url": "https://www.metmuseum.org/essays/painting-in-oil-in-the-low-countries-and-its-spread-to-southern-europe",
+      "use": "Tecnica a olio e circolazione dal Nord verso il Sud; evita il mito di una diffusione unidirezionale.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R3",
+      "title": "Met — A Goldsmith in his Shop",
+      "url": "https://www.metmuseum.org/art/collection/search/459052",
+      "use": "Petrus Christus, 1449; descrizione visiva originale. Identificazione del committente controversa, non asserita.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R4",
+      "title": "Library of Congress — Gutenberg Bible",
+      "url": "https://www.loc.gov/item/2021666734/",
+      "use": "Magonza e stampa a metà Quattrocento; la stima della tiratura dipende da una testimonianza, non usata come conteggio esatto.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R5",
+      "title": "Met — Venice and Northern Italy, 1400–1600",
+      "url": "https://82nd-and-fifth.metmuseum.org/toah/ht/08/eustn.html",
+      "use": "Prima stampa a Venezia nel 1469; tipografi provenienti dal Nord e sviluppo editoriale.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R6",
+      "title": "Met — Albrecht Dürer (1471–1528)",
+      "url": "https://www.metmuseum.org/essays/albrecht-durer-1471-1528",
+      "use": "Norimberga; viaggi italiani 1494–95 e 1505–07; diffusione delle stampe.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R7",
+      "title": "Met — Adam and Eve",
+      "url": "https://www.metmuseum.org/art/collection/search/336222",
+      "use": "Incisione del 1504, tecnica e soggetto. Riproduzione in pubblico dominio.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R8",
+      "title": "Château d’Amboise — Histoire du château",
+      "url": "https://www.chateau-amboise.com/lhistoire-du-chateau/",
+      "use": "Leonardo al Clos Lucé nel 1516–1519, invito di Francesco I e attività di corte.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R9",
+      "title": "Met — Erasmus of Rotterdam",
+      "url": "https://www.metmuseum.org/art/collection/search/459080",
+      "use": "Ritratto di Holbein e bottega circa 1532; lettere di presentazione del 1526. Nascita di Erasmo non certa: 1466/1469.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R10",
+      "title": "Met — The Renaissance of Etching",
+      "url": "https://www.metmuseum.org/exhibitions/listings/2019/renaissance-of-etching",
+      "use": "Trasferimento della tecnica dalle armature alle stampe; centri tedeschi, fiamminghi, italiani e francesi.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "R11",
+      "title": "Met — Italian Renaissance Frames",
+      "url": "https://www.metmuseum.org/essays/italian-renaissance-frames",
+      "use": "Legame delle opere con gli ambienti originari e con la funzione, non immagini isolate.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    }
+  ],
+  "persons": [
+    {
+      "id": "erasmus",
+      "name": "Erasmo da Rotterdam",
+      "role": "Umanista e studioso",
+      "period": "1466/1469–1536",
+      "portrait": "assets/history/erasmus.jpg",
+      "intro": "Libri, lettere e amicizie collegano i centri della cultura europea.",
+      "events": [
+        "holbein"
+      ]
+    },
+    {
+      "id": "leonardo",
+      "name": "Leonardo da Vinci",
+      "role": "Artista e ingegnere",
+      "period": "1452–1519",
+      "intro": "Il viaggio in Francia mostra il ruolo delle corti nella mobilità degli artisti."
+    }
+  ],
+  "entities": [],
+  "events": [
+    {
+      "id": "goldsmith",
+      "year": 1449,
+      "title": "Petrus Christus dipinge l’orefice",
+      "description": "Petrus Christus dipinge l’orefice",
+      "type": "cultural_event",
+      "sources": [
+        "R3"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "printing",
+      "year": 1455,
+      "title": "La Bibbia di Gutenberg",
+      "description": "La Bibbia di Gutenberg",
+      "type": "invention",
+      "sources": [
+        "R4"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "venice",
+      "year": 1469,
+      "title": "Primo libro stampato a Venezia",
+      "description": "Primo libro stampato a Venezia",
+      "type": "cultural_event",
+      "sources": [
+        "R5"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "durer",
+      "year": 1494,
+      "title": "Dürer parte per l’Italia",
+      "description": "Dürer parte per l’Italia",
+      "type": "cultural_event",
+      "sources": [
+        "R6"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "adam",
+      "year": 1504,
+      "title": "Adamo ed Eva",
+      "description": "Adamo ed Eva",
+      "type": "cultural_event",
+      "sources": [
+        "R7"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "leonardo",
+      "year": 1516,
+      "title": "Leonardo si stabilisce in Francia",
+      "description": "Leonardo si stabilisce in Francia",
+      "type": "cultural_event",
+      "sources": [
+        "R8"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "holbein",
+      "year": 1526,
+      "title": "Lettere per il viaggio di Holbein",
+      "description": "Lettere per il viaggio di Holbein",
+      "type": "cultural_event",
+      "sources": [
+        "R9"
+      ],
+      "certainty": "established"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "01",
+      "title": "Come viaggia un’idea?",
+      "scene_type": "map_overview",
+      "historical_range": [
+        1400,
+        1420
+      ],
+      "date": "1400 d.C. – 1420 d.C.",
+      "lines": [
+        "Una carta d’Europa può raccontare una storia senza seguire un esercito. Fra le città italiane, le Fiandre e le regioni tedesche circolano dipinti, libri, tecniche e persone. Il Rinascimento prende forma anche attraverso questi scambi. Non possiede una capitale unica, né una frontiera che separi improvvisamente il mondo vecchio da quello nuovo.",
+        "Per comprenderlo seguiremo alcune città e alcuni oggetti. Vedremo innovazioni nate in ambienti diversi incontrarsi, essere imitate e cambiare significato. La parola Rinascimento riunisce esperienze molteplici: la nostra mappa le collega, senza trasformarle nelle tappe obbligate di un progresso identico per tutti."
+      ],
+      "sources": [
+        "R1",
+        "R2",
+        "R10"
+      ],
+      "location_ids": [
+        "florence",
+        "bruges",
+        "mainz",
+        "venice"
+      ],
+      "camera_end": [
+        8,
+        47,
+        45
+      ],
+      "kicker": "Una storia di relazioni",
+      "facts": [
+        "Città, botteghe e corti: una rete senza una frontiera unica."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "Firenze: la città come cantiere",
+      "scene_type": "city_focus",
+      "historical_range": [
+        1420,
+        1440
+      ],
+      "date": "1420 d.C. – 1440 d.C.",
+      "lines": [
+        "Il primo punto è Firenze. Nel Quattrocento, chiese, piazze e sedi delle corporazioni offrono agli artisti occasioni di lavoro e di confronto. Donatello opera dentro questo paesaggio urbano. Le sculture non sono pensate per sale di museo: rispondono a spazi, committenti e pubblici precisi.",
+        "Guardare una città significa allora riconoscere anche chi rende possibile un’opera. Risorse economiche, devozione e prestigio civico si intrecciano. Il richiamo all’antichità non cancella le funzioni religiose dell’arte. Le nuove forme nascono dentro istituzioni e pratiche già esistenti, mentre gli artisti sperimentano modi diversi di rappresentare corpi, emozioni e presenza umana."
+      ],
+      "sources": [
+        "R1",
+        "R11"
+      ],
+      "location_ids": [
+        "florence",
+        "venice"
+      ],
+      "camera_end": [
+        11.4,
+        44,
+        12
+      ],
+      "kicker": "Arte e spazio pubblico",
+      "facts": [
+        "Le opere rispondono a luoghi, committenti e funzioni."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "Bruges: osservare le cose",
+      "scene_type": "artwork",
+      "historical_range": [
+        1449,
+        1449
+      ],
+      "date": "1449 d.C.",
+      "lines": [
+        "Spostiamoci a Bruges. Nel millequattrocentoquarantanove Petrus Christus dipinge un orefice nella sua bottega. Il metallo, il vetro, le stoffe e le superfici riflettenti fanno del quadro un esercizio di osservazione. L’immagine suggerisce un mondo di oggetti preziosi, lavoro specializzato e relazioni sociali.",
+        "L’identità esatta del protagonista e la funzione originaria del dipinto hanno suscitato interpretazioni diverse. Non occorre risolverle inventando una certezza. Possiamo invece vedere come la pittura a olio permetta trasparenze, dettagli e passaggi di luce. Anche qui si costruisce una nuova esperienza visiva, con soluzioni che avranno interesse ben oltre i Paesi Bassi."
+      ],
+      "sources": [
+        "R2",
+        "R3"
+      ],
+      "asset_ids": [
+        "goldsmith"
+      ],
+      "event_ids": [
+        "goldsmith"
+      ],
+      "kicker": "Un altro centro di innovazione",
+      "facts": [
+        "Petrus Christus, 1449. L’identificazione del committente resta discussa."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "La pagina diventa moltiplicabile",
+      "scene_type": "event_focus",
+      "historical_range": [
+        1454,
+        1455
+      ],
+      "date": "1454 d.C. – 1455 d.C.",
+      "lines": [
+        "A metà del Quattrocento, a Magonza, un cambiamento tecnico trasforma la produzione del libro. Gutenberg mette a punto un sistema di stampa con caratteri mobili metallici. La sua celebre Bibbia è realizzata negli anni intorno al millequattrocentocinquantacinque. È una svolta europea, non l’inizio universale di ogni forma di stampa.",
+        "Comporre, inchiostrare e ripetere la stessa pagina permette di produrre più esemplari di un testo. Servono però capitale, materiali, competenze e compratori. Il libro stampato non raggiunge immediatamente tutti. Amplia le possibilità di circolazione, ma non rende automaticamente alfabetizzata la società e non elimina il manoscritto dalla vita culturale."
+      ],
+      "sources": [
+        "R4",
+        "R5"
+      ],
+      "event_ids": [
+        "printing"
+      ],
+      "kicker": "Tecnica, lavoro, lettori",
+      "facts": [
+        "La stampa moltiplica gli esemplari. La diffusione della lettura resta diseguale."
+      ],
+      "highlights": [
+        "Magonza · circa 1454–1455",
+        "Caratteri mobili metallici",
+        "Libri, competenze e investimenti"
+      ]
+    },
+    {
+      "id": "05",
+      "title": "Venezia: il crocevia dei libri",
+      "scene_type": "network_map",
+      "historical_range": [
+        1469,
+        1490
+      ],
+      "date": "1469 d.C. – 1490 d.C.",
+      "lines": [
+        "La stampa attraversa presto le Alpi. A Venezia il primo libro viene stampato nel millequattrocentosessantanove da Giovanni da Spira, proveniente dall’area tedesca. La città diventa un importante centro editoriale, alimentato da competenze mobili e collegamenti commerciali. Per capire questo sviluppo, il confine fra storia culturale e storia economica diventa poco utile.",
+        "Viaggiano i testi, ma anche stampatori, incisori e strumenti. Le relazioni tra il mondo tedesco e Venezia non sono una semplice esportazione italiana verso nord. La carta mostra qui legami fra centri, non un itinerario individuale documentato in ogni tappa. È la struttura dello scambio che ci interessa rendere visibile."
+      ],
+      "sources": [
+        "R5"
+      ],
+      "location_ids": [
+        "mainz",
+        "venice",
+        "nuremberg"
+      ],
+      "camera_end": [
+        10.8,
+        47.5,
+        21
+      ],
+      "network": {
+        "nodes": [
+          {
+            "location_id": "mainz"
+          },
+          {
+            "location_id": "venice"
+          }
+        ],
+        "edges": [
+          {
+            "from": "mainz",
+            "to": "venice",
+            "semantic": "technology_diffusion",
+            "sources": [
+              "R5"
+            ],
+            "uncertain": true
+          }
+        ]
+      },
+      "kicker": "Un centro editoriale europeo",
+      "facts": [
+        "Venezia, 1469: tecnici e reti commerciali sostengono la nuova editoria."
+      ]
+    },
+    {
+      "id": "06",
+      "title": "Dürer attraversa le Alpi",
+      "scene_type": "animated_route",
+      "historical_range": [
+        1494,
+        1495
+      ],
+      "date": "1494 d.C. – 1495 d.C.",
+      "lines": [
+        "Un artista può essere esso stesso un collegamento fra mondi diversi. Albrecht Dürer nasce a Norimberga, città attiva nelle arti e nel commercio. Fra il millequattrocentonovantaquattro e il novantacinque visita l’Italia. Tornerà ancora, dieci anni più tardi. L’esperienza italiana arricchisce una formazione già radicata nelle botteghe del nord.",
+        "Non è il viaggio di un allievo privo di una propria cultura. Dürer osserva, confronta e seleziona. Il suo interesse per le proporzioni e per la teoria si intreccia con una straordinaria abilità nell’incisione. Nella nostra carta il percorso è schematico: documenta il rapporto fra i centri, senza pretendere di ricostruire ogni strada percorsa."
+      ],
+      "sources": [
+        "R6"
+      ],
+      "location_ids": [
+        "nuremberg",
+        "venice"
+      ],
+      "camera_end": [
+        11.2,
+        47,
+        22
+      ],
+      "movements": [
+        {
+          "semantic": "journey",
+          "points": [
+            [
+              11.08,
+              49.45
+            ],
+            [
+              11.4,
+              47.27
+            ],
+            [
+              11.12,
+              46.07
+            ],
+            [
+              12.32,
+              45.44
+            ]
+          ],
+          "sources": [
+            "R6"
+          ],
+          "uncertain": true
+        }
+      ],
+      "kicker": "Un artista fra Nord e Sud",
+      "facts": [
+        "Primo viaggio italiano: 1494–1495. Itinerario rappresentato in forma schematica."
+      ]
+    },
+    {
+      "id": "07",
+      "title": "Un’incisione attraversa l’Europa",
+      "scene_type": "artwork",
+      "historical_range": [
+        1504,
+        1504
+      ],
+      "date": "1504 d.C.",
+      "lines": [
+        "Nel millecinquecentoquattro Dürer incide Adamo ed Eva. Il soggetto biblico convive con un’attenta costruzione delle figure e con una varietà di superfici: corteccia, pelle, foglie e pelo degli animali. L’incisione richiede una precisione che trasforma piccoli segni in luce e materia.",
+        "A differenza di un dipinto destinato a un unico ambiente, una matrice può produrre più impressioni. L’immagine raggiunge luoghi nei quali l’artista non sarà mai presente. La circolazione delle stampe offre quindi un mezzo concreto per studiare e rielaborare invenzioni altrui. La diffusione culturale passa anche dalla possibilità di tenere, guardare e confrontare un foglio."
+      ],
+      "sources": [
+        "R7",
+        "R6"
+      ],
+      "asset_ids": [
+        "adam-eve"
+      ],
+      "event_ids": [
+        "adam"
+      ],
+      "kicker": "L’immagine riproducibile",
+      "facts": [
+        "Adamo ed Eva, 1504: il foglio moltiplica le occasioni di incontro con un’immagine."
+      ]
+    },
+    {
+      "id": "08",
+      "title": "Scambi in entrambe le direzioni",
+      "scene_type": "comparison",
+      "historical_range": [
+        1505,
+        1507
+      ],
+      "date": "1505 d.C. – 1507 d.C.",
+      "lines": [
+        "La storia diventa più chiara se abbandoniamo l’idea di un’unica freccia. In Italia interessano le ricerche nordiche sul colore e sui dettagli. A nord delle Alpi vengono studiate opere, proporzioni e teorie italiane. I mercanti possono acquistare dipinti, gli artisti viaggiare, le stampe passare di mano.",
+        "Questi movimenti si sovrappongono e non producono copie identiche. Ogni ambiente modifica ciò che riceve secondo gusti, funzioni e richieste locali. Parlare di Rinascimento europeo significa riconoscere questa capacità di trasformazione. L’influenza non si misura come una conquista territoriale: una città può partecipare a più tradizioni, nello stesso momento, senza abbandonare del tutto le proprie."
+      ],
+      "sources": [
+        "R2",
+        "R6",
+        "R10"
+      ],
+      "kicker": "Una rete reciproca",
+      "facts": [
+        "Ricevere un’idea significa anche trasformarla."
+      ],
+      "comparison": [
+        {
+          "title": "Dal Nord verso il Sud",
+          "text": "Pittura a olio, dettagli delle superfici, competenze tipografiche e incisorie."
+        },
+        {
+          "title": "Dal Sud verso il Nord",
+          "text": "Studio dell’antico, proporzioni, prospettiva e confronto diretto con le opere."
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "title": "Leonardo alla corte di Francia",
+      "scene_type": "animated_route",
+      "historical_range": [
+        1516,
+        1519
+      ],
+      "date": "1516 d.C. – 1519 d.C.",
+      "lines": [
+        "Le corti offrono un’altra via alla mobilità. Nel millecinquecentosedici Leonardo da Vinci si stabilisce in Francia, invitato da Francesco primo. Vive al Clos Lucé, vicino ad Amboise, negli ultimi anni della sua vita. Con lui si muovono opere, conoscenze e una reputazione costruita in una lunga carriera.",
+        "La presenza di un artista celebre serve anche al prestigio del sovrano. Disegno, architettura, ingegneria e spettacoli di corte possono incontrarsi nelle stesse commissioni. Leonardo muore nel millecinquecentodiciannove. Il suo soggiorno aiuta a vedere come il Rinascimento attraversi l’Europa attraverso rapporti personali e protezioni politiche, oltre che attraverso mercati e botteghe."
+      ],
+      "sources": [
+        "R8"
+      ],
+      "location_ids": [
+        "rome",
+        "amboise"
+      ],
+      "camera_end": [
+        6.5,
+        44.8,
+        33
+      ],
+      "movements": [
+        {
+          "semantic": "journey",
+          "points": [
+            [
+              12.5,
+              41.9
+            ],
+            [
+              9.2,
+              45.46
+            ],
+            [
+              6.2,
+              45.4
+            ],
+            [
+              4.84,
+              45.76
+            ],
+            [
+              0.984,
+              47.413
+            ]
+          ],
+          "sources": [
+            "R8"
+          ],
+          "uncertain": true
+        }
+      ],
+      "kicker": "Artisti e mecenati",
+      "facts": [
+        "Leonardo al Clos Lucé, 1516–1519. Collegamento schematico fra Italia e Francia."
+      ],
+      "label_offsets": {
+        "rome": [
+          50,
+          -27
+        ]
+      }
+    },
+    {
+      "id": "10",
+      "title": "Erasmo: la forza delle relazioni",
+      "scene_type": "person_intro",
+      "historical_range": [
+        1526,
+        1532
+      ],
+      "date": "1526 d.C. – 1532 d.C.",
+      "lines": [
+        "Il ritratto di Erasmo realizzato da Holbein e dalla sua bottega, intorno al millecinquecentotrentadue, presenta un uomo di studio. Lo sguardo e la sobrietà dell’abito costruiscono un’identità intellettuale. Non siamo davanti a un generale o a un territorio: il protagonista è una rete di libri, lettere e amicizie.",
+        "Nel millecinquecentoventisei Erasmo aveva fornito a Holbein lettere di presentazione per amici in Inghilterra. Un rapporto personale poteva aprire porte in un’altra città. La cultura umanistica vive anche di questi strumenti quotidiani. Il ritratto rende visibile la persona; la corrispondenza aiuta a capire come la sua influenza superasse il luogo in cui abitava."
+      ],
+      "sources": [
+        "R9"
+      ],
+      "person_ids": [
+        "erasmus"
+      ],
+      "event_ids": [
+        "holbein"
+      ],
+      "kicker": "La repubblica delle lettere",
+      "facts": [
+        "Una lettera di presentazione può collegare artisti, studiosi e nuovi committenti."
+      ]
+    },
+    {
+      "id": "11",
+      "title": "Le tecniche cambiano mestiere",
+      "scene_type": "document",
+      "historical_range": [
+        1532,
+        1545
+      ],
+      "date": "1532 d.C. – 1545 d.C.",
+      "lines": [
+        "Le innovazioni non viaggiano soltanto da una regione all’altra. Possono passare da un mestiere a un altro. L’acquaforte, usata nella decorazione delle armature, entra nella produzione di immagini su carta. Fra la fine del Quattrocento e il Cinquecento, artisti di diverse regioni europee sperimentano il procedimento.",
+        "Questa trasformazione invita a guardare oltre i nomi più celebri. Materiali, artigiani e conoscenze pratiche sono parte della storia culturale. Il foglio che osserviamo è invece un’incisione a bulino di Dürer: non un esempio di acquaforte. Accostare le tecniche serve a distinguere procedimenti diversi, senza confondere ogni stampa con lo stesso modo di lavorare."
+      ],
+      "sources": [
+        "R10",
+        "R6"
+      ],
+      "asset_ids": [
+        "melencolia"
+      ],
+      "kicker": "Tecniche distinte",
+      "facts": [
+        "Melencolia I, 1514: incisione a bulino. Mostrata per confronto, non come acquaforte."
+      ]
+    },
+    {
+      "id": "12",
+      "title": "Un’Europa di scambi",
+      "scene_type": "summary",
+      "historical_range": [
+        1545,
+        1550
+      ],
+      "date": "1545 d.C. – 1550 d.C.",
+      "lines": [
+        "Alla fine del percorso non troviamo una carta interamente colorata dalla stessa cultura. Troviamo centri differenti, collegati da persone, oggetti e competenze. Firenze, Bruges, Venezia, Norimberga, Basilea e le corti francesi partecipano a processi che non avanzano con il medesimo ritmo.",
+        "Il Rinascimento non si esaurisce in un elenco di capolavori. È anche una storia di luoghi di lavoro, committenze, tecniche e possibilità di comunicazione. Le differenze non scompaiono attraverso gli scambi: spesso diventano la ragione stessa del loro interesse. Per raccontare questa Europa servono dunque mappe, ma anche volti e opere: prove concrete di come un’idea possa cambiare incontrando un altro mondo."
+      ],
+      "sources": [
+        "R1",
+        "R2",
+        "R5",
+        "R9",
+        "R10"
+      ],
+      "kicker": "Ciò che resta",
+      "facts": [
+        "Persone, opere e tecniche trasformano le relazioni fra le città."
+      ],
+      "highlights": [
+        "Più centri di innovazione",
+        "Scambi reciproci e selettivi",
+        "Tempi e accessi diseguali"
+      ]
+    }
+  ],
+  "visual_layers": [],
+  "visual_assets": [
+    {
+      "id": "goldsmith",
+      "path": "assets/history/goldsmith.jpg",
+      "title": "Un orefice nella sua bottega",
+      "creator": "Petrus Christus",
+      "date": "1449",
+      "license": "Public domain / CC0 (Met Open Access)",
+      "source": "https://www.metmuseum.org/art/collection/search/459052",
+      "url": "https://images.metmuseum.org/CRDImages/rl/original/DP-42353-001.jpg",
+      "credit": "The Metropolitan Museum of Art · Robert Lehman Collection, 1975",
+      "sha256": "44ed801e6304b3721c28a69d07bae67749166aeb2b42df9962344771d817b4f4"
+    },
+    {
+      "id": "adam-eve",
+      "path": "assets/history/adam-eve.jpg",
+      "title": "Adamo ed Eva",
+      "creator": "Albrecht Dürer",
+      "date": "1504",
+      "license": "Public domain / CC0 (Met Open Access)",
+      "source": "https://www.metmuseum.org/art/collection/search/336222",
+      "url": "https://images.metmuseum.org/CRDImages/dp/original/DP816026.jpg",
+      "credit": "The Metropolitan Museum of Art · Fletcher Fund, 1919",
+      "sha256": "b8eb90ce089725a99cd1888a3b66ba182d0726c985f9b55746aa645172e4a765"
+    },
+    {
+      "id": "erasmus",
+      "path": "assets/history/erasmus.jpg",
+      "title": "Erasmo da Rotterdam",
+      "creator": "Hans Holbein the Younger",
+      "date": "ca. 1532",
+      "license": "Public domain / CC0 (Met Open Access)",
+      "source": "https://www.metmuseum.org/art/collection/search/459080",
+      "url": "https://images.metmuseum.org/CRDImages/rl/original/DP164857.jpg",
+      "credit": "The Metropolitan Museum of Art · Robert Lehman Collection, 1975",
+      "sha256": "22e75c6932d8aff0b0e7aa7d05657e731c5a8d9d596ae162e1132b30ae7b79e0"
+    },
+    {
+      "id": "melencolia",
+      "path": "assets/history/melencolia.jpg",
+      "title": "Melencolia I",
+      "creator": "Albrecht Dürer",
+      "date": "1514",
+      "license": "Public domain / CC0 (Met Open Access)",
+      "source": "https://www.metmuseum.org/art/collection/search/336228",
+      "url": "https://images.metmuseum.org/CRDImages/dp/original/DP820348.jpg",
+      "credit": "The Metropolitan Museum of Art · Harris Brisbane Dick Fund, 1943",
+      "sha256": "ea8e4a7d78d56d7b1bfec95c640470a3a768b3f0f9d7bdb520c402791c27a330"
+    }
+  ],
+  "metadata": {
+    "authoring": "Ricerca e sintesi editoriale assistita; fixture di accettazione verificata.",
+    "status": "researched"
+  },
+  "editorial_notes": [
+    "Date dei processi diffuse nel tempo: le scansioni delle scene servono alla narrazione, non descrivono trasformazioni istantanee.",
+    "Coordinate di città attuali per orientamento; connessioni e regioni esplicitamente schematiche. Nessuna quantità è dedotta dallo spessore dei flussi.",
+    "Non si assume una diffusione unidirezionale da Firenze. Le date dei quadri sono distinte dalla data degli eventi raccontati.",
+    "Melencolia I è incisione a bulino, mostrata come confronto con l’acquaforte.",
+    "Erasmo: anno di nascita controverso, 1466/1469; ritratto datato circa 1532."
+  ],
+  "source_method": "Pagine di musei, biblioteche, istituzioni e opere storiche consultate il 3 settembre 2026. Distinzione fra fatti, stime e interpretazioni nei dati e nelle note. Narrazione originale.",
+  "territorial_note": "La cartografia fisica è moderna. Aree schematiche e reti non sono confini politici misurati.",
+  "map_notice": "Mappe illustrative su base fisica moderna; reti schematiche e date dei processi indicative.",
+  "fps": 24,
+  "overview": [
+    8,
+    47,
+    45
+  ],
+  "pronunciation": {
+    "Dürer": "Dùrer",
+    "Holbein": "Hòlbein",
+    "Clos Lucé": "Clò Lusé",
+    "Bruges": "Brug",
+    "Erasmo": "Erasmo"
+  },
+  "voice_custom_chunks": {
+    "06:0": [
+      "Un artista può essere esso stesso un collegamento fra mondi diversi.",
+      "Albrecht Dürer nasce a Norimberga,",
+      "città attiva nelle arti e nel commercio.",
+      "Fra il millequattrocentonovantaquattro e il novantacinque visita l’Italia.",
+      "Tornerà ancora,",
+      "dieci anni più tardi.",
+      "L’esperienza italiana arricchisce una formazione già radicata nelle botteghe del nord."
+    ],
+    "06:1": [
+      "Non è il viaggio di un allievo privo di una propria cultura.",
+      "Dürer osserva,",
+      "confronta e seleziona.",
+      "Il suo interesse per le proporzioni e per la teoria si intreccia con una straordinaria abilità nell’incisione.",
+      "Nella nostra carta il percorso è schematico:",
+      "documenta il rapporto fra i centri,",
+      "senza pretendere di ricostruire ogni strada percorsa."
+    ]
+  }
+}

@@ -1,0 +1,115 @@
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
+from typing import Literal
+from urllib.parse import urlsplit, urlunsplit
+import math
+
+class Settings(BaseModel):
+    provider: Literal["openai","lmstudio","vllm","ollama"] = "lmstudio"
+    base_url: str = "http://localhost:1234/v1"
+    model: str = ""
+    api_key: str | None = None
+    clear_api_key: bool = False
+    timeout: int = Field(180, ge=10, le=1800)
+    max_tokens: int = Field(8192, ge=512, le=65536)
+    temperature: float | None = Field(0.25, ge=0, le=2)
+    token_parameter: Literal["max_tokens","max_completion_tokens"] = "max_tokens"
+    json_mode: bool = False
+    vision: bool = False
+    pipeline_path: str = ""
+    render_jobs: int = Field(2, ge=1, le=4)
+    fps: Literal[24,30] = 30
+    request_limit: int = Field(100, ge=10, le=500)
+    search_url: str = ""
+    instructions: str = Field("", max_length=12000)
+
+    @field_validator("base_url")
+    @classmethod
+    def endpoint(cls, value):
+        value=value.strip().rstrip("/")
+        p=urlsplit(value)
+        if p.scheme not in ("http","https") or not p.hostname or p.username or p.password or p.query or p.fragment:
+            raise ValueError("Usa un indirizzo HTTP/HTTPS senza credenziali o parametri nella URL.")
+        path=p.path.rstrip("/")
+        for suffix in ("/chat/completions","/models"):
+            if path.endswith(suffix): path=path[:-len(suffix)]
+        if path in ("","/api"): path="/v1"
+        return urlunsplit((p.scheme,p.netloc,path,"",""))
+
+class ProjectRequest(BaseModel):
+    topic: str = Field(min_length=4, max_length=300)
+    minutes: int = Field(10, ge=2, le=60)
+    notes: str = Field("", max_length=5000)
+    source_urls: list[str] = Field(default_factory=list,max_length=12)
+    start: bool = True
+    documentary_type: Literal["auto","battle","war","territorial_expansion","migration","cultural_movement","religious_expansion","trade_network","exploration","political_history","revolution","economic_history","technology_history","biography","general_history"] = "auto"
+
+class GeoPoint(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    id: str = Field(pattern=r"^[a-z0-9_-]{1,50}$")
+    name: str = Field(min_length=1,max_length=65)
+    pos: tuple[float,float]
+    @field_validator("pos")
+    @classmethod
+    def position(cls,v):
+        if not all(math.isfinite(x) for x in v) or not (-179 <= v[0] <=179 and -78 <= v[1] <=78):
+            raise ValueError("Coordinate fuori dalla carta supportata.")
+        return v
+
+class Commander(BaseModel):
+    id: str = Field(pattern=r"^[a-z0-9_-]{1,50}$")
+    name: str
+    role: str
+    wikipedia_page: str
+
+class Route(BaseModel):
+    side: Literal["a","b"] = "a"
+    points: list[tuple[float,float]] = Field(min_length=2,max_length=30)
+    uncertain: bool = True
+    @field_validator("points")
+    @classmethod
+    def coordinates(cls,points):
+        for p in points: GeoPoint(id="p",name="p",pos=p)
+        return points
+
+class OutlineScene(BaseModel):
+    title: str = Field(max_length=65)
+    date: str = Field(max_length=65)
+    focus: list[str] = Field(min_length=1,max_length=7)
+    event: str = Field(max_length=1400)
+    source_ids: list[str] = Field(min_length=1,max_length=8)
+    routes: list[Route] = Field(default_factory=list,max_length=4)
+    commander_ids: list[str] = Field(default_factory=list,max_length=2)
+
+class Outline(BaseModel):
+    title: str = Field(max_length=120)
+    short_title: str = Field(max_length=35)
+    description: str = Field(max_length=1000)
+    display_date: str = Field(max_length=65)
+    factions: tuple[str,str]
+    places: list[GeoPoint] = Field(min_length=2,max_length=70)
+    commanders: list[Commander] = Field(default_factory=list,max_length=7)
+    river_names: list[str] = Field(default_factory=list,max_length=15)
+    scenes: list[OutlineScene] = Field(min_length=3,max_length=120)
+    uncertainties: list[str] = Field(default_factory=list,max_length=15)
+    @model_validator(mode="after")
+    def links(self):
+        ids={p.id for p in self.places}; cs={p.id for p in self.commanders}
+        if len(ids)!=len(self.places) or len(cs)!=len(self.commanders): raise ValueError("Identificatori duplicati.")
+        for s in self.scenes:
+            if not set(s.focus)<=ids or not set(s.commander_ids)<=cs: raise ValueError("Riferimenti a luoghi o comandanti inesistenti.")
+        return self
+
+class NarrationScene(BaseModel):
+    index: int
+    lines: list[str] = Field(min_length=2,max_length=2)
+    fact: str = Field(min_length=10,max_length=140)
+    kicker: str = Field(min_length=5,max_length=75)
+
+class NarrationBatch(BaseModel):
+    scenes: list[NarrationScene] = Field(min_length=1,max_length=4)
+
+class Review(BaseModel):
+    acceptable: bool
+    issues: list[str] = Field(default_factory=list,max_length=20)
+    source_ids: list[str] = Field(default_factory=list)
+    summary: str

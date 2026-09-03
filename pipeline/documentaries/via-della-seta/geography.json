@@ -1,0 +1,11 @@
+{
+  "bounds": [
+    -15,
+    -6,
+    145,
+    72
+  ],
+  "patches": {},
+  "terrain_zoom": 8,
+  "output": "assets/geography/atlas-history"
+}

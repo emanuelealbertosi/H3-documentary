@@ -1,0 +1,5231 @@
+{
+  "schema_version": 1,
+  "slug": "stalingrado",
+  "title": "Stalingrado — La città e la trappola",
+  "short_title": "STALINGRADO",
+  "subtitle": "La città e la trappola",
+  "display_date": "1942 — 1943",
+  "date": "1942-07-17",
+  "language": "it",
+  "target_minutes": 15,
+  "max_voice_tempo": 1.28,
+  "min_minutes": 14.7,
+  "max_minutes": 15.4,
+  "width": 1920,
+  "height": 1080,
+  "fps": 24,
+  "output": "output/stalingrado_documentario_1080p.mp4",
+  "verification_dir": "stalingrado_verification",
+  "video_license": "Video: Creative Commons BY-SA 4.0 — https://creativecommons.org/licenses/by-sa/4.0/ . Ritratti soggetti alle attribuzioni e licenze specificate.",
+  "description": "Dall’avanzata verso il Volga alla resa: Stalingrado raccontata in italiano con mappe animate della città, del Don e del fronte meridionale. Urano, il ponte aereo, Tempesta invernale e operazione Anello.",
+  "voice_engine": "kokoro",
+  "voice": "assets/voice/kokoro/kokoro-v1.0.onnx",
+  "voice_styles": "assets/voice/kokoro/voices-v1.0.bin",
+  "voice_speaker": "if_sara",
+  "voice_credit": "Kokoro 82M, voce italiana if_sara; pesi Apache-2.0, sintesi locale con Kokoro-ONNX (MIT) e fonemizzazione eSpeak tramite Misaki. Nessuna API vocale a pagamento.",
+  "pronunciation": {
+    "Čujkov": "Ciùikov",
+    "Žukov": "Giùkov",
+    "Vasilevskij": "Vassilièvski",
+    "Rokossovskij": "Rokossòvski",
+    "Serafimovič": "Serafimòvic",
+    "Kletskaja": "Clètscaia",
+    "Myškova": "Mìscova",
+    "Tatsinskaja": "Tatsìnskaia",
+    "Mamayev Kurgan": "Mamàiev Curgàn",
+    "Rodimcev": "Rodìmtsev",
+    "Hoth": "Hot",
+    "Kalach": "Calàc",
+    "Gumrak": "Gumràc",
+    "Pitomnik": "Pitòmnic",
+    "Eremenko": "Eriomènco",
+    "Manstein": "Mànstain",
+    "Paulus": "Pàulus"
+  },
+  "factions": [
+    {
+      "id": "axis",
+      "label": "Germania e alleati dell’Asse",
+      "color": [
+        112,
+        179,
+        220
+      ],
+      "estimate": "Variabile per fase",
+      "commander": "Paulus / Hoth / Manstein"
+    },
+    {
+      "id": "soviet",
+      "label": "Armata Rossa",
+      "color": [
+        235,
+        128,
+        110
+      ],
+      "estimate": "Oltre un milione nell’area di Urano",
+      "commander": "Čujkov / Eremenko / Vatutin / Rokossovskij"
+    }
+  ],
+  "commanders": {
+    "hitler": {
+      "name": "Adolf Hitler",
+      "subtitle": "Dittatore della Germania nazista",
+      "side": "axis",
+      "portrait": "assets/portraits/stalingrado/hitler.jpg",
+      "wikipedia_page": "Adolf Hitler",
+      "image_credit": "Foto: Bundesarchiv · CC BY-SA 3.0 DE"
+    },
+    "stalin": {
+      "name": "Iosif Stalin",
+      "subtitle": "Capo dell’Unione Sovietica",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/stalin.jpg",
+      "wikipedia_page": "Joseph Stalin"
+    },
+    "paulus": {
+      "name": "Friedrich Paulus",
+      "subtitle": "Comandante della Sesta armata",
+      "side": "axis",
+      "portrait": "assets/portraits/stalingrado/paulus.jpg",
+      "wikipedia_page": "Friedrich Paulus"
+    },
+    "hoth": {
+      "name": "Hermann Hoth",
+      "subtitle": "Quarta armata corazzata",
+      "side": "axis",
+      "portrait": "assets/portraits/stalingrado/hoth.jpg",
+      "wikipedia_page": "Hermann Hoth"
+    },
+    "eremenko": {
+      "name": "Andrej Eremenko",
+      "subtitle": "Comandante del settore; poi fronte di Stalingrado",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/eremenko.jpg",
+      "wikipedia_page": "Andrey Yeryomenko",
+      "image_credit": "Foto: Mil.ru · CC BY 4.0"
+    },
+    "chuikov": {
+      "name": "Vasilij Čujkov",
+      "subtitle": "Comandante della Sessantaduesima armata",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/chuikov.jpg",
+      "wikipedia_page": "Vasily Chuikov",
+      "image_credit": "Foto: Mil.ru · CC BY 4.0"
+    },
+    "rodimtsev": {
+      "name": "Aleksandr Rodimcev",
+      "subtitle": "Tredicesima divisione della Guardia",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/rodimtsev-portrait.jpg",
+      "wikipedia_page": "Aleksandr Rodimtsev",
+      "commons_file": "Photo of Aleksandr Rodimtsev from mil.ru.jpg",
+      "image_credit": "Foto: Mil.ru · CC BY 4.0"
+    },
+    "zhukov": {
+      "name": "Georgij Žukov",
+      "subtitle": "Comando supremo sovietico",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/zhukov.jpg",
+      "wikipedia_page": "Georgy Zhukov",
+      "image_credit": "Foto: Mil.ru · CC BY 4.0"
+    },
+    "vasilevsky": {
+      "name": "Aleksandr Vasilevskij",
+      "subtitle": "Capo di stato maggiore generale",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/vasilevsky.jpg",
+      "wikipedia_page": "Aleksandr Vasilevsky",
+      "image_credit": "Foto: Mil.ru · CC BY 4.0"
+    },
+    "vatutin": {
+      "name": "Nikolaj Vatutin",
+      "subtitle": "Fronte Sudoccidentale",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/vatutin.jpg",
+      "wikipedia_page": "Nikolai Vatutin",
+      "image_credit": "Foto: Mil.ru · CC BY 4.0"
+    },
+    "rokossovsky": {
+      "name": "Konstantin Rokossovskij",
+      "subtitle": "Fronte del Don",
+      "side": "soviet",
+      "portrait": "assets/portraits/stalingrado/rokossovsky.jpg",
+      "wikipedia_page": "Konstantin Rokossovsky",
+      "image_credit": "Foto: Mil.ru · CC BY 4.0"
+    },
+    "manstein": {
+      "name": "Erich von Manstein",
+      "subtitle": "Gruppo d’armate Don",
+      "side": "axis",
+      "portrait": "assets/portraits/stalingrado/manstein.jpg",
+      "wikipedia_page": "Erich von Manstein",
+      "image_credit": "Foto: Bundesarchiv · CC BY-SA 3.0 DE"
+    }
+  },
+  "framing": {
+    "hoth": [
+      0,
+      0,
+      1,
+      0.8
+    ],
+    "hitler": [
+      0.08,
+      0,
+      0.96,
+      0.83
+    ]
+  },
+  "maps": {
+    "campaign": {
+      "center": [
+        42.2,
+        48.3
+      ],
+      "scale": [
+        95,
+        115
+      ],
+      "seed": 19420,
+      "north_label": "NORD",
+      "region_label": "URSS · 1942–1943",
+      "landmarks": [
+        {
+          "id": "stalingrad",
+          "name": "Stalingrado",
+          "pos": [
+            44.52,
+            48.71
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "rostov",
+          "name": "Rostov",
+          "pos": [
+            39.723,
+            47.235
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "voronezh",
+          "name": "Voronež",
+          "pos": [
+            39.2,
+            51.67
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "maikop",
+          "name": "Majkop",
+          "pos": [
+            40.1,
+            44.61
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "grozny",
+          "name": "Groznyj",
+          "pos": [
+            45.7,
+            43.3
+          ],
+          "kind": "town"
+        }
+      ],
+      "roads": [],
+      "rivers": [
+        {
+          "name": "Don",
+          "points": [
+            [
+              39.2,
+              51.7
+            ],
+            [
+              39.8,
+              50.1
+            ],
+            [
+              41.0,
+              49.8
+            ],
+            [
+              42.05,
+              49.58
+            ],
+            [
+              42.735,
+              49.58
+            ],
+            [
+              43.06,
+              49.31
+            ],
+            [
+              43.5,
+              49.25
+            ],
+            [
+              43.93,
+              49.1
+            ],
+            [
+              43.9,
+              48.98
+            ],
+            [
+              43.5,
+              48.9
+            ],
+            [
+              43.53,
+              48.69
+            ],
+            [
+              43.4,
+              48.47
+            ],
+            [
+              43.09,
+              48.24
+            ],
+            [
+              42.2,
+              47.7
+            ],
+            [
+              41.2,
+              47.55
+            ],
+            [
+              40.4,
+              47.55
+            ],
+            [
+              39.72,
+              47.24
+            ],
+            [
+              39.2,
+              47.05
+            ]
+          ]
+        },
+        {
+          "name": "Volga",
+          "points": [
+            [
+              45.1,
+              51.0
+            ],
+            [
+              44.9,
+              50.1
+            ],
+            [
+              44.73,
+              49.4
+            ],
+            [
+              44.66,
+              48.94
+            ],
+            [
+              44.64,
+              48.82
+            ],
+            [
+              44.565,
+              48.745
+            ],
+            [
+              44.54,
+              48.7
+            ],
+            [
+              44.49,
+              48.6
+            ],
+            [
+              44.6,
+              48.45
+            ],
+            [
+              45.12,
+              48.04
+            ],
+            [
+              45.6,
+              47.8
+            ],
+            [
+              46.8,
+              46.6
+            ],
+            [
+              48.04,
+              46.35
+            ]
+          ]
+        }
+      ],
+      "ridges": [
+        {
+          "pos": [
+            43.0,
+            43.2
+          ],
+          "amplitude": 32,
+          "width": [
+            4,
+            0.48
+          ]
+        }
+      ],
+      "forests": [],
+      "zones": [],
+      "show_river_names": true,
+      "scale_km": 100
+    },
+    "front": {
+      "center": [
+        43.45,
+        48.75
+      ],
+      "scale": [
+        470,
+        580
+      ],
+      "seed": 1942,
+      "north_label": "NORD",
+      "region_label": "URSS · 1942–1943",
+      "landmarks": [
+        {
+          "id": "stalingrad",
+          "name": "Stalingrado",
+          "pos": [
+            44.52,
+            48.71
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "kalach",
+          "name": "Kalach",
+          "pos": [
+            43.526,
+            48.691
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "sovetskij",
+          "name": "Sovetskij",
+          "pos": [
+            43.76,
+            48.64
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "serafimovich",
+          "name": "Serafimovič",
+          "pos": [
+            42.735,
+            49.584
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "kletskaya",
+          "name": "Kletskaja",
+          "pos": [
+            43.061,
+            49.314
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "kotelnikovo",
+          "name": "Kotelnikovo",
+          "pos": [
+            43.133,
+            47.632
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "pitomnik",
+          "name": "Pitomnik",
+          "pos": [
+            44.241,
+            48.74
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "gumrak",
+          "name": "Gumrak",
+          "pos": [
+            44.355,
+            48.794
+          ],
+          "kind": "town",
+          "label_offset": [
+            65,
+            -24
+          ]
+        }
+      ],
+      "roads": [
+        {
+          "name": "Asse logistico",
+          "points": [
+            [
+              41.82,
+              48.35
+            ],
+            [
+              43.09,
+              48.24
+            ],
+            [
+              43.526,
+              48.691
+            ],
+            [
+              44.241,
+              48.74
+            ],
+            [
+              44.52,
+              48.71
+            ]
+          ]
+        },
+        {
+          "name": "Asse di Kotelnikovo",
+          "points": [
+            [
+              43.133,
+              47.632
+            ],
+            [
+              43.6,
+              48.1
+            ],
+            [
+              44.1,
+              48.4
+            ],
+            [
+              44.52,
+              48.71
+            ]
+          ]
+        }
+      ],
+      "rivers": [
+        {
+          "name": "Don",
+          "points": [
+            [
+              39.2,
+              51.7
+            ],
+            [
+              39.8,
+              50.1
+            ],
+            [
+              41.0,
+              49.8
+            ],
+            [
+              42.05,
+              49.58
+            ],
+            [
+              42.735,
+              49.58
+            ],
+            [
+              43.06,
+              49.31
+            ],
+            [
+              43.5,
+              49.25
+            ],
+            [
+              43.93,
+              49.1
+            ],
+            [
+              43.9,
+              48.98
+            ],
+            [
+              43.5,
+              48.9
+            ],
+            [
+              43.53,
+              48.69
+            ],
+            [
+              43.4,
+              48.47
+            ],
+            [
+              43.09,
+              48.24
+            ],
+            [
+              42.2,
+              47.7
+            ],
+            [
+              41.2,
+              47.55
+            ],
+            [
+              40.4,
+              47.55
+            ],
+            [
+              39.72,
+              47.24
+            ],
+            [
+              39.2,
+              47.05
+            ]
+          ]
+        },
+        {
+          "name": "Volga",
+          "points": [
+            [
+              45.1,
+              51.0
+            ],
+            [
+              44.9,
+              50.1
+            ],
+            [
+              44.73,
+              49.4
+            ],
+            [
+              44.66,
+              48.94
+            ],
+            [
+              44.64,
+              48.82
+            ],
+            [
+              44.565,
+              48.745
+            ],
+            [
+              44.54,
+              48.7
+            ],
+            [
+              44.49,
+              48.6
+            ],
+            [
+              44.6,
+              48.45
+            ],
+            [
+              45.12,
+              48.04
+            ],
+            [
+              45.6,
+              47.8
+            ],
+            [
+              46.8,
+              46.6
+            ],
+            [
+              48.04,
+              46.35
+            ]
+          ]
+        },
+        {
+          "name": "Čir",
+          "points": [
+            [
+              41.4,
+              49.1
+            ],
+            [
+              42.0,
+              48.9
+            ],
+            [
+              42.6,
+              48.6
+            ],
+            [
+              43.1,
+              48.35
+            ],
+            [
+              43.4,
+              48.47
+            ]
+          ]
+        },
+        {
+          "name": "Myškova",
+          "points": [
+            [
+              43.29,
+              48.382
+            ],
+            [
+              43.64,
+              48.32
+            ],
+            [
+              43.94,
+              48.29
+            ],
+            [
+              44.16,
+              48.37
+            ],
+            [
+              44.38,
+              48.44
+            ]
+          ],
+          "label_offset": [
+            80,
+            -40
+          ]
+        },
+        {
+          "name": "Aksaj",
+          "points": [
+            [
+              42.78,
+              48.052
+            ],
+            [
+              43.33,
+              48.02
+            ],
+            [
+              43.7,
+              48.0
+            ],
+            [
+              44.1,
+              48.1
+            ],
+            [
+              44.4,
+              48.14
+            ]
+          ]
+        }
+      ],
+      "ridges": [
+        {
+          "pos": [
+            44.15,
+            48.72
+          ],
+          "amplitude": 15,
+          "width": [
+            0.24,
+            0.7
+          ]
+        }
+      ],
+      "forests": [],
+      "zones": [],
+      "show_river_names": true,
+      "scale_km": 25,
+      "palette": [
+        108,
+        115,
+        101
+      ]
+    },
+    "don": {
+      "center": [
+        42.25,
+        49.0
+      ],
+      "scale": [
+        220,
+        300
+      ],
+      "seed": 19421,
+      "north_label": "NORD",
+      "region_label": "URSS · 1942–1943",
+      "landmarks": [
+        {
+          "id": "stalingrad",
+          "name": "Stalingrado",
+          "pos": [
+            44.52,
+            48.71
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "kalach",
+          "name": "Kalach",
+          "pos": [
+            43.526,
+            48.691
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "tatsinskaya",
+          "name": "Tatsinskaja",
+          "pos": [
+            41.276,
+            48.196
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "morozovsk",
+          "name": "Morozovsk",
+          "pos": [
+            41.826,
+            48.354
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "millerovo",
+          "name": "Millerovo",
+          "pos": [
+            40.4,
+            48.92
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "novayakalitva",
+          "name": "Novaja Kalitva",
+          "pos": [
+            39.96,
+            50.02
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "rostov",
+          "name": "Rostov",
+          "pos": [
+            39.723,
+            47.235
+          ],
+          "kind": "town"
+        }
+      ],
+      "roads": [
+        {
+          "name": "Collegamenti ferroviari",
+          "points": [
+            [
+              39.723,
+              47.235
+            ],
+            [
+              41.276,
+              48.196
+            ],
+            [
+              41.826,
+              48.354
+            ],
+            [
+              43.526,
+              48.691
+            ],
+            [
+              44.52,
+              48.71
+            ]
+          ]
+        }
+      ],
+      "rivers": [
+        {
+          "name": "Don",
+          "points": [
+            [
+              39.2,
+              51.7
+            ],
+            [
+              39.8,
+              50.1
+            ],
+            [
+              41.0,
+              49.8
+            ],
+            [
+              42.05,
+              49.58
+            ],
+            [
+              42.735,
+              49.58
+            ],
+            [
+              43.06,
+              49.31
+            ],
+            [
+              43.5,
+              49.25
+            ],
+            [
+              43.93,
+              49.1
+            ],
+            [
+              43.9,
+              48.98
+            ],
+            [
+              43.5,
+              48.9
+            ],
+            [
+              43.53,
+              48.69
+            ],
+            [
+              43.4,
+              48.47
+            ],
+            [
+              43.09,
+              48.24
+            ],
+            [
+              42.2,
+              47.7
+            ],
+            [
+              41.2,
+              47.55
+            ],
+            [
+              40.4,
+              47.55
+            ],
+            [
+              39.72,
+              47.24
+            ],
+            [
+              39.2,
+              47.05
+            ]
+          ]
+        },
+        {
+          "name": "Volga",
+          "points": [
+            [
+              45.1,
+              51.0
+            ],
+            [
+              44.9,
+              50.1
+            ],
+            [
+              44.73,
+              49.4
+            ],
+            [
+              44.66,
+              48.94
+            ],
+            [
+              44.64,
+              48.82
+            ],
+            [
+              44.565,
+              48.745
+            ],
+            [
+              44.54,
+              48.7
+            ],
+            [
+              44.49,
+              48.6
+            ],
+            [
+              44.6,
+              48.45
+            ],
+            [
+              45.12,
+              48.04
+            ],
+            [
+              45.6,
+              47.8
+            ],
+            [
+              46.8,
+              46.6
+            ],
+            [
+              48.04,
+              46.35
+            ]
+          ]
+        },
+        {
+          "name": "Čir",
+          "points": [
+            [
+              41.4,
+              49.1
+            ],
+            [
+              42.0,
+              48.9
+            ],
+            [
+              42.6,
+              48.6
+            ],
+            [
+              43.1,
+              48.35
+            ],
+            [
+              43.4,
+              48.47
+            ]
+          ]
+        },
+        {
+          "name": "Myškova",
+          "points": [
+            [
+              43.29,
+              48.382
+            ],
+            [
+              43.64,
+              48.32
+            ],
+            [
+              43.94,
+              48.29
+            ],
+            [
+              44.16,
+              48.37
+            ],
+            [
+              44.38,
+              48.44
+            ]
+          ],
+          "label_offset": [
+            80,
+            -40
+          ]
+        },
+        {
+          "name": "Aksaj",
+          "points": [
+            [
+              42.78,
+              48.052
+            ],
+            [
+              43.33,
+              48.02
+            ],
+            [
+              43.7,
+              48.0
+            ],
+            [
+              44.1,
+              48.1
+            ],
+            [
+              44.4,
+              48.14
+            ]
+          ]
+        }
+      ],
+      "ridges": [],
+      "forests": [],
+      "zones": [],
+      "show_river_names": true,
+      "scale_km": 50,
+      "palette": [
+        118,
+        124,
+        116
+      ]
+    },
+    "battle": {
+      "center": [
+        44.56,
+        48.75
+      ],
+      "scale": [
+        12000,
+        11000
+      ],
+      "seed": 19422,
+      "north_label": "NORD",
+      "region_label": "URSS · 1942–1943",
+      "landmarks": [
+        {
+          "id": "mamaev",
+          "name": "Mamayev Kurgan",
+          "pos": [
+            44.537,
+            48.742
+          ],
+          "kind": "ridge"
+        },
+        {
+          "id": "station",
+          "name": "Stazione",
+          "pos": [
+            44.513,
+            48.711
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "landing",
+          "name": "Approdi",
+          "pos": [
+            44.536,
+            48.716
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "grain",
+          "name": "Silos del grano",
+          "pos": [
+            44.498,
+            48.686
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "october",
+          "name": "Ottobre Rosso",
+          "pos": [
+            44.562,
+            48.771
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "barrikady",
+          "name": "Barrikady",
+          "pos": [
+            44.584,
+            48.786
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "tractor",
+          "name": "Fabbrica di trattori",
+          "pos": [
+            44.604,
+            48.805
+          ],
+          "kind": "town"
+        }
+      ],
+      "roads": [
+        {
+          "name": "Asse urbano",
+          "points": [
+            [
+              44.485,
+              48.665
+            ],
+            [
+              44.502,
+              48.71
+            ],
+            [
+              44.526,
+              48.745
+            ],
+            [
+              44.554,
+              48.775
+            ],
+            [
+              44.59,
+              48.813
+            ]
+          ]
+        }
+      ],
+      "rivers": [
+        {
+          "name": "Volga",
+          "points": [
+            [
+              44.6655,
+              48.85
+            ],
+            [
+              44.6475,
+              48.832
+            ],
+            [
+              44.6275,
+              48.81
+            ],
+            [
+              44.6045,
+              48.79
+            ],
+            [
+              44.5845,
+              48.773
+            ],
+            [
+              44.5705,
+              48.75
+            ],
+            [
+              44.5595,
+              48.737
+            ],
+            [
+              44.5505,
+              48.723
+            ],
+            [
+              44.5455,
+              48.71
+            ],
+            [
+              44.5305,
+              48.695
+            ],
+            [
+              44.5095,
+              48.665
+            ],
+            [
+              44.4995,
+              48.646
+            ]
+          ]
+        },
+        {
+          "name": "Carica",
+          "points": [
+            [
+              44.46,
+              48.716
+            ],
+            [
+              44.485,
+              48.703
+            ],
+            [
+              44.506,
+              48.697
+            ],
+            [
+              44.523,
+              48.699
+            ]
+          ]
+        }
+      ],
+      "ridges": [
+        {
+          "pos": [
+            44.537,
+            48.742
+          ],
+          "amplitude": 27,
+          "width": [
+            0.01,
+            0.01
+          ]
+        }
+      ],
+      "forests": [],
+      "zones": [],
+      "show_river_names": true,
+      "scale_km": 1,
+      "water": [
+        {
+          "points": [
+            [
+              44.655,
+              48.85
+            ],
+            [
+              44.637,
+              48.832
+            ],
+            [
+              44.617,
+              48.81
+            ],
+            [
+              44.594,
+              48.79
+            ],
+            [
+              44.574,
+              48.773
+            ],
+            [
+              44.56,
+              48.75
+            ],
+            [
+              44.549,
+              48.737
+            ],
+            [
+              44.54,
+              48.723
+            ],
+            [
+              44.535,
+              48.71
+            ],
+            [
+              44.52,
+              48.695
+            ],
+            [
+              44.499,
+              48.665
+            ],
+            [
+              44.489,
+              48.646
+            ],
+            [
+              44.51,
+              48.646
+            ],
+            [
+              44.52,
+              48.665
+            ],
+            [
+              44.541000000000004,
+              48.695
+            ],
+            [
+              44.556,
+              48.71
+            ],
+            [
+              44.561,
+              48.723
+            ],
+            [
+              44.57,
+              48.737
+            ],
+            [
+              44.581,
+              48.75
+            ],
+            [
+              44.595,
+              48.773
+            ],
+            [
+              44.615,
+              48.79
+            ],
+            [
+              44.638,
+              48.81
+            ],
+            [
+              44.658,
+              48.832
+            ],
+            [
+              44.676,
+              48.85
+            ]
+          ]
+        }
+      ],
+      "districts": [
+        {
+          "points": [
+            [
+              44.488,
+              48.67
+            ],
+            [
+              44.499,
+              48.716
+            ],
+            [
+              44.516,
+              48.753
+            ],
+            [
+              44.545,
+              48.779
+            ],
+            [
+              44.584,
+              48.82
+            ],
+            [
+              44.613,
+              48.823
+            ],
+            [
+              44.591,
+              48.79
+            ],
+            [
+              44.562,
+              48.766
+            ],
+            [
+              44.539,
+              48.73
+            ],
+            [
+              44.517,
+              48.69
+            ]
+          ]
+        }
+      ]
+    },
+    "winter_city": {
+      "center": [
+        44.56,
+        48.75
+      ],
+      "scale": [
+        12000,
+        11000
+      ],
+      "seed": 19422,
+      "north_label": "NORD",
+      "region_label": "URSS · 1942–1943",
+      "landmarks": [
+        {
+          "id": "mamaev",
+          "name": "Mamayev Kurgan",
+          "pos": [
+            44.537,
+            48.742
+          ],
+          "kind": "ridge"
+        },
+        {
+          "id": "station",
+          "name": "Stazione",
+          "pos": [
+            44.513,
+            48.711
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "landing",
+          "name": "Approdi",
+          "pos": [
+            44.536,
+            48.716
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "grain",
+          "name": "Silos del grano",
+          "pos": [
+            44.498,
+            48.686
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "october",
+          "name": "Ottobre Rosso",
+          "pos": [
+            44.562,
+            48.771
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "barrikady",
+          "name": "Barrikady",
+          "pos": [
+            44.584,
+            48.786
+          ],
+          "kind": "town"
+        },
+        {
+          "id": "tractor",
+          "name": "Fabbrica di trattori",
+          "pos": [
+            44.604,
+            48.805
+          ],
+          "kind": "town"
+        }
+      ],
+      "roads": [
+        {
+          "name": "Asse urbano",
+          "points": [
+            [
+              44.485,
+              48.665
+            ],
+            [
+              44.502,
+              48.71
+            ],
+            [
+              44.526,
+              48.745
+            ],
+            [
+              44.554,
+              48.775
+            ],
+            [
+              44.59,
+              48.813
+            ]
+          ]
+        }
+      ],
+      "rivers": [
+        {
+          "name": "Volga",
+          "points": [
+            [
+              44.6655,
+              48.85
+            ],
+            [
+              44.6475,
+              48.832
+            ],
+            [
+              44.6275,
+              48.81
+            ],
+            [
+              44.6045,
+              48.79
+            ],
+            [
+              44.5845,
+              48.773
+            ],
+            [
+              44.5705,
+              48.75
+            ],
+            [
+              44.5595,
+              48.737
+            ],
+            [
+              44.5505,
+              48.723
+            ],
+            [
+              44.5455,
+              48.71
+            ],
+            [
+              44.5305,
+              48.695
+            ],
+            [
+              44.5095,
+              48.665
+            ],
+            [
+              44.4995,
+              48.646
+            ]
+          ]
+        },
+        {
+          "name": "Carica",
+          "points": [
+            [
+              44.46,
+              48.716
+            ],
+            [
+              44.485,
+              48.703
+            ],
+            [
+              44.506,
+              48.697
+            ],
+            [
+              44.523,
+              48.699
+            ]
+          ]
+        }
+      ],
+      "ridges": [
+        {
+          "pos": [
+            44.537,
+            48.742
+          ],
+          "amplitude": 27,
+          "width": [
+            0.01,
+            0.01
+          ]
+        }
+      ],
+      "forests": [],
+      "zones": [],
+      "show_river_names": true,
+      "scale_km": 1,
+      "water": [
+        {
+          "points": [
+            [
+              44.655,
+              48.85
+            ],
+            [
+              44.637,
+              48.832
+            ],
+            [
+              44.617,
+              48.81
+            ],
+            [
+              44.594,
+              48.79
+            ],
+            [
+              44.574,
+              48.773
+            ],
+            [
+              44.56,
+              48.75
+            ],
+            [
+              44.549,
+              48.737
+            ],
+            [
+              44.54,
+              48.723
+            ],
+            [
+              44.535,
+              48.71
+            ],
+            [
+              44.52,
+              48.695
+            ],
+            [
+              44.499,
+              48.665
+            ],
+            [
+              44.489,
+              48.646
+            ],
+            [
+              44.51,
+              48.646
+            ],
+            [
+              44.52,
+              48.665
+            ],
+            [
+              44.541000000000004,
+              48.695
+            ],
+            [
+              44.556,
+              48.71
+            ],
+            [
+              44.561,
+              48.723
+            ],
+            [
+              44.57,
+              48.737
+            ],
+            [
+              44.581,
+              48.75
+            ],
+            [
+              44.595,
+              48.773
+            ],
+            [
+              44.615,
+              48.79
+            ],
+            [
+              44.638,
+              48.81
+            ],
+            [
+              44.658,
+              48.832
+            ],
+            [
+              44.676,
+              48.85
+            ]
+          ]
+        }
+      ],
+      "districts": [
+        {
+          "points": [
+            [
+              44.488,
+              48.67
+            ],
+            [
+              44.499,
+              48.716
+            ],
+            [
+              44.516,
+              48.753
+            ],
+            [
+              44.545,
+              48.779
+            ],
+            [
+              44.584,
+              48.82
+            ],
+            [
+              44.613,
+              48.823
+            ],
+            [
+              44.591,
+              48.79
+            ],
+            [
+              44.562,
+              48.766
+            ],
+            [
+              44.539,
+              48.73
+            ],
+            [
+              44.517,
+              48.69
+            ]
+          ]
+        }
+      ],
+      "palette": [
+        115,
+        122,
+        116
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "CMH1",
+      "title": "Earl F. Ziemke, Stalingrad to Berlin, cap. I (U.S. Army, 1968)",
+      "url": "https://www.ibiblio.org/hyperwar/USA/USA-EF-Defeat/USA-EF-Defeat-1.html",
+      "use": "Testo della storia ufficiale federale statunitense, trascrizione HyperWar: contesto del 1942 e operazione Blau. Opera storica, non fonte neutrale rispetto alla storiografia del suo tempo."
+    },
+    {
+      "id": "CMH3",
+      "title": "Ziemke, Stalingrad to Berlin, cap. III: Stalingrad, the Encirclement",
+      "url": "https://www.ibiblio.org/hyperwar/USA/USA-EF-Defeat/USA-EF-Defeat-3.html",
+      "use": "Capitolo consultato: Don, città, ottobre-novembre, Urano e tentativo di soccorso. Carte 3 e 4 per orientamento dei settori e direttrici. Le generalizzazioni nazionali e alcune valutazioni sovietiche del 1968 non sono riprese."
+    },
+    {
+      "id": "CMH4",
+      "title": "Ziemke, Stalingrad to Berlin, cap. IV: Stalingrad, the Turning Point",
+      "url": "https://www.ibiblio.org/hyperwar/USA/USA-EF-Defeat/USA-EF-Defeat-4.html",
+      "use": "Testo consultato: Piccolo Saturno, logistica, fallimento del soccorso, Anello e resa. Carta 5 per il medio Don. Data di Pitomnik e cronologia di gennaio confrontate, non adottate senza riserve."
+    },
+    {
+      "id": "WW2ADAPT",
+      "title": "National WWII Museum — Stalingrad: Experimentation, Adaptation, Implementation",
+      "url": "https://www.nationalww2museum.org/war/articles/stalingrad-experimentation-adaptation-implementation",
+      "use": "Confronto storiografico: apprendimento sovietico, resistenza sugli accessi, errori logistici e miti di una trappola perfetta. Non si ricopiano i totali o le generalizzazioni delle memorie tedesche."
+    },
+    {
+      "id": "WW2CIV",
+      "title": "National WWII Museum — Unsung Witnesses of the Battle of Stalingrad",
+      "url": "https://www.nationalww2museum.org/war/articles/unsung-witnesses-battle-stalingrad",
+      "use": "Articolo consultato su evacuazione, civili fra le rovine, deportazioni e lavoro forzato. Parafrasi originale; nessuna testimonianza inventata o citazione diretta."
+    },
+    {
+      "id": "DHM",
+      "title": "Deutsches Historisches Museum — Die Schlacht um Stalingrad",
+      "url": "https://www.dhm.de/lemo/kapitel/der-zweite-weltkrieg/kriegsverlauf/schlacht-um-stalingrad-194243",
+      "use": "Confronto per stime della sacca, fallimento del ponte aereo e rese. La scheda sintetizza e comprime alcune date: il film distingue 19/20/23 novembre e 31 gennaio/2 febbraio. Non viene riprodotto il testo CC BY-NC-SA."
+    },
+    {
+      "id": "BARCH",
+      "title": "Bundesarchiv — Ende der Schlacht von Stalingrad",
+      "url": "https://www.bundesarchiv.de/themen-entdecken/online-entdecken/dokumente-zur-zeitgeschichte/ende-der-schlacht-von-stalingrad/",
+      "use": "Conferma delle rese del 31 gennaio e 2 febbraio 1943 e dei successivi 27 mesi di guerra in Europa."
+    },
+    {
+      "id": "IWM",
+      "title": "Imperial War Museums — Second World War Galleries, large print",
+      "url": "https://www.iwm.org.uk/sites/default/files/files/2023-10/second_world_war_galleries_large_print.pdf",
+      "use": "Testo indicizzato della sezione Stalingrad: circa 265.000 accerchiati, circa 91.000 prigionieri finali. Non è stato utilizzato materiale iconografico del PDF."
+    },
+    {
+      "id": "USHMM",
+      "title": "United States Holocaust Memorial Museum — The Soviet Union and the Eastern Front",
+      "url": "https://encyclopedia.ushmm.org/content/en/article/the-soviet-union-and-the-eastern-front?series=7",
+      "use": "Contesto della guerra di aggressione nazista, obiettivi economici del 1942 e significato della svolta."
+    },
+    {
+      "id": "MUSEUM",
+      "title": "Museo-riserva della battaglia di Stalingrado — Complesso di Mamayev Kurgan",
+      "url": "https://stalingrad-battle.ru/about/about-museum-inner/2302/",
+      "use": "Topografia commemorativa e ricostruzione della collina; confronto sulla congiunzione del 26 gennaio. Il linguaggio celebrativo non è assunto come giudizio critico."
+    },
+    {
+      "id": "MAMAYEV",
+      "title": "Mamayev Hill — Fights for Mamayev Kurgan",
+      "url": "https://mamaev-hill.ru/en/battle",
+      "use": "Sito non ufficiale (dichiarato nella pagina): consultato come confronto per la collina e i reparti, con conferma istituzionale del 26 gennaio. Non è il sito ufficiale del museo."
+    },
+    {
+      "id": "AUP",
+      "title": "Army University Press — Stalingrad: The Battle for the Martenovskii Shop",
+      "url": "https://www.armyupress.army.mil/Journals/Military-Review/English-Edition-Archives/September-October-2018/Stalingrad-Martenovskii-Shop/",
+      "use": "Contesto del combattimento industriale e della ricostruzione didattica per luoghi. Nessun filmato o immagine riprodotto."
+    }
+  ],
+  "scenes": [
+    {
+      "id": "01",
+      "title": "LA CITTÀ E LA TRAPPOLA",
+      "date": "1942–1943",
+      "kicker": "Una battaglia su due scale",
+      "lines": [
+        "Nel novembre del millenovecentoquarantadue, i soldati tedeschi combattono ancora per gli ultimi edifici di Stalingrado. Il Volga è davanti a loro. La vittoria sembra vicina.",
+        "Ma nella steppa, lontano dalle fabbriche distrutte, l'Armata Rossa sta preparando un colpo contro le strade che alimentano l'intero esercito assediante.",
+        "In pochi giorni, chi tentava di conquistare la città si ritroverà accerchiato. Comincia una lotta per sopravvivere, fra ordini di resistere e promesse di soccorso.",
+        "Per capire Stalingrado seguiremo entrambe queste battaglie: fra le case e lungo le strade che collegano Don e Volga."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.5,
+        48.9,
+        0.7
+      ],
+      "camera_end": [
+        43.55,
+        48.9,
+        0.72
+      ],
+      "units": [
+        {
+          "id": "Sesta_armata_e_aggregati",
+          "label": "Sesta armata e aggregati",
+          "side": "axis",
+          "pos": [
+            44.13,
+            48.74
+          ],
+          "kind": "infantry",
+          "count": 4,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Fronte_del_Don",
+          "label": "Fronte del Don",
+          "side": "soviet",
+          "pos": [
+            43.74,
+            49.01
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Fronte_di_Stalingrado",
+          "label": "Fronte di Stalingrado",
+          "side": "soviet",
+          "pos": [
+            44.06,
+            48.42
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              42.73,
+              49.58
+            ],
+            [
+              43.0,
+              49.12
+            ],
+            [
+              43.526,
+              48.69
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.3,
+              48.22
+            ],
+            [
+              43.95,
+              48.43
+            ],
+            [
+              43.76,
+              48.64
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "La città e la steppa",
+        "Due scale della stessa battaglia"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH3",
+        "BARCH"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "mode": "opening",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "02",
+      "title": "LA STRADA VERSO IL PETROLIO",
+      "date": "Estate 1942",
+      "kicker": "Gli obiettivi nel sud sovietico",
+      "lines": [
+        "Un anno prima, la Germania nazista ha invaso l'Unione Sovietica. La guerra a oriente porta occupazione, persecuzioni e distruzione su una scala immensa.",
+        "L'offensiva tedesca non ha ottenuto la vittoria rapida prevista. Dopo l'arresto davanti a Mosca, Hitler concentra lo sforzo dell'estate quarantadue verso sud.",
+        "L'obiettivo economico è il petrolio del Caucaso. Privarne l'avversario e impadronirsene significherebbe cambiare le risorse disponibili per continuare la guerra.",
+        "Industrie e traffico sul Volga rendono Stalingrado strategica, oltre al valore politico del suo nome."
+      ],
+      "map": "campaign",
+      "camera_start": [
+        42.3,
+        47.3,
+        0.83
+      ],
+      "camera_end": [
+        42.7,
+        47.2,
+        0.88
+      ],
+      "units": [
+        {
+          "id": "Asse",
+          "label": "Asse",
+          "side": "axis",
+          "pos": [
+            39.3,
+            49.0
+          ],
+          "kind": "infantry",
+          "count": 4,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              39.3,
+              49.0
+            ],
+            [
+              40.5,
+              47.1
+            ],
+            [
+              43.0,
+              44.3
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack",
+          "end_cue": 3
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Petrolio del Caucaso",
+        "Industrie e traffico sul Volga"
+      ],
+      "focus": [
+        {
+          "place": "stalingrad",
+          "cue": 3,
+          "side": "axis"
+        }
+      ],
+      "sfx": [],
+      "sources": [
+        "CMH1",
+        "USHMM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "03",
+      "title": "DUE DIREZIONI, UN RISCHIO",
+      "date": "Giugno–luglio 1942",
+      "kicker": "Il fronte si allunga",
+      "lines": [
+        "L'offensiva estiva, chiamata operazione Blu, comincia alla fine di giugno. Gli eserciti tedeschi avanzano e le difese sovietiche subiscono nuove, pesanti sconfitte.",
+        "Hitler divide poi il dispositivo meridionale. Il gruppo d'armate A punta al Caucaso; il gruppo B deve raggiungere il Volga e prendere Stalingrado.",
+        "Le distanze aumentano. Carburante, munizioni e rinforzi devono seguire poche ferrovie e lunghe strade. Ogni deviazione rallenta altri reparti in movimento.",
+        "Anche Stalin sbaglia nel valutare il nemico. La resistenza nasce da una crisi, non da una trappola perfetta."
+      ],
+      "map": "campaign",
+      "camera_start": [
+        42.1,
+        47.2,
+        0.82
+      ],
+      "camera_end": [
+        42.3,
+        47.4,
+        0.85
+      ],
+      "units": [
+        {
+          "id": "Gruppo_A",
+          "label": "Gruppo A",
+          "side": "axis",
+          "pos": [
+            40.8,
+            44.7
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Gruppo_B",
+          "label": "Gruppo B",
+          "side": "axis",
+          "pos": [
+            42.2,
+            49.0
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              39.72,
+              47.23
+            ],
+            [
+              40.1,
+              45.0
+            ],
+            [
+              44.7,
+              43.6
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        },
+        {
+          "side": "axis",
+          "points": [
+            [
+              40.0,
+              49.0
+            ],
+            [
+              42.3,
+              48.8
+            ],
+            [
+              44.52,
+              48.71
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [
+        {
+          "id": "hitler",
+          "cue": 0
+        },
+        {
+          "id": "stalin",
+          "cue": 3
+        }
+      ],
+      "facts": [
+        "Due obiettivi simultanei",
+        "Comunicazioni sempre più lunghe"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH1",
+        "CMH3",
+        "WW2ADAPT"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "04",
+      "title": "RESISTERE SUL DON",
+      "date": "Luglio–agosto 1942",
+      "kicker": "Gli accessi alla città",
+      "lines": [
+        "La campagna di Stalingrado viene spesso fatta iniziare il diciassette luglio, quando i combattimenti investono gli accessi occidentali. La battaglia urbana arriverà più tardi.",
+        "Fra le anse del Don, la Sesta armata tedesca incontra nuove formazioni sovietiche. La Sessantaduesima e la Sessantaquattresima armata tentano di rallentarla.",
+        "I contrattacchi sovietici sono costosi e spesso male coordinati. Carri armati, fanteria e rifornimenti non riescono sempre a muoversi insieme sotto la pressione avversaria.",
+        "Questa resistenza consuma tempo e mezzi. Presso Kalach i tedeschi raggiungono il Don, ma il Volga è ancora lontano."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.5,
+        48.95,
+        0.9
+      ],
+      "camera_end": [
+        43.7,
+        48.92,
+        0.95
+      ],
+      "units": [
+        {
+          "id": "Sesta_armata",
+          "label": "Sesta armata",
+          "side": "axis",
+          "pos": [
+            42.1,
+            48.9
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [
+            [
+              42.1,
+              48.9
+            ],
+            [
+              43.3,
+              48.83
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        },
+        {
+          "id": "62ª_e_64ª_armata",
+          "label": "62ª e 64ª armata",
+          "side": "soviet",
+          "pos": [
+            43.65,
+            48.7
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              42.2,
+              48.9
+            ],
+            [
+              43.3,
+              48.8
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Dal 17 luglio: gli accessi",
+        "Il Don prima della città"
+      ],
+      "focus": [
+        {
+          "place": "kalach",
+          "cue": 3,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [
+        {
+          "type": "march",
+          "cue": 1
+        }
+      ],
+      "sources": [
+        "CMH3",
+        "WW2ADAPT"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "05",
+      "title": "IL GIORNO DEL FUOCO",
+      "date": "23 agosto 1942",
+      "kicker": "I tedeschi raggiungono il Volga",
+      "lines": [
+        "Il ventitré agosto, i carri tedeschi raggiungono il Volga a nord della città. Una stretta penetrazione taglia la steppa e minaccia le comunicazioni sovietiche.",
+        "Nello stesso giorno, un massiccio bombardamento aereo devasta Stalingrado. Incendi e macerie trasformano quartieri abitati in un campo di battaglia.",
+        "Molti civili sono ancora presenti. Le cifre delle vittime del bombardamento restano discusse e non consentono un totale certo.",
+        "Raggiungere il fiume non significa però controllare tutta la città. La punta corazzata tedesca è esposta e deve difendersi mentre attende fanteria, carburante e munizioni."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.57,
+        48.788,
+        0.48
+      ],
+      "camera_end": [
+        44.571,
+        48.788999999999994,
+        0.5088
+      ],
+      "units": [
+        {
+          "id": "16ª_Panzer",
+          "label": "16ª Panzer",
+          "side": "axis",
+          "pos": [
+            44.52,
+            48.83
+          ],
+          "kind": "armor",
+          "count": 2,
+          "path": [
+            [
+              44.52,
+              48.83
+            ],
+            [
+              44.625,
+              48.822
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 1
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.5,
+              48.83
+            ],
+            [
+              44.625,
+              48.822
+            ]
+          ],
+          "cue": 0,
+          "kind": "attack"
+        },
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.46,
+              48.76
+            ],
+            [
+              44.52,
+              48.73
+            ]
+          ],
+          "cue": 1,
+          "kind": "fire"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "23 agosto: fiume e bombardamenti",
+        "La città resta contesa"
+      ],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 1
+        }
+      ],
+      "sources": [
+        "CMH3",
+        "WW2ADAPT",
+        "WW2CIV"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "06",
+      "title": "UNA CITTÀ LUNGO IL FIUME",
+      "date": "Agosto–settembre 1942",
+      "kicker": "La geografia della resistenza",
+      "lines": [
+        "Guardiamo il terreno. Stalingrado si allunga sulla riva occidentale del Volga. A est si trovano approdi, isole e le retrovie della difesa sovietica.",
+        "A nord sorgono i grandi complessi industriali: la fabbrica di trattori, Barrikady e Ottobre Rosso. Più a sud si trovano il centro e la stazione.",
+        "La collina di Mamayev Kurgan domina parte di questo spazio. Alture e valloni interrompono il tessuto urbano e influenzano osservazione, ripari e collegamenti.",
+        "I tedeschi vogliono comprimere i difensori contro il fiume. Ai sovietici, piccoli approdi permettono ancora di ricevere rinforzi."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.56,
+        48.75,
+        0.43
+      ],
+      "camera_end": [
+        44.561,
+        48.751,
+        0.45580000000000004
+      ],
+      "units": [],
+      "arrows": [],
+      "commanders": [],
+      "facts": [
+        "Riva occidentale: la città",
+        "Riva orientale: retrovie e artiglieria"
+      ],
+      "focus": [
+        {
+          "place": "tractor",
+          "cue": 1,
+          "side": "soviet"
+        },
+        {
+          "place": "mamaev",
+          "cue": 2,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [],
+      "sources": [
+        "CMH3",
+        "MUSEUM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "07",
+      "title": "GLI ESERCITI CONVERGONO",
+      "date": "Inizio settembre 1942",
+      "kicker": "Paulus e Hoth davanti alla città",
+      "lines": [
+        "La Sesta armata di Friedrich Paulus avanza da ovest. A sud opera la Quarta armata corazzata di Hermann Hoth, che completa la pressione sulla città.",
+        "Nei primi giorni di settembre le forze tedesche si congiungono a occidente di Stalingrado. Le unità sovietiche ripiegano verso una difesa sempre più vicina al fiume.",
+        "Il comandante sovietico del settore, Andrej Eremenko, deve coordinare eserciti provati dalla ritirata, rinforzi in arrivo e collegamenti esposti agli attacchi aerei.",
+        "Le armate cambiano continuamente consistenza: perdite, trasferimenti e rinforzi modificano gli uomini disponibili."
+      ],
+      "map": "front",
+      "camera_start": [
+        44.02,
+        48.78,
+        1.05
+      ],
+      "camera_end": [
+        44.1,
+        48.76,
+        1.1
+      ],
+      "units": [
+        {
+          "id": "Paulus_Sesta_armata",
+          "label": "Paulus · Sesta armata",
+          "side": "axis",
+          "pos": [
+            43.5,
+            48.9
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [
+            [
+              43.5,
+              48.9
+            ],
+            [
+              44.18,
+              48.8
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 2
+        },
+        {
+          "id": "Hoth_Quarta_corazzata",
+          "label": "Hoth · Quarta corazzata",
+          "side": "axis",
+          "pos": [
+            43.8,
+            48.38
+          ],
+          "kind": "armor",
+          "count": 2,
+          "path": [
+            [
+              43.8,
+              48.38
+            ],
+            [
+              44.2,
+              48.63
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 2
+        },
+        {
+          "id": "Difese_sovietiche",
+          "label": "Difese sovietiche",
+          "side": "soviet",
+          "pos": [
+            44.53,
+            48.72
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [],
+      "commanders": [
+        {
+          "id": "paulus",
+          "cue": 0
+        },
+        {
+          "id": "hoth",
+          "cue": 1
+        },
+        {
+          "id": "eremenko",
+          "cue": 2
+        }
+      ],
+      "facts": [
+        "Convergenza da ovest e sud",
+        "Forze in continua trasformazione"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH3"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "08",
+      "title": "TENERE LA RIVA",
+      "date": "12 settembre 1942",
+      "kicker": "Čujkov assume il comando",
+      "lines": [
+        "Il dodici settembre, Vasilij Čujkov assume il comando della Sessantaduesima armata. Il suo compito è difendere il nucleo della città sulla riva occidentale.",
+        "Alle sue spalle c'è il Volga. I collegamenti attraversano acqua battuta dal fuoco; davanti, l'avversario dispone di artiglieria, aviazione e reparti esperti.",
+        "Čujkov organizza una difesa che sfrutta macerie, edifici e brevi contrattacchi. Non può aspettare che ogni reparto sia completo prima di impiegarlo.",
+        "Fuori città, altri eserciti sovietici impegnano i tedeschi e impediscono loro di concentrare tutte le forze contro gli approdi."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.544,
+        48.744,
+        0.6
+      ],
+      "camera_end": [
+        44.544999999999995,
+        48.745,
+        0.636
+      ],
+      "units": [
+        {
+          "id": "Sesta_armata",
+          "label": "Sesta armata",
+          "side": "axis",
+          "pos": [
+            44.526,
+            48.737
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "62ª_armata",
+          "label": "62ª armata",
+          "side": "soviet",
+          "pos": [
+            44.53,
+            48.718
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [],
+      "commanders": [
+        {
+          "id": "chuikov",
+          "cue": 0
+        }
+      ],
+      "facts": [
+        "62ª armata",
+        "Conservare gli approdi"
+      ],
+      "focus": [
+        {
+          "place": "landing",
+          "cue": 1,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [],
+      "sources": [
+        "CMH3",
+        "WW2ADAPT"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "09",
+      "title": "IL CENTRO SOTTO ASSALTO",
+      "date": "13–16 settembre 1942",
+      "kicker": "Stazione, collina e approdi",
+      "lines": [
+        "Il tredici settembre, i tedeschi attaccano il centro di Stalingrado. La stazione e Mamayev Kurgan diventano obiettivi decisivi, vicinissimi alle vie di rifornimento.",
+        "La situazione sovietica è critica. Nella notte fra il quattordici e il quindici settembre, la Tredicesima divisione della Guardia attraversa il Volga.",
+        "La comanda Aleksandr Rodimcev. I suoi uomini entrano rapidamente in combattimento e contribuiscono a fermare l'avanzata nel centro e sulle alture.",
+        "Le posizioni cambiano continuamente. Talvolta gli avversari occupano piani diversi dello stesso edificio: una linea sulla mappa può soltanto semplificarlo."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.528,
+        48.728,
+        0.88
+      ],
+      "camera_end": [
+        44.528999999999996,
+        48.729,
+        0.9328000000000001
+      ],
+      "units": [
+        {
+          "id": "Assalto_tedesco",
+          "label": "Assalto tedesco",
+          "side": "axis",
+          "pos": [
+            44.488,
+            48.73
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [
+            [
+              44.488,
+              48.73
+            ],
+            [
+              44.515,
+              48.719
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 1
+        },
+        {
+          "id": "13ª_Guardia",
+          "label": "13ª Guardia",
+          "side": "soviet",
+          "pos": [
+            44.578,
+            48.713
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [
+            [
+              44.578,
+              48.713
+            ],
+            [
+              44.54,
+              48.716
+            ],
+            [
+              44.526,
+              48.733
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.486,
+              48.731
+            ],
+            [
+              44.515,
+              48.719
+            ]
+          ],
+          "cue": 0,
+          "kind": "attack",
+          "end_cue": 1
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.58,
+              48.713
+            ],
+            [
+              44.54,
+              48.716
+            ],
+            [
+              44.526,
+              48.733
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [
+        {
+          "id": "rodimtsev",
+          "cue": 2
+        }
+      ],
+      "facts": [
+        "Rinforzi attraverso il Volga",
+        "14–15 settembre"
+      ],
+      "focus": [
+        {
+          "place": "mamaev",
+          "cue": 3,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [
+        {
+          "type": "musket",
+          "cue": 0
+        }
+      ],
+      "sources": [
+        "CMH3",
+        "MAMAYEV"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "station",
+        "mamaev",
+        "landing"
+      ]
+    },
+    {
+      "id": "10",
+      "title": "LA GUERRA DELLE MACERIE",
+      "date": "Settembre 1942",
+      "kicker": "Piccoli reparti, obiettivi ravvicinati",
+      "lines": [
+        "Nelle strade distrutte, la potenza di fuoco tedesca conserva il suo peso, ma usarla diventa più difficile quando amici e nemici sono vicinissimi.",
+        "I difensori cercano il contatto ravvicinato. Gruppi d'assalto, mitragliatrici e tiratori sfruttano cantine, aperture nei muri e passaggi coperti fra gli edifici.",
+        "Anche i tedeschi adattano le proprie tattiche. Genieri e fanteria devono ridurre singoli capisaldi, proteggere i fianchi e resistere ai contrattacchi locali.",
+        "Una fabbrica può controllare un incrocio o proteggere un approdo. Conta la sua funzione, oltre alla superficie conquistata."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.532,
+        48.73,
+        1.02
+      ],
+      "camera_end": [
+        44.532999999999994,
+        48.730999999999995,
+        1.0812000000000002
+      ],
+      "units": [
+        {
+          "id": "Gruppi_tedeschi",
+          "label": "Gruppi tedeschi",
+          "side": "axis",
+          "pos": [
+            44.51,
+            48.737
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Gruppi_sovietici",
+          "label": "Gruppi sovietici",
+          "side": "soviet",
+          "pos": [
+            44.541,
+            48.736
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.511,
+              48.736
+            ],
+            [
+              44.524,
+              48.729
+            ]
+          ],
+          "cue": 2,
+          "kind": "attack"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.542,
+              48.731
+            ],
+            [
+              44.527,
+              48.734
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Obiettivi ravvicinati",
+        "Edifici, incroci e collegamenti"
+      ],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "musket",
+          "cue": 2
+        }
+      ],
+      "sources": [
+        "CMH3",
+        "AUP"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "station",
+        "mamaev",
+        "landing"
+      ]
+    },
+    {
+      "id": "11",
+      "title": "CHI NON PUÒ ANDARSENE",
+      "date": "Agosto–ottobre 1942",
+      "kicker": "I civili fra i due fronti",
+      "lines": [
+        "Sotto le mappe militari esiste un'altra città: quella dei civili. Famiglie, anziani e bambini cercano rifugio nelle cantine e fra le rovine.",
+        "L'evacuazione sovietica è tardiva e disordinata. Attraversare il Volga sotto i bombardamenti è pericoloso, e raggiungere l'altra riva non garantisce subito cibo o riparo.",
+        "Chi rimane deve trovare acqua e alimenti in uno spazio attraversato dal fuoco. Le necessità più elementari diventano rischi quotidiani.",
+        "Nei settori occupati, i tedeschi deportano abitanti e impiegano civili nel lavoro forzato. La popolazione vive una catastrofe."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.544,
+        48.708,
+        0.66
+      ],
+      "camera_end": [
+        44.544999999999995,
+        48.708999999999996,
+        0.6996000000000001
+      ],
+      "units": [],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.522,
+              48.712
+            ],
+            [
+              44.573,
+              48.717
+            ]
+          ],
+          "cue": 1,
+          "kind": "move"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Evacuazione e sopravvivenza",
+        "Civili fra i due fronti"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "WW2CIV"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "mode": "aftermath",
+      "visible_places": [
+        "station",
+        "landing",
+        "grain"
+      ]
+    },
+    {
+      "id": "12",
+      "title": "LA BATTAGLIA DELLE FABBRICHE",
+      "date": "14–31 ottobre 1942",
+      "kicker": "L'assalto al settore industriale",
+      "lines": [
+        "A metà ottobre, Paulus concentra un nuovo attacco nel settore industriale. Fanteria, carri e genieri avanzano verso la fabbrica di trattori e gli impianti vicini.",
+        "I tedeschi conquistano gran parte della fabbrica e raggiungono il Volga, spezzando ulteriormente la continuità delle posizioni sovietiche sulla riva occidentale.",
+        "A Barrikady e Ottobre Rosso la lotta continua fra capannoni, officine e macchinari. I difensori mantengono capisaldi che devono essere riforniti separatamente.",
+        "Entrambi gli eserciti consumano reparti e munizioni, mentre l’autunno peggiora i collegamenti. La mappa mostra settori schematici."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.578,
+        48.79,
+        0.74
+      ],
+      "camera_end": [
+        44.579,
+        48.791,
+        0.7844
+      ],
+      "units": [
+        {
+          "id": "Assalto_tedesco",
+          "label": "Assalto tedesco",
+          "side": "axis",
+          "pos": [
+            44.555,
+            48.81
+          ],
+          "kind": "armor",
+          "count": 3,
+          "path": [
+            [
+              44.555,
+              48.81
+            ],
+            [
+              44.6,
+              48.805
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 1
+        },
+        {
+          "id": "Capisaldi_sovietici",
+          "label": "Capisaldi sovietici",
+          "side": "soviet",
+          "pos": [
+            44.582,
+            48.784
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.552,
+              48.81
+            ],
+            [
+              44.614,
+              48.808
+            ]
+          ],
+          "cue": 0,
+          "kind": "attack"
+        },
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.54,
+              48.78
+            ],
+            [
+              44.582,
+              48.785
+            ]
+          ],
+          "cue": 2,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Il settore industriale",
+        "Difese sovietiche frammentate"
+      ],
+      "focus": [
+        {
+          "place": "tractor",
+          "cue": 1,
+          "side": "axis"
+        },
+        {
+          "place": "barrikady",
+          "cue": 2,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 0
+        }
+      ],
+      "sources": [
+        "CMH3",
+        "AUP"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "tractor",
+        "barrikady",
+        "october"
+      ]
+    },
+    {
+      "id": "13",
+      "title": "IL VOLGA TIENE IN VITA",
+      "date": "Autunno 1942",
+      "kicker": "Rifornimenti e fuoco dalla riva est",
+      "lines": [
+        "Le difese sovietiche in città dipendono dai trasporti sul Volga. Imbarcazioni di diverso tipo portano rinforzi, munizioni e viveri, spesso sfruttando l'oscurità.",
+        "Nel viaggio opposto vengono evacuati feriti e civili. Gli approdi sono obiettivi costanti: perderne uno può isolare un intero settore della difesa.",
+        "Dalla riva orientale, l'artiglieria sovietica sostiene le truppe tra le rovine. Il fiume separa le retrovie dal combattimento, senza renderle invulnerabili.",
+        "Il ghiaccio mobile ostacola le barche. Prima che il fiume geli, gli attraversamenti diventano ancora più pericolosi."
+      ],
+      "map": "battle",
+      "camera_start": [
+        44.56,
+        48.75,
+        0.55
+      ],
+      "camera_end": [
+        44.561,
+        48.751,
+        0.5830000000000001
+      ],
+      "units": [
+        {
+          "id": "Artiglieria_sovietica",
+          "label": "Artiglieria sovietica",
+          "side": "soviet",
+          "pos": [
+            44.613,
+            48.733
+          ],
+          "kind": "artillery",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.6,
+              48.718
+            ],
+            [
+              44.542,
+              48.719
+            ]
+          ],
+          "cue": 0,
+          "kind": "move"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.542,
+              48.713
+            ],
+            [
+              44.6,
+              48.711
+            ]
+          ],
+          "cue": 1,
+          "kind": "move"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.611,
+              48.735
+            ],
+            [
+              44.522,
+              48.75
+            ]
+          ],
+          "cue": 2,
+          "kind": "fire"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Rinforzi e munizioni",
+        "Il ghiaccio mobile ostacola le barche"
+      ],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 2
+        }
+      ],
+      "sources": [
+        "CMH3",
+        "WW2CIV"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "landing",
+        "mamaev",
+        "october"
+      ]
+    },
+    {
+      "id": "14",
+      "title": "GLI ULTIMI METRI",
+      "date": "11–18 novembre 1942",
+      "kicker": "La città sembra sul punto di cadere",
+      "lines": [
+        "A novembre, i tedeschi controllano la maggior parte di Stalingrado. I sovietici tengono ancora tratti di riva e gruppi di edifici, spesso separati fra loro.",
+        "L'undici novembre parte un altro assalto nel settore delle fabbriche. Nuove penetrazioni raggiungono il Volga, senza eliminare tutta la resistenza.",
+        "Per Paulus, il problema sembra ancora come completare la conquista. Ma ogni reparto consumato nell'attacco urbano riduce le possibilità di reagire altrove.",
+        "Contemporaneamente, lontano dal centro, il comando sovietico concentra forze per la controffensiva. La difesa urbana continua."
+      ],
+      "map": "winter_city",
+      "camera_start": [
+        44.574,
+        48.783,
+        0.76
+      ],
+      "camera_end": [
+        44.574999999999996,
+        48.784,
+        0.8056000000000001
+      ],
+      "units": [
+        {
+          "id": "Sesta_armata",
+          "label": "Sesta armata",
+          "side": "axis",
+          "pos": [
+            44.526,
+            48.772
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "62ª_armata",
+          "label": "62ª armata",
+          "side": "soviet",
+          "pos": [
+            44.568,
+            48.774
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.549,
+              48.786
+            ],
+            [
+              44.591,
+              48.789
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Ultimi assalti tedeschi",
+        "Contemporaneamente: prepara Urano"
+      ],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "musket",
+          "cue": 1
+        }
+      ],
+      "sources": [
+        "CMH3"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "frontlines": [
+        {
+          "points": [
+            [
+              44.565,
+              48.758
+            ],
+            [
+              44.574,
+              48.774
+            ],
+            [
+              44.59,
+              48.789
+            ],
+            [
+              44.618,
+              48.81
+            ]
+          ],
+          "side": "soviet"
+        }
+      ],
+      "visible_places": [
+        "october",
+        "barrikady",
+        "tractor"
+      ]
+    },
+    {
+      "id": "15",
+      "title": "I FIANCHI ESPOSTI",
+      "date": "Novembre 1942",
+      "kicker": "Oltre la battaglia urbana",
+      "lines": [
+        "Allarghiamo l'inquadratura. La Sesta armata dipende da strade e ferrovie che attraversano la steppa e il Don, molto lontano dai suoi reparti d'assalto.",
+        "A nordovest, la Terza armata romena protegge un lungo settore. A sud, altre forze romene coprono il fianco del dispositivo tedesco.",
+        "Più lontano lungo il Don sono schierati anche italiani e ungheresi. Non combattono tutti nelle strade di Stalingrado: sostengono il vasto fronte dell'Asse.",
+        "Difese anticarro e riserve romene sono insufficienti. La vulnerabilità dipende da mezzi e scelte operative, non da caratteri nazionali."
+      ],
+      "map": "don",
+      "camera_start": [
+        42.55,
+        49.1,
+        0.67
+      ],
+      "camera_end": [
+        42.7,
+        49.08,
+        0.69
+      ],
+      "units": [
+        {
+          "id": "8ª_armata_italiana",
+          "label": "8ª armata italiana",
+          "side": "axis",
+          "pos": [
+            40.9,
+            49.65
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "3ª_armata_romena",
+          "label": "3ª armata romena",
+          "side": "axis",
+          "pos": [
+            42.7,
+            49.34
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "6ª_armata_tedesca",
+          "label": "6ª armata tedesca",
+          "side": "axis",
+          "pos": [
+            44.25,
+            48.79
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Forze_romene_a_sud",
+          "label": "Forze romene a sud",
+          "side": "axis",
+          "pos": [
+            44.25,
+            48.22
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [],
+      "commanders": [],
+      "facts": [
+        "Fianchi estesi",
+        "Riserve e difese anticarro insufficienti"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH3"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "16",
+      "title": "IL PIANO URANO",
+      "date": "Autunno 1942",
+      "kicker": "Colpire le comunicazioni nemiche",
+      "lines": [
+        "Il comando supremo sovietico prepara l'operazione Urano. Žukov e Vasilevskij contribuiscono alla pianificazione e al coordinamento, insieme agli stati maggiori e ai comandanti sul campo.",
+        "L'idea è aggirare l'area dove i tedeschi sono più forti. Due offensive devono sfondare sui fianchi e congiungersi alle spalle della Sesta armata.",
+        "La branca settentrionale partirà dalle teste di ponte sul Don. Quella meridionale muoverà dai settori a sud di Stalingrado, puntando verso nordovest.",
+        "L’obiettivo è chiudere una sacca presso Kalach. Servono preparazione, concentrazione e capacità di avanzare in profondità."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.5,
+        48.9,
+        0.7
+      ],
+      "camera_end": [
+        43.55,
+        48.9,
+        0.72
+      ],
+      "units": [],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              42.74,
+              49.58
+            ],
+            [
+              42.95,
+              49.16
+            ],
+            [
+              43.53,
+              48.69
+            ]
+          ],
+          "cue": 2,
+          "kind": "plan"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.31,
+              48.22
+            ],
+            [
+              43.99,
+              48.4
+            ],
+            [
+              43.76,
+              48.64
+            ]
+          ],
+          "cue": 2,
+          "kind": "plan"
+        }
+      ],
+      "commanders": [
+        {
+          "id": "zhukov",
+          "cue": 0
+        },
+        {
+          "id": "vasilevsky",
+          "cue": 1
+        }
+      ],
+      "facts": [
+        "Urano: attaccare i fianchi",
+        "Tratteggio: piano di manovra"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH3",
+        "WW2ADAPT"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "17",
+      "title": "PREPARARE IL COLPO",
+      "date": "Ottobre–novembre 1942",
+      "kicker": "Tre fronti sovietici",
+      "lines": [
+        "Tre grandi comandi partecipano alla controffensiva: il fronte Sudoccidentale di Vatutin, il fronte del Don di Rokossovskij e quello di Stalingrado di Eremenko.",
+        "Un fronte sovietico raggruppa più armate. Nell’area offensiva sono concentrati oltre un milione di uomini, comprese le retrovie.",
+        "Artiglieria e fanteria devono aprire i varchi. Corpi corazzati e meccanizzati devono attraversarli, spingersi nelle retrovie e impedire al nemico di ristabilire una linea continua.",
+        "Il trasferimento delle forze viene protetto e mascherato. I tedeschi osservano segnali di pericolo, ma non reagiscono con riserve adeguate alla dimensione del colpo imminente."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.5,
+        48.9,
+        0.7
+      ],
+      "camera_end": [
+        43.55,
+        48.9,
+        0.72
+      ],
+      "units": [
+        {
+          "id": "Sudoccidentale_Vatutin",
+          "label": "Sudoccidentale · Vatutin",
+          "side": "soviet",
+          "pos": [
+            42.48,
+            49.56
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Don_Rokossovskij",
+          "label": "Don · Rokossovskij",
+          "side": "soviet",
+          "pos": [
+            43.87,
+            49.31
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Stalingrado_Eremenko",
+          "label": "Stalingrado · Eremenko",
+          "side": "soviet",
+          "pos": [
+            44.31,
+            48.23
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [],
+      "commanders": [
+        {
+          "id": "vatutin",
+          "cue": 0
+        }
+      ],
+      "facts": [
+        "Oltre 1 milione di uomini",
+        "Nel complesso dell’area offensiva"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH3",
+        "WW2ADAPT"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "18",
+      "title": "SI APRE LA BRECCIA",
+      "date": "19 novembre 1942",
+      "kicker": "L'offensiva a nord",
+      "lines": [
+        "Il diciannove novembre, l'artiglieria sovietica apre il fuoco a nordovest di Stalingrado. Nella nebbia e nella neve comincia l'attacco contro il fronte romeno.",
+        "La Quinta armata corazzata e la Ventunesima armata avanzano dai settori di Serafimovič e Kletskaja. Dopo gli sfondamenti iniziali, le formazioni mobili entrano in azione.",
+        "Non ogni reparto romeno cede subito: alcuni continuano a resistere anche isolati. Ma il sistema difensivo viene spezzato e le riserve non riescono a ricucirlo.",
+        "Le colonne sovietiche piegano a sudest, verso ponti, depositi e snodi alle spalle dei tedeschi."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.5,
+        48.9,
+        0.7
+      ],
+      "camera_end": [
+        43.55,
+        48.9,
+        0.72
+      ],
+      "units": [
+        {
+          "id": "5ª_corazzata",
+          "label": "5ª corazzata",
+          "side": "soviet",
+          "pos": [
+            42.735,
+            49.58
+          ],
+          "kind": "armor",
+          "count": 3,
+          "path": [
+            [
+              42.735,
+              49.58
+            ],
+            [
+              42.99,
+              49.16
+            ],
+            [
+              43.3,
+              48.91
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        },
+        {
+          "id": "21ª_armata",
+          "label": "21ª armata",
+          "side": "soviet",
+          "pos": [
+            43.06,
+            49.31
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [
+            [
+              43.06,
+              49.31
+            ],
+            [
+              43.34,
+              49.09
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        },
+        {
+          "id": "3ª_armata_romena",
+          "label": "3ª armata romena",
+          "side": "axis",
+          "pos": [
+            42.88,
+            49.36
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0,
+          "until": 2
+        }
+      ],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              42.735,
+              49.58
+            ],
+            [
+              42.99,
+              49.16
+            ],
+            [
+              43.3,
+              48.91
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              43.06,
+              49.31
+            ],
+            [
+              43.34,
+              49.09
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "19 novembre: settore nord",
+        "Le formazioni mobili attraversano i varchi"
+      ],
+      "focus": [
+        {
+          "place": "serafimovich",
+          "cue": 0,
+          "side": "soviet"
+        },
+        {
+          "place": "kletskaya",
+          "cue": 1,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 0
+        }
+      ],
+      "sources": [
+        "CMH3"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "19",
+      "title": "LA SECONDA TENAGLIA",
+      "date": "20 novembre 1942",
+      "kicker": "L'offensiva a sud",
+      "lines": [
+        "Il giorno successivo parte l'attacco meridionale. Le armate sovietiche colpiscono le forze romene a sud di Stalingrado e penetrano nelle loro retrovie.",
+        "La Cinquantunesima e la Cinquantasettesima armata aprono la strada alle unità mobili. Le punte corazzate avanzano verso nordovest, in direzione del Don.",
+        "Mentre la tenaglia settentrionale prosegue, anche il dispositivo di Hoth viene spezzato. Una parte delle sue forze resterà nella sacca, un'altra fuori.",
+        "L’avanzata incontra ritardi e resistenze. Ma ai tedeschi mancano mezzi e carburante per bloccare entrambe le penetrazioni."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.9,
+        48.58,
+        0.9
+      ],
+      "camera_end": [
+        43.95,
+        48.64,
+        0.94
+      ],
+      "units": [
+        {
+          "id": "51ª_e_57ª_armata",
+          "label": "51ª e 57ª armata",
+          "side": "soviet",
+          "pos": [
+            44.34,
+            48.19
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [
+            [
+              44.34,
+              48.19
+            ],
+            [
+              44.07,
+              48.38
+            ],
+            [
+              43.9,
+              48.54
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 3
+        },
+        {
+          "id": "Forze_romene",
+          "label": "Forze romene",
+          "side": "axis",
+          "pos": [
+            44.2,
+            48.3
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [],
+          "cue": 0,
+          "until": 1
+        },
+        {
+          "id": "Branca_settentrionale",
+          "label": "Branca settentrionale",
+          "side": "soviet",
+          "pos": [
+            43.44,
+            48.91
+          ],
+          "kind": "armor",
+          "count": 2,
+          "path": [
+            [
+              43.44,
+              48.91
+            ],
+            [
+              43.57,
+              48.78
+            ]
+          ],
+          "cue": 2,
+          "end_cue": 3
+        }
+      ],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.34,
+              48.19
+            ],
+            [
+              44.07,
+              48.38
+            ],
+            [
+              43.9,
+              48.54
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              43.44,
+              48.91
+            ],
+            [
+              43.57,
+              48.78
+            ]
+          ],
+          "cue": 2,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "20 novembre: settore sud",
+        "Entrambe le branche sono in movimento"
+      ],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 0
+        }
+      ],
+      "sources": [
+        "CMH3"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "20",
+      "title": "L'ANELLO SI CHIUDE",
+      "date": "23 novembre 1942",
+      "kicker": "Kalach e Sovetskij",
+      "lines": [
+        "Il ventitré novembre, le punte sovietiche provenienti da nord e da sud si incontrano nell'area di Sovetskij, vicino a Kalach. L'accerchiamento è compiuto.",
+        "Nella sacca restano la Sesta armata, parti della Quarta armata corazzata, reparti romeni e personale ausiliario. Le stime iniziali variano secondo le categorie conteggiate.",
+        "Parliamo di circa duecentocinquantamila, fino a quasi trecentomila persone: non soltanto soldati tedeschi pronti al combattimento, ma anche servizi, feriti e altre componenti.",
+        "I sovietici costruiscono due fronti: uno contiene gli accerchiati, l’altro deve fermare soccorsi esterni. La battaglia continua."
+      ],
+      "map": "front",
+      "camera_start": [
+        44.0,
+        48.78,
+        0.97
+      ],
+      "camera_end": [
+        44.02,
+        48.78,
+        1.02
+      ],
+      "units": [
+        {
+          "id": "Sesta_armata_e_aggregati",
+          "label": "Sesta armata e aggregati",
+          "side": "axis",
+          "pos": [
+            44.13,
+            48.74
+          ],
+          "kind": "infantry",
+          "count": 4,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Fronte_del_Don",
+          "label": "Fronte del Don",
+          "side": "soviet",
+          "pos": [
+            43.74,
+            49.01
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Fronte_di_Stalingrado",
+          "label": "Fronte di Stalingrado",
+          "side": "soviet",
+          "pos": [
+            44.06,
+            48.42
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              43.2,
+              49.0
+            ],
+            [
+              43.526,
+              48.69
+            ],
+            [
+              43.76,
+              48.64
+            ]
+          ],
+          "cue": 0,
+          "kind": "attack",
+          "end_cue": 1
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.3,
+              48.22
+            ],
+            [
+              44.0,
+              48.41
+            ],
+            [
+              43.76,
+              48.64
+            ]
+          ],
+          "cue": 0,
+          "kind": "attack",
+          "end_cue": 1
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Circa 250.000–300.000 accerchiati",
+        "Stime dipendenti dalle categorie"
+      ],
+      "focus": [
+        {
+          "place": "sovetskij",
+          "cue": 0,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [],
+      "sources": [
+        "CMH3",
+        "DHM",
+        "IWM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "frontlines": [
+        {
+          "points": [
+            [
+              43.75,
+              48.87
+            ],
+            [
+              44.04,
+              48.98
+            ],
+            [
+              44.42,
+              48.96
+            ],
+            [
+              44.6,
+              48.84
+            ],
+            [
+              44.54,
+              48.69
+            ],
+            [
+              44.36,
+              48.52
+            ],
+            [
+              43.98,
+              48.51
+            ],
+            [
+              43.72,
+              48.64
+            ],
+            [
+              43.75,
+              48.87
+            ]
+          ],
+          "side": "soviet",
+          "cue": 1
+        }
+      ],
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "21",
+      "title": "L'ORDINE DI RESTARE",
+      "date": "Fine novembre 1942",
+      "kicker": "La decisione di Hitler",
+      "lines": [
+        "Paulus deve scegliere come reagire, ma la sua libertà è limitata dagli ordini superiori. Hitler pretende che l'armata mantenga Stalingrado e resista nella sacca.",
+        "Abbandonare la città richiederebbe ripiegare, concentrarsi e aprire un varco con uomini già provati. Non sarebbe una semplice marcia lungo una strada libera.",
+        "Il comando tedesco promette rifornimenti aerei e prepara un soccorso dall'esterno. Erich von Manstein riceve il comando del nuovo gruppo d'armate Don.",
+        "Una fuga precoce avrebbe avuto successo? Resta discusso. Intanto l’armata rimane, l’anello si rafforza e le scorte diminuiscono."
+      ],
+      "map": "front",
+      "camera_start": [
+        44.1,
+        48.76,
+        1.05
+      ],
+      "camera_end": [
+        44.14,
+        48.77,
+        1.1
+      ],
+      "units": [
+        {
+          "id": "Sesta_armata_e_aggregati",
+          "label": "Sesta armata e aggregati",
+          "side": "axis",
+          "pos": [
+            44.13,
+            48.74
+          ],
+          "kind": "infantry",
+          "count": 4,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Fronte_del_Don",
+          "label": "Fronte del Don",
+          "side": "soviet",
+          "pos": [
+            43.74,
+            49.01
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Fronte_di_Stalingrado",
+          "label": "Fronte di Stalingrado",
+          "side": "soviet",
+          "pos": [
+            44.06,
+            48.42
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [],
+      "commanders": [
+        {
+          "id": "paulus",
+          "cue": 0
+        },
+        {
+          "id": "manstein",
+          "cue": 2
+        }
+      ],
+      "facts": [
+        "Resistere in attesa del soccorso",
+        "Le scorte si consumano"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH3"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "frontlines": [
+        {
+          "points": [
+            [
+              43.75,
+              48.87
+            ],
+            [
+              44.04,
+              48.98
+            ],
+            [
+              44.42,
+              48.96
+            ],
+            [
+              44.6,
+              48.84
+            ],
+            [
+              44.54,
+              48.69
+            ],
+            [
+              44.36,
+              48.52
+            ],
+            [
+              43.98,
+              48.51
+            ],
+            [
+              43.72,
+              48.64
+            ],
+            [
+              43.75,
+              48.87
+            ]
+          ],
+          "side": "soviet"
+        }
+      ],
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "22",
+      "title": "UN PONTE AEREO INSUFFICIENTE",
+      "date": "Novembre–dicembre 1942",
+      "kicker": "Le scorte diminuiscono",
+      "lines": [
+        "Gli aerei da trasporto devono raggiungere gli aeroporti dentro la sacca, scaricare rifornimenti e, quando possibile, portare via feriti. Pitomnik e Gumrak diventano essenziali.",
+        "Ma le necessità dell'armata sono nell'ordine di diverse centinaia di tonnellate al giorno. Il ponte aereo non riesce a sostenerle con continuità.",
+        "Maltempo, distanza, disponibilità di velivoli, attacchi sovietici e problemi agli aeroporti si sommano. Una giornata favorevole non compensa settimane di consegne insufficienti.",
+        "Meno carburante significa meno mobilità; meno viveri, meno forza; meno munizioni, meno capacità di resistere."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.98,
+        48.76,
+        1.0
+      ],
+      "camera_end": [
+        44.05,
+        48.77,
+        1.04
+      ],
+      "units": [
+        {
+          "id": "Trasporti_Luftwaffe",
+          "label": "Trasporti Luftwaffe",
+          "side": "axis",
+          "pos": [
+            43.0,
+            48.48
+          ],
+          "kind": "air",
+          "count": 2,
+          "path": [
+            [
+              43.0,
+              48.48
+            ],
+            [
+              43.8,
+              48.65
+            ],
+            [
+              44.241,
+              48.74
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 2
+        },
+        {
+          "id": "Sacca",
+          "label": "Sacca",
+          "side": "axis",
+          "pos": [
+            44.21,
+            48.62
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              43.0,
+              48.48
+            ],
+            [
+              43.8,
+              48.65
+            ],
+            [
+              44.241,
+              48.74
+            ]
+          ],
+          "cue": 0,
+          "kind": "move"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Servono centinaia di tonnellate al giorno",
+        "Consegne insufficienti e irregolari"
+      ],
+      "focus": [
+        {
+          "place": "pitomnik",
+          "cue": 0,
+          "side": "axis"
+        },
+        {
+          "place": "gumrak",
+          "cue": 0,
+          "side": "axis"
+        }
+      ],
+      "sfx": [],
+      "sources": [
+        "CMH3",
+        "CMH4",
+        "DHM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "frontlines": [
+        {
+          "points": [
+            [
+              43.75,
+              48.87
+            ],
+            [
+              44.04,
+              48.98
+            ],
+            [
+              44.42,
+              48.96
+            ],
+            [
+              44.6,
+              48.84
+            ],
+            [
+              44.54,
+              48.69
+            ],
+            [
+              44.36,
+              48.52
+            ],
+            [
+              43.98,
+              48.51
+            ],
+            [
+              43.72,
+              48.64
+            ],
+            [
+              43.75,
+              48.87
+            ]
+          ],
+          "side": "soviet"
+        }
+      ]
+    },
+    {
+      "id": "23",
+      "title": "IL SOCCORSO DA SUD",
+      "date": "12–19 dicembre 1942",
+      "kicker": "Operazione Tempesta invernale",
+      "lines": [
+        "Il dodici dicembre comincia l'operazione Tempesta invernale. Le forze corazzate di Hoth avanzano dall'area di Kotelnikovo, sotto il comando superiore di Manstein.",
+        "L'attacco procede da sudovest verso la sacca. Attraversa l'Aksaj e raggiunge il settore della Myškova, avvicinandosi a circa cinquanta chilometri dagli accerchiati.",
+        "Per i soldati di Paulus, il rumore di una battaglia lontana alimenta la speranza. Ma un avvicinamento non equivale a un corridoio aperto e rifornito.",
+        "La Sesta armata non esce dalla sacca. Ordini e scarsità di mezzi pesano, mentre rinforzi sovietici bloccano Hoth."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.9,
+        48.24,
+        0.75
+      ],
+      "camera_end": [
+        43.95,
+        48.24,
+        0.78
+      ],
+      "units": [
+        {
+          "id": "Soccorso_Hoth",
+          "label": "Soccorso · Hoth",
+          "side": "axis",
+          "pos": [
+            43.133,
+            47.632
+          ],
+          "kind": "armor",
+          "count": 3,
+          "path": [
+            [
+              43.133,
+              47.632
+            ],
+            [
+              43.59,
+              48.07
+            ],
+            [
+              43.94,
+              48.29
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 2
+        },
+        {
+          "id": "Sesta_armata",
+          "label": "Sesta armata",
+          "side": "axis",
+          "pos": [
+            44.2,
+            48.71
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        },
+        {
+          "id": "Riserve_sovietiche",
+          "label": "Riserve sovietiche",
+          "side": "soviet",
+          "pos": [
+            44.31,
+            48.27
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 3
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              43.133,
+              47.632
+            ],
+            [
+              43.59,
+              48.07
+            ],
+            [
+              43.94,
+              48.29
+            ]
+          ],
+          "cue": 0,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [
+        {
+          "id": "hoth",
+          "cue": 0
+        }
+      ],
+      "facts": [
+        "12 dicembre: inizia il soccorso",
+        "Circa 50 km dalla sacca"
+      ],
+      "focus": [
+        {
+          "place": "kotelnikovo",
+          "cue": 0,
+          "side": "axis"
+        }
+      ],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 1
+        }
+      ],
+      "sources": [
+        "CMH3",
+        "DHM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "24",
+      "title": "IL DON TRAVOLGE IL SOCCORSO",
+      "date": "Dal 16 dicembre 1942",
+      "kicker": "Piccolo Saturno e il fronte italiano",
+      "lines": [
+        "Durante il tentativo di soccorso, un'altra offensiva sovietica cambia l'intero quadro. Il sedici dicembre comincia Piccolo Saturno, sul medio Don.",
+        "L'attacco investe l'Ottava armata italiana e forze dell'Asse nei settori vicini. Lo sfondamento minaccia le retrovie del gruppo d'armate Don e le basi aeree.",
+        "I carri sovietici penetrano in profondità; il ventiquattro dicembre raggiungono l'aeroporto di Tatsinskaja. Manstein deve impiegare risorse anche per contenere questo nuovo pericolo.",
+        "La crisi coinvolge gli italiani sul Don. La ritirata alpina del gennaio successivo è distinta dall’accerchiamento di novembre."
+      ],
+      "map": "don",
+      "camera_start": [
+        42.0,
+        49.02,
+        0.71
+      ],
+      "camera_end": [
+        42.05,
+        48.91,
+        0.75
+      ],
+      "units": [
+        {
+          "id": "8ª_armata_italiana",
+          "label": "8ª armata italiana",
+          "side": "axis",
+          "pos": [
+            40.3,
+            49.68
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0,
+          "until": 2
+        },
+        {
+          "id": "Avanzata_sovietica",
+          "label": "Avanzata sovietica",
+          "side": "soviet",
+          "pos": [
+            40.4,
+            50.05
+          ],
+          "kind": "armor",
+          "count": 3,
+          "path": [
+            [
+              40.4,
+              50.05
+            ],
+            [
+              40.6,
+              49.4
+            ],
+            [
+              41.276,
+              48.196
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        }
+      ],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              40.4,
+              50.05
+            ],
+            [
+              40.6,
+              49.4
+            ],
+            [
+              41.276,
+              48.196
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Piccolo Saturno: 16 dicembre",
+        "24 dicembre: incursione a Tatsinskaja"
+      ],
+      "focus": [
+        {
+          "place": "tatsinskaya",
+          "cue": 2,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 1
+        }
+      ],
+      "sources": [
+        "CMH4"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "25",
+      "title": "LA SPERANZA SI ALLONTANA",
+      "date": "23–29 dicembre 1942",
+      "kicker": "Il fallimento del collegamento",
+      "lines": [
+        "La pressione sovietica costringe il comando tedesco a ridistribuire le sue forze. Il tentativo di raggiungere Paulus perde slancio e poi viene abbandonato.",
+        "La Seconda armata della Guardia rafforza il fronte contro Hoth. Dal ventiquattro dicembre i sovietici contrattaccano, respingendo i soccorritori verso sudovest.",
+        "Nella sacca, fame, malattie, freddo e combattimenti consumano uomini e animali. Le possibilità di un'uscita organizzata diventano sempre più ridotte.",
+        "Il gelo aggrava il disastro. A prepararlo sono stati accerchiamento, rifornimenti insufficienti e decisioni di comando."
+      ],
+      "map": "front",
+      "camera_start": [
+        43.9,
+        48.24,
+        0.75
+      ],
+      "camera_end": [
+        44.0,
+        48.25,
+        0.78
+      ],
+      "units": [
+        {
+          "id": "Hoth_ripiega",
+          "label": "Hoth ripiega",
+          "side": "axis",
+          "pos": [
+            43.94,
+            48.29
+          ],
+          "kind": "armor",
+          "count": 2,
+          "path": [
+            [
+              43.94,
+              48.29
+            ],
+            [
+              43.59,
+              48.07
+            ],
+            [
+              43.133,
+              47.632
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        },
+        {
+          "id": "2ª_armata_Guardia",
+          "label": "2ª armata Guardia",
+          "side": "soviet",
+          "pos": [
+            44.12,
+            48.36
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [
+            [
+              44.12,
+              48.36
+            ],
+            [
+              43.82,
+              48.14
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        },
+        {
+          "id": "Sacca",
+          "label": "Sacca",
+          "side": "axis",
+          "pos": [
+            44.2,
+            48.71
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              43.94,
+              48.29
+            ],
+            [
+              43.59,
+              48.07
+            ],
+            [
+              43.133,
+              47.632
+            ]
+          ],
+          "cue": 1,
+          "kind": "retreat"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.12,
+              48.36
+            ],
+            [
+              43.82,
+              48.14
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Il soccorso viene respinto",
+        "Fame e isolamento precedono il collasso"
+      ],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "march",
+          "cue": 1
+        }
+      ],
+      "sources": [
+        "CMH4"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "26",
+      "title": "OPERAZIONE ANELLO",
+      "date": "Dal 10 gennaio 1943",
+      "kicker": "La riduzione della sacca",
+      "lines": [
+        "Il dieci gennaio millenovecentoquarantatré, i sovietici lanciano l'operazione Anello. Il fronte del Don, comandato da Rokossovskij, deve eliminare la sacca di Stalingrado.",
+        "Un forte bombardamento precede gli attacchi, soprattutto da ovest e da sud. Le difese tedesche arretrano e lo spazio disponibile si restringe.",
+        "La resistenza non scompare immediatamente. Fortificazioni, valloni e abitati offrono ancora ripari; anche gli attaccanti affrontano combattimenti duri e perdite.",
+        "L’armata accerchiata non può ricostituire le unità. Ogni posizione perduta avvicina il nemico agli aeroporti e ai feriti."
+      ],
+      "map": "front",
+      "camera_start": [
+        44.16,
+        48.77,
+        1.17
+      ],
+      "camera_end": [
+        44.21,
+        48.78,
+        1.24
+      ],
+      "units": [
+        {
+          "id": "Fronte_del_Don",
+          "label": "Fronte del Don",
+          "side": "soviet",
+          "pos": [
+            43.65,
+            48.9
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [
+            [
+              43.65,
+              48.9
+            ],
+            [
+              44.13,
+              48.79
+            ]
+          ],
+          "cue": 1,
+          "end_cue": 3
+        },
+        {
+          "id": "Sesta_armata",
+          "label": "Sesta armata",
+          "side": "axis",
+          "pos": [
+            44.28,
+            48.72
+          ],
+          "kind": "infantry",
+          "count": 3,
+          "path": [],
+          "cue": 0
+        }
+      ],
+      "arrows": [
+        {
+          "side": "soviet",
+          "points": [
+            [
+              43.7,
+              48.91
+            ],
+            [
+              44.14,
+              48.8
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.12,
+              48.47
+            ],
+            [
+              44.29,
+              48.66
+            ]
+          ],
+          "cue": 1,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [
+        {
+          "id": "rokossovsky",
+          "cue": 0
+        }
+      ],
+      "facts": [
+        "10 gennaio: operazione Anello",
+        "L’attacco restringe la sacca"
+      ],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "cannon",
+          "cue": 1
+        }
+      ],
+      "sources": [
+        "CMH4"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "frontlines": [
+        {
+          "points": [
+            [
+              43.75,
+              48.87
+            ],
+            [
+              44.04,
+              48.98
+            ],
+            [
+              44.42,
+              48.96
+            ],
+            [
+              44.6,
+              48.84
+            ],
+            [
+              44.54,
+              48.69
+            ],
+            [
+              44.36,
+              48.52
+            ],
+            [
+              43.98,
+              48.51
+            ],
+            [
+              43.72,
+              48.64
+            ],
+            [
+              43.75,
+              48.87
+            ]
+          ],
+          "side": "soviet"
+        }
+      ],
+      "visible_places": [
+        "stalingrad",
+        "kalach",
+        "sovetskij",
+        "serafimovich",
+        "kletskaya",
+        "kotelnikovo"
+      ]
+    },
+    {
+      "id": "27",
+      "title": "GLI ULTIMI AEROPORTI",
+      "date": "Gennaio 1943",
+      "kicker": "La sacca si frammenta",
+      "lines": [
+        "A metà gennaio, la perdita di Pitomnik riduce drasticamente le possibilità di atterraggio. Poco dopo cade anche Gumrak: il ponte aereo perde i suoi principali punti d'appoggio.",
+        "I rifornimenti residui non possono invertire il collasso. Molti feriti restano senza evacuazione, mentre le unità superstiti ripiegano verso le rovine della città.",
+        "Il ventisei gennaio, le forze sovietiche provenienti da ovest si congiungono con i difensori della riva, dividendo la sacca in settori separati.",
+        "La città diventa l’ultima difesa tedesca. I collegamenti si interrompono e i comandi perdono il controllo dei reparti."
+      ],
+      "map": "front",
+      "camera_start": [
+        44.28,
+        48.77,
+        1.55
+      ],
+      "camera_end": [
+        44.39,
+        48.76,
+        1.7
+      ],
+      "units": [
+        {
+          "id": "Ripiegamento_tedesco",
+          "label": "Ripiegamento tedesco",
+          "side": "axis",
+          "pos": [
+            44.241,
+            48.74
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [
+            [
+              44.241,
+              48.74
+            ],
+            [
+              44.39,
+              48.74
+            ],
+            [
+              44.52,
+              48.71
+            ]
+          ],
+          "cue": 0,
+          "end_cue": 2
+        },
+        {
+          "id": "21ª_armata",
+          "label": "21ª armata",
+          "side": "soviet",
+          "pos": [
+            44.27,
+            48.83
+          ],
+          "kind": "infantry",
+          "count": 2,
+          "path": [
+            [
+              44.27,
+              48.83
+            ],
+            [
+              44.537,
+              48.742
+            ]
+          ],
+          "cue": 2,
+          "end_cue": 3
+        }
+      ],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              44.241,
+              48.74
+            ],
+            [
+              44.39,
+              48.74
+            ],
+            [
+              44.52,
+              48.71
+            ]
+          ],
+          "cue": 0,
+          "kind": "retreat",
+          "end_cue": 2
+        },
+        {
+          "side": "soviet",
+          "points": [
+            [
+              44.27,
+              48.83
+            ],
+            [
+              44.537,
+              48.742
+            ]
+          ],
+          "cue": 2,
+          "kind": "attack"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Perduti gli aeroporti principali",
+        "26 gennaio: congiunzione sovietica"
+      ],
+      "focus": [
+        {
+          "place": "pitomnik",
+          "cue": 0,
+          "side": "soviet"
+        },
+        {
+          "place": "gumrak",
+          "cue": 0,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [],
+      "sources": [
+        "CMH4",
+        "MUSEUM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative"
+    },
+    {
+      "id": "28",
+      "title": "LE DUE RESE",
+      "date": "31 gennaio–2 febbraio 1943",
+      "kicker": "La fine della Sesta armata",
+      "lines": [
+        "Il trenta gennaio, Hitler promuove Paulus a feldmaresciallo. È un gesto che accompagna la richiesta di continuare a resistere in una situazione ormai senza sbocco.",
+        "Il trentuno gennaio, Paulus viene catturato e il settore meridionale depone le armi. Non tutta la battaglia termina nello stesso momento.",
+        "Nel settore settentrionale, fra i complessi industriali, altre truppe continuano a combattere. Il due febbraio cessa anche quella resistenza organizzata.",
+        "Circa novantunomila uomini vengono fatti prigionieri nella fase finale. Per molti, la fine del combattimento non significherà tornare a casa."
+      ],
+      "map": "winter_city",
+      "camera_start": [
+        44.559,
+        48.754,
+        0.45
+      ],
+      "camera_end": [
+        44.559999999999995,
+        48.754999999999995,
+        0.47700000000000004
+      ],
+      "units": [
+        {
+          "id": "Settore_sud_resa",
+          "label": "Settore sud · resa",
+          "side": "axis",
+          "pos": [
+            44.516,
+            48.711
+          ],
+          "kind": "infantry",
+          "count": 1,
+          "path": [],
+          "cue": 1,
+          "until": 2
+        },
+        {
+          "id": "Settore_nord_resa",
+          "label": "Settore nord · resa",
+          "side": "axis",
+          "pos": [
+            44.567,
+            48.78
+          ],
+          "kind": "infantry",
+          "count": 1,
+          "path": [],
+          "cue": 2
+        }
+      ],
+      "arrows": [],
+      "commanders": [
+        {
+          "id": "paulus",
+          "cue": 0
+        }
+      ],
+      "facts": [
+        "31 gennaio: settore meridionale",
+        "2 febbraio: settore settentrionale"
+      ],
+      "focus": [
+        {
+          "place": "station",
+          "cue": 1,
+          "side": "soviet"
+        },
+        {
+          "place": "barrikady",
+          "cue": 2,
+          "side": "soviet"
+        }
+      ],
+      "sfx": [],
+      "sources": [
+        "BARCH",
+        "DHM",
+        "IWM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "visible_places": [
+        "station",
+        "mamaev",
+        "october",
+        "barrikady",
+        "tractor"
+      ]
+    },
+    {
+      "id": "29",
+      "title": "IL COSTO DELLA VITTORIA",
+      "date": "Dopo la battaglia",
+      "kicker": "Uomini, rovine e memoria",
+      "lines": [
+        "Stalingrado lascia una città devastata e perdite enormi da entrambe le parti. Le cifre complessive cambiano secondo il periodo e l'area geografica considerati.",
+        "Una stima dell'intera campagna non può essere presentata come il numero dei morti nelle strade. Morti, feriti, dispersi e prigionieri sono categorie diverse.",
+        "Tra i prigionieri della fase finale, soltanto alcune migliaia rientreranno in Germania negli anni successivi. Fame, malattie e condizioni della prigionia prolungano la tragedia.",
+        "La vittoria diventa un simbolo sovietico. Dietro rimangono soldati caduti, famiglie disperse ed esperienze lontane dal racconto celebrativo."
+      ],
+      "map": "winter_city",
+      "camera_start": [
+        44.548,
+        48.745,
+        0.45
+      ],
+      "camera_end": [
+        44.549,
+        48.745999999999995,
+        0.47700000000000004
+      ],
+      "units": [],
+      "arrows": [],
+      "commanders": [],
+      "facts": [
+        "Morti ≠ perdite complessive",
+        "Circa 91.000 prigionieri nella fase finale"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "DHM",
+        "WW2CIV",
+        "IWM"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "mode": "aftermath"
+    },
+    {
+      "id": "30",
+      "title": "PERCHÉ STALINGRADO CONTA",
+      "date": "1943 e oltre",
+      "kicker": "Una svolta, una guerra ancora lunga",
+      "lines": [
+        "La sconfitta distrugge una grande armata tedesca e compromette la posizione dell'Asse nel sud sovietico. Anche le forze avanzate nel Caucaso devono arretrare.",
+        "L’Armata Rossa ha dimostrato capacità di preparazione e manovra. Organizzazione, apprendimento e sacrificio hanno modificato il rapporto di forze.",
+        "La guerra in Europa durerà ancora più di due anni. Non tutto è deciso sul Volga, ma la possibilità di una vittoria tedesca si è allontanata.",
+        "La lezione della mappa sta nel passaggio fra due scale: conquistare un edificio non basta, se nel frattempo si perdono le strade che tengono in vita l'esercito. A Stalingrado, queste due battaglie diventano inseparabili."
+      ],
+      "map": "campaign",
+      "camera_start": [
+        42.3,
+        47.4,
+        0.88
+      ],
+      "camera_end": [
+        42.2,
+        47.6,
+        0.78
+      ],
+      "units": [],
+      "arrows": [
+        {
+          "side": "axis",
+          "points": [
+            [
+              43.4,
+              44.1
+            ],
+            [
+              41.2,
+              45.5
+            ],
+            [
+              39.723,
+              47.235
+            ]
+          ],
+          "cue": 0,
+          "kind": "retreat"
+        }
+      ],
+      "commanders": [],
+      "facts": [
+        "Una svolta strategica",
+        "La guerra continua fino al 1945"
+      ],
+      "focus": [],
+      "sfx": [],
+      "sources": [
+        "CMH4",
+        "WW2ADAPT",
+        "BARCH"
+      ],
+      "note": "Posizioni, rilievi e movimenti schematici · Date per fasi operative",
+      "mode": "ending"
+    }
+  ],
+  "source_method": "Ricerca e confronto effettuati il 2 settembre 2026. Base operativa: storia ufficiale U.S. Army di Earl F. Ziemke, opera federale in pubblico dominio, capitoli I, III e IV; confronto con musei e archivi tedeschi, britannici, statunitensi e il museo di Stalingrado. Testo originale italiano, senza citazioni dirette. Le fonti commemorative e la storiografia del 1968 sono valutate criticamente.",
+  "territorial_note": "Geografia nel contesto 1942–1943. Non sono disegnati confini politici moderni, il canale Volga-Don o i bacini di Volgograd e Cimljansk creati nel dopoguerra. I corsi fluviali e gli assi stradali sono generalizzati dalle carte storiche; gli edifici e i rilievi sono illustrativi, non una planimetria edilizia o un DEM storico. Posizioni operative approssimate in longitudine/latitudine WGS84.",
+  "editorial_notes": [
+    "Periodo: il 17 luglio è l’inizio convenzionale della campagna sugli accessi; il 23 agosto identifica l’arrivo tedesco al Volga e il grande bombardamento; non sono date intercambiabili.",
+    "Urano: attacco settentrionale 19 novembre, meridionale 20 novembre, congiunzione 23 novembre presso Sovetskij/Kalach. Le sintesi DHM/IWM comprimono la sequenza: il film la distingue.",
+    "Accerchiati: intervallo circa 250.000–300.000, con differenze fra effettivi alimentati, combattenti, feriti, romeni e ausiliari. Il valore IWM di circa 265.000 è compatibile con questo ordine di grandezza.",
+    "Nessun totale esatto delle vittime del bombardamento del 23 agosto. Le perdite dell’intera campagna non vengono equiparate ai morti nella città.",
+    "La storia CMH contiene una data di Pitomnik differente dalla cronologia comunemente accolta (16 gennaio); il testo usa prudentemente metà gennaio. Gumrak viene collocato poco dopo, senza precisione al giorno non necessaria.",
+    "Le date sintetiche DHM relative al completo ripiegamento urbano e alla divisione della sacca non sono adottate: si usa il 26 gennaio per la congiunzione, confrontato con il museo di Mamayev Kurgan.",
+    "La resa del settore sud il 31 gennaio non conclude immediatamente quella del settore nord, avvenuta il 2 febbraio. Circa 91.000 prigionieri si riferiscono alla fase finale, non al totale iniziale della sacca.",
+    "Il fallimento del soccorso non è attribuito al solo inverno. Ordini di Hitler, responsabilità dei comandi, logistica e azione sovietica sono rappresentati insieme. Non si afferma che una fuga precoce avrebbe sicuramente avuto successo.",
+    "Piccolo Saturno (dicembre) e ritirata del corpo alpino (gennaio) sono distinti; italiani e ungheresi non vengono falsamente collocati in massa nei combattimenti urbani.",
+    "Linee e zone indicano settori schematizzati, non confini occupati con precisione in ogni ora. Simboli aggregati: il numero di icone non equivale al numero di soldati. Frecce tratteggiate distinguono piani, fuoco e ritirate.",
+    "I ritratti possono essere di date diverse dal 1942; sono identificativi dei comandanti, non fotografie del giorno narrato. Nessun filmato d’archivio è simulato."
+  ]
+}

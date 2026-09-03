@@ -1,0 +1,359 @@
+{
+  "schema_version": 2,
+  "slug": "napoleone-biografia",
+  "title": "Napoleone — Una vita fra rivoluzione e impero",
+  "short_title": "Napoleone",
+  "documentary_type": "biography",
+  "historical_period": {
+    "start": 1769,
+    "end": 1821,
+    "calendar": "anni storici senza anno zero"
+  },
+  "target_minutes": 3,
+  "locations": [
+    {
+      "id": "ajaccio",
+      "name": "Ajaccio",
+      "pos": [
+        8.74,
+        41.92
+      ]
+    },
+    {
+      "id": "brienne",
+      "name": "Brienne",
+      "pos": [
+        4.53,
+        48.39
+      ]
+    },
+    {
+      "id": "paris",
+      "name": "Parigi",
+      "pos": [
+        2.35,
+        48.86
+      ]
+    },
+    {
+      "id": "toulon",
+      "name": "Tolone",
+      "pos": [
+        5.93,
+        43.12
+      ]
+    },
+    {
+      "id": "milan",
+      "name": "Milano",
+      "pos": [
+        9.19,
+        45.46
+      ]
+    },
+    {
+      "id": "moscow",
+      "name": "Mosca",
+      "pos": [
+        37.62,
+        55.75
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "N1",
+      "title": "Fondation Napoléon — Napoléon Ier, biographie",
+      "url": "https://www.napoleon.org/histoire-des-2-empires/biographies/napoleon-ier-1769-1821-empereur/",
+      "use": "Cronologia della vita; formazione, carriera, politica ed esilio.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "N2",
+      "title": "Fondation Napoléon — Timeline Consulate / First Empire",
+      "url": "https://www.napoleon.org/en/young-historians/napodoc/timeline-consulate1st-french-empire/",
+      "use": "Colpo di stato, impero, campagne, abdicazioni, esilio e morte.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "N3",
+      "title": "Fondation Napoléon — Jeunesse 1769–1793",
+      "url": "https://www.napoleon.org/histoire-des-2-empires/dossiers-thematiques/1769-1793-la-jeunesse-dun-futur-empereur/",
+      "use": "Contesto corso, formazione e Rivoluzione francese.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    }
+  ],
+  "persons": [
+    {
+      "id": "napoleon",
+      "name": "Napoleone Bonaparte",
+      "role": "Militare, primo console, imperatore",
+      "period": "1769–1821",
+      "portrait": "assets/portraits/napoleon.jpg",
+      "intro": "Una carriera intrecciata alla Rivoluzione francese, alle istituzioni e alle guerre europee."
+    }
+  ],
+  "entities": [],
+  "events": [
+    {
+      "id": "birth",
+      "year": 1769,
+      "title": "Nascita ad Ajaccio",
+      "description": "Nascita ad Ajaccio",
+      "type": "birth",
+      "sources": [
+        "N1"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "consul",
+      "year": 1799,
+      "title": "Colpo di stato del 18 brumaio",
+      "description": "Colpo di stato del 18 brumaio",
+      "type": "political_event",
+      "sources": [
+        "N2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "crown",
+      "year": 1804,
+      "title": "Incoronazione imperiale",
+      "description": "Incoronazione imperiale",
+      "type": "coronation",
+      "sources": [
+        "N2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "russia",
+      "year": 1812,
+      "title": "Campagna di Russia",
+      "description": "Campagna di Russia",
+      "type": "battle",
+      "sources": [
+        "N2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "waterloo",
+      "year": 1815,
+      "title": "Waterloo e seconda abdicazione",
+      "description": "Waterloo e seconda abdicazione",
+      "type": "battle",
+      "sources": [
+        "N2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "death",
+      "year": 1821,
+      "title": "Morte a Sant’Elena",
+      "description": "Morte a Sant’Elena",
+      "type": "death",
+      "sources": [
+        "N2"
+      ],
+      "certainty": "established"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "01",
+      "title": "Un ragazzo corso",
+      "scene_type": "person_intro",
+      "historical_range": [
+        1769,
+        1779
+      ],
+      "date": "1769 d.C. – 1779 d.C.",
+      "lines": [
+        "Napoleone Bonaparte nasce ad Ajaccio nel millesettecentosessantanove, poco dopo il passaggio della Corsica sotto il potere francese. La sua famiglia appartiene alla piccola nobiltà e cerca opportunità attraverso l’istruzione. Il futuro imperatore entra nella storia da una periferia recentemente acquisita.",
+        "La biografia non deve trasformare l’infanzia in un destino già scritto. Le borse di studio e la formazione militare gli aprono possibilità concrete. Il contesto corso e, più tardi, la Rivoluzione francese contribuiscono a cambiare il campo delle sue scelte. Il ritratto dell’uomo adulto introduce una vita da ricostruire, non una leggenda inevitabile."
+      ],
+      "sources": [
+        "N1",
+        "N3"
+      ],
+      "person_ids": [
+        "napoleon"
+      ],
+      "kicker": "Origini e possibilità",
+      "facts": [
+        "Ajaccio, 1769. Il contesto precede il mito."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "Formazione e Rivoluzione",
+      "scene_type": "animated_route",
+      "historical_range": [
+        1779,
+        1793
+      ],
+      "date": "1779 d.C. – 1793 d.C.",
+      "lines": [
+        "Dalla Corsica Napoleone raggiunge la Francia continentale per studiare. Passa per Brienne e per la scuola militare di Parigi, quindi diventa ufficiale d’artiglieria. L’istruzione tecnica sarà una risorsa della sua carriera, insieme alle relazioni e alle occasioni politiche.",
+        "La Rivoluzione sconvolge l’ordine nel quale si è formato. Nel millesettecentonovantatré, a Tolone, la sua azione contribuisce al successo repubblicano e gli vale una promozione. Sulla carta seguiamo luoghi di formazione e attività: questo spostamento personale non è disegnato come un attacco. La carriera dipende da decisioni individuali dentro una crisi collettiva."
+      ],
+      "sources": [
+        "N1",
+        "N3"
+      ],
+      "location_ids": [
+        "ajaccio",
+        "brienne",
+        "paris",
+        "toulon"
+      ],
+      "camera_end": [
+        5.5,
+        44.7,
+        45
+      ],
+      "movements": [
+        {
+          "semantic": "journey",
+          "points": [
+            [
+              8.74,
+              41.92
+            ],
+            [
+              4.53,
+              48.39
+            ],
+            [
+              2.35,
+              48.86
+            ],
+            [
+              5.93,
+              43.12
+            ]
+          ],
+          "sources": [
+            "N1"
+          ],
+          "uncertain": true
+        }
+      ],
+      "kicker": "Dalle scuole all’artiglieria",
+      "facts": [
+        "Luoghi selezionati della formazione; collegamento schematico."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "Dal generale al sovrano",
+      "scene_type": "timeline",
+      "historical_range": [
+        1796,
+        1804
+      ],
+      "date": "1796 d.C. – 1804 d.C.",
+      "lines": [
+        "Le campagne d’Italia accrescono la notorietà di Bonaparte. La fama militare si combina con l’ambizione politica. Nel millesettecentonovantanove il colpo di stato del diciotto brumaio apre il Consolato; nel milleottocentoquattro Napoleone diventa imperatore.",
+        "La cronologia rende visibili passaggi che una mappa da sola non spiegherebbe. Cambiano cariche, istituzioni e forme di legittimazione. Il nuovo potere conserva alcuni risultati della Rivoluzione mentre concentra l’autorità. Alleati, familiari e collaboratori partecipano al sistema. La biografia deve guardare anche a queste relazioni, senza attribuire ogni trasformazione alla volontà di un singolo uomo."
+      ],
+      "sources": [
+        "N1",
+        "N2"
+      ],
+      "event_ids": [
+        "consul",
+        "crown"
+      ],
+      "kicker": "Carriera e istituzioni",
+      "facts": [
+        "1799: Consolato. 1804: impero."
+      ]
+    },
+    {
+      "id": "04",
+      "title": "Successi, limiti e sconfitta",
+      "scene_type": "comparison",
+      "historical_range": [
+        1804,
+        1815
+      ],
+      "date": "1804 d.C. – 1815 d.C.",
+      "lines": [
+        "Il potere napoleonico modifica una parte dell’Europa attraverso guerre, amministrazione e alleanze. La sua capacità di organizzare lo stato convive con la coercizione e con il costo umano dei conflitti. Le vittorie non eliminano gli avversari né garantiscono risorse illimitate.",
+        "La campagna di Russia del milleottocentododici è una svolta disastrosa. Seguono nuove sconfitte e la prima abdicazione. Dopo il ritorno dall’Elba, Waterloo nel milleottocentoquindici chiude i Cento Giorni. Confrontare risultati e costi aiuta a evitare tanto il racconto celebrativo quanto una spiegazione ridotta a un solo errore finale."
+      ],
+      "sources": [
+        "N1",
+        "N2"
+      ],
+      "kicker": "Risultati e costi",
+      "facts": [
+        "L’espansione del potere produce anche resistenze e vulnerabilità."
+      ],
+      "comparison": [
+        {
+          "title": "Costruire il potere",
+          "text": "Istituzioni, collaboratori, amministrazione, prestigio e alleanze."
+        },
+        {
+          "title": "Sostenere il potere",
+          "text": "Guerre, risorse, coercizione, opposizioni e logoramento."
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "title": "Sant’Elena e la memoria",
+      "scene_type": "summary",
+      "historical_range": [
+        1815,
+        1821
+      ],
+      "date": "1815 d.C. – 1821 d.C.",
+      "lines": [
+        "Dopo la seconda abdicazione Napoleone viene esiliato a Sant’Elena, nell’Atlantico meridionale. Muore il cinque maggio del milleottocentoventuno. Negli anni dell’esilio partecipa alla costruzione della propria memoria attraverso il racconto della sua esperienza.",
+        "La biografia continua dunque anche nella disputa sull’eredità. Le istituzioni e le guerre, l’autoritarismo e la mobilità sociale, la leggenda e le testimonianze offrono prospettive differenti. Comprendere una vita storica significa distinguere ciò che il protagonista volle dire di sé da ciò che altre fonti permettono di ricostruire. Le mappe mostrano gli spostamenti; le scelte e le conseguenze richiedono una narrazione più ampia."
+      ],
+      "sources": [
+        "N1",
+        "N2"
+      ],
+      "kicker": "Vita, memoria, interpretazione",
+      "facts": [
+        "5 maggio 1821 · Morte a Sant’Elena."
+      ],
+      "highlights": [
+        "Esperienza e autorappresentazione",
+        "Istituzioni e costi delle guerre",
+        "Un’eredità discussa"
+      ]
+    }
+  ],
+  "visual_layers": [],
+  "visual_assets": [],
+  "metadata": {
+    "authoring": "Ricerca e sintesi editoriale assistita; fixture di accettazione verificata.",
+    "status": "researched"
+  },
+  "editorial_notes": [
+    "Date dei processi diffuse nel tempo: le scansioni delle scene servono alla narrazione, non descrivono trasformazioni istantanee.",
+    "Coordinate di città attuali per orientamento; connessioni e regioni esplicitamente schematiche. Nessuna quantità è dedotta dallo spessore dei flussi."
+  ],
+  "source_method": "Pagine di musei, biblioteche, istituzioni e opere storiche consultate il 3 settembre 2026. Distinzione fra fatti, stime e interpretazioni nei dati e nelle note. Narrazione originale.",
+  "territorial_note": "La cartografia fisica è moderna. Aree schematiche e reti non sono confini politici misurati.",
+  "map_notice": "Mappe illustrative su base fisica moderna; reti schematiche e date dei processi indicative.",
+  "fps": 24,
+  "overview": [
+    12,
+    47,
+    45
+  ]
+}

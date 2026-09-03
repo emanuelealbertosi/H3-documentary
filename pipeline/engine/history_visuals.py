@@ -1,0 +1,276 @@
+"""Historical visual grammar atop the unchanged, stable geographic atlas."""
+import math
+from functools import lru_cache
+import numpy as np,cv2
+from PIL import Image,ImageDraw,ImageOps
+from .common import ROOT
+from .atlas import AtlasVisuals,camera,screen,partial,smooth,progress,label,polyline,W,H,SS,INK,CREAM,GOLD,MUTED
+from .visuals import font,wrap
+from .history_schema import interpolate_year,year_label,historical_value
+
+PALETTE={'migration':(129,208,186),'population_transfer':(129,208,186),'trade':GOLD,'sea_trade':(110,193,225),'cultural_diffusion':(190,169,238),'religious_diffusion':(151,201,153),'technology_diffusion':(123,207,215),'journey':(231,191,137),'exploration':(129,202,195),'connection':MUTED,'influence':(192,165,218),'attack':(227,114,108),'invasion':(227,114,108),'retreat':(220,141,109),'campaign':(227,114,108),'expansion':GOLD}
+SEMANTICS={'migration':'Migrazione','population_transfer':'Trasferimento di popolazione','trade':'Scambi terrestri','sea_trade':'Scambi marittimi','cultural_diffusion':'Circolazione delle idee','religious_diffusion':'Diffusione religiosa','technology_diffusion':'Circolazione tecnica','journey':'Spostamento personale','exploration':'Esplorazione','connection':'Collegamento','influence':'Influenza','attack':'Attacco','invasion':'Invasione','retreat':'Ritirata','campaign':'Campagna','expansion':'Espansione'}
+NONMAP={'timeline','person_intro','event_focus','comparison','data_visualization','quote','artwork','document','transition','summary'}
+
+def textblock(d,xy,text,width,size=30,color=CREAM,kind='sans',maxlines=10):
+    lines=wrap(d,str(text),width,size,kind)
+    while len(lines)>maxlines and size>17:
+        size-=1;lines=wrap(d,str(text),width,size,kind)
+    for i,line in enumerate(lines):d.text((xy[0],xy[1]+i*int(size*1.3)),line,font=font(size,kind),fill=color)
+    return len(lines)*int(size*1.3)
+
+def territory_state(layer,year):
+    states=sorted(layer.get('states',[]),key=lambda s:historical_value(s['year']))
+    old=None;new=None
+    for state in states:
+        if historical_value(state['year'])<=historical_value(year):old=state
+        else:new=state;break
+    return old,new
+
+class HistoryVisuals(AtlasVisuals):
+    def __init__(self,data):
+        super().__init__(data)
+        self.events={e['id']:e for e in data.get('events',[])}
+        self.people={p['id']:p for p in data.get('persons',[])}
+        self.assets={p['id']:p for p in data.get('visual_assets',[])}
+        self.layers={p['id']:p for p in data.get('visual_layers',[])}
+        self.static_cards={}
+        yy,xx=np.mgrid[:H,:W]
+        a=(np.clip(1-np.sqrt(((xx-700)/2000)**2+((yy-450)/1500)**2),0,1)*8).astype(np.uint8)
+        bg=np.zeros((H,W,3),np.uint8)
+        for c,b in enumerate(INK):bg[:,:,c]=b+a
+        self.background=Image.fromarray(bg)
+
+    def frame(self,s,t):
+        q=max(0,min(1,t/s['duration']));a,b=s['historical_range'];year=interpolate_year(a,b,q)
+        kind=s['scene_type'];cam=camera(s,t)
+        if kind in NONMAP:
+            im=self.card(s,t,year)
+        else:
+            im=self.atlas.frame(cam).convert('RGBA')
+            overlay=Image.new('RGBA',(W*SS,H*SS));d=ImageDraw.Draw(overlay)
+            self.territories(overlay,d,s,cam,year)
+            for m in s.get('movements',[]):self.movement(overlay,d,m,s,t,cam)
+            self.network(overlay,d,s,t,cam)
+            self.battle_symbols(overlay,d,s,t,cam)
+            overlay.alpha_composite(self.geography_labels(s,cam,1))
+            im.alpha_composite(Image.fromarray(cv2.resize(np.asarray(overlay),(W,H),interpolation=cv2.INTER_AREA)))
+            im.alpha_composite(self.shade)
+            self.map_key(im,s)
+        self.header(im,s,year)
+        self.chronology(im,s,t,year)
+        return im.convert('RGB')
+
+    def battle_symbols(self,im,d,s,t,cam):
+        for unit in s.get('units',[]):
+            p=progress(s,unit,t)
+            if t<s['cues'][unit.get('cue',0)]['start']:continue
+            pos=partial(unit.get('path',[unit['pos'],unit['pos']]),p)[-1]
+            x,y=screen(pos,cam);col=self.colors.get(unit.get('side'),GOLD)
+            d.rectangle(((x-17)*SS,(y-10)*SS,(x+17)*SS,(y+10)*SS),fill=(*col,235),outline=CREAM,width=SS)
+            d.line(((x-14)*SS,(y-7)*SS,(x+14)*SS,(y+7)*SS),fill=INK,width=SS)
+            d.line(((x-14)*SS,(y+7)*SS,(x+14)*SS,(y-7)*SS),fill=INK,width=SS)
+            if unit.get('label'):label(im,(x,y+28),unit['label'],18,CREAM)
+        for arrow in s.get('arrows',[]):
+            m={**arrow,'semantic':arrow.get('semantic','attack'),'color':self.colors.get(arrow.get('side'),PALETTE['attack'])}
+            self.movement(im,d,m,s,t,cam)
+
+    def territories(self,im,d,s,cam,year):
+        # State comes from absolute historical time, not previously rendered frames.
+        # This makes seeking, parallel rendering and out-of-order previews identical.
+        selected=s.get('territory_ids',list(self.layers))
+        for ident in selected:
+            layer=self.layers[ident]
+            if layer.get('kind') not in ('territory','influence','cultural','linguistic','religious','alliance','contested'):continue
+            state,nextstate=territory_state(layer,year)
+            if not state:continue
+            fade=1
+            years=layer.get('transition_years',0)
+            previous=[x for x in layer['states'] if historical_value(x['year'])<historical_value(state['year'])]
+            if years and previous:
+                previous=max(previous,key=lambda x:historical_value(x['year']))
+                fade=smooth((historical_value(year)-historical_value(state['year']))/years)
+                self.paint_state(d,previous,layer,cam,1-fade)
+            self.paint_state(d,state,layer,cam,fade)
+            if layer.get('label_pos'):
+                x,y=screen(layer['label_pos'],cam)
+                if 60<x<W-60 and 170<y<800:label(im,(x,y),state.get('label',layer['label']),24,CREAM)
+
+    def paint_state(self,d,state,layer,cam,opacity):
+        if opacity<=0:return
+        col=tuple(state.get('color',layer.get('color',GOLD)))
+        for poly in state.get('polygons',[]):
+            pts=[screen(p,cam) for p in poly]
+            d.polygon([(x*SS,y*SS) for x,y in pts],fill=(*col,int(78*opacity)))
+            polyline(d,pts+[pts[0]],(*col,int(215*opacity)),2,layer.get('schematic',True) or state.get('contested',False))
+
+    def movement(self,im,d,m,s,t,cam):
+        p=1 if m.get('complete') else progress(s,m,t)
+        if p<=0:return
+        semantic=m['semantic'];col=tuple(m.get('color',PALETTE[semantic]));points=[screen(x,cam) for x in m['points']]
+        pts=partial(points,p);w=min(12,max(3,m.get('width',5)))
+        polyline(d,pts,(*INK,180),w+4)
+        polyline(d,pts,(*col,235),w,m.get('uncertain',False))
+        # Only explicitly martial semantics use a military arrowhead.
+        if semantic in ('attack','invasion','campaign','retreat'):
+            if len(pts)>1:
+                x,y=pts[-1];ax,ay=pts[-2];theta=math.atan2(y-ay,x-ax)
+                d.polygon([(x*SS,y*SS),((x-22*math.cos(theta)+10*math.sin(theta))*SS,(y-22*math.sin(theta)-10*math.cos(theta))*SS),((x-22*math.cos(theta)-10*math.sin(theta))*SS,(y-22*math.sin(theta)+10*math.cos(theta))*SS)],fill=col)
+        else:
+            # Dots are a directional flow cue, never a claim about population size.
+            for k in range(5):
+                phase=(t*.028+k/5)%1
+                if phase>p:continue
+                x,y=partial(points,phase)[-1];r=5 if semantic in ('migration','population_transfer') else 4
+                d.ellipse(((x-r)*SS,(y-r)*SS,(x+r)*SS,(y+r)*SS),fill=CREAM,outline=col,width=2*SS)
+
+    def network(self,im,d,s,t,cam):
+        net=s.get('network',{})
+        for edge in net.get('edges',[]):
+            p1=self.data['places'][edge['from']]['pos'];p2=self.data['places'][edge['to']]['pos']
+            m={**edge,'points':edge.get('points',[p1,p2]),'semantic':edge.get('semantic','connection'),'cue':edge.get('cue',0)}
+            self.movement(im,d,m,s,t,cam)
+        for node in net.get('nodes',[]):
+            p=self.data['places'][node['location_id']];x,y=screen(p['pos'],cam);r=12
+            d.ellipse(((x-r)*SS,(y-r)*SS,(x+r)*SS,(y+r)*SS),outline=(*GOLD,220),width=2*SS)
+
+    def header(self,im,s,year):
+        d=ImageDraw.Draw(im)
+        d.rectangle((0,0,W,148),fill=(*INK,242))
+        d.text((60,28),self.data['short_title'].upper()+'  /  STORIE VISUALI',font=font(16),fill=GOLD)
+        textblock(d,(57,58),s['title'].upper(),1410,53,CREAM,'display',1)
+        d.text((1860,36),s.get('date',year_label(year)),font=font(22),fill=CREAM,anchor='ra')
+        if s['scene_type'] not in NONMAP:
+            d.text((1840,93),'N ↑',font=font(20),fill=MUTED,anchor='ra')
+        d.line((60,143,1860,143),fill=(*GOLD,110),width=1)
+
+    def map_key(self,im,s):
+        d=ImageDraw.Draw(im)
+        d.rounded_rectangle((55,765,815,915),radius=12,fill=(*INK,238))
+        d.text((79,785),s['kicker'].upper(),font=font(16),fill=GOLD)
+        textblock(d,(79,816),s['facts'][0],706,29,CREAM,'serif',2)
+        semantic=[]
+        for m in s.get('movements',[])+s.get('network',{}).get('edges',[]):
+            sem=m.get('semantic','connection')
+            if sem not in semantic:semantic.append(sem)
+        for i,sem in enumerate(semantic[:3]):
+            y=785+i*36
+            d.rounded_rectangle((1030,y-3,1550,y+32),radius=5,fill=(*INK,230))
+            d.line((1050,y+12,1100,y+12),fill=PALETTE[sem],width=4)
+            d.text((1115,y),SEMANTICS[sem],font=font(19),fill=CREAM)
+        notice=s.get('map_note','Collegamenti schematici · nessuna quantità implicita')
+        d.text((1858,904),notice[:100],font=font(13),fill=MUTED,anchor='ra')
+
+    def chronology(self,im,s,t,year):
+        d=ImageDraw.Draw(im);d.rectangle((0,938,W,H),fill=(*INK,250))
+        period=self.data.get('historical_period',{});lo=period.get('start',s['historical_range'][0]);hi=period.get('end',s['historical_range'][1])
+        def x(y):return 250+1390*max(0,min(1,(historical_value(y)-historical_value(lo))/max(1,historical_value(hi)-historical_value(lo))))
+        d.text((60,956),year_label(year),font=font(29,'serif'),fill=GOLD)
+        d.line((250,988,1640,988),fill=(67,89,95),width=3)
+        d.line((250,988,max(251,x(year)),988),fill=GOLD,width=3)
+        # Fixed positions and a bounded number of labels prevent flicker/collisions.
+        events=[e for e in self.events.values() if e.get('timeline',True)]
+        if len(events)>8:events=[events[round(i*(len(events)-1)/7)] for i in range(8)]
+        last=-1000
+        for e in sorted(events,key=lambda e:e['year']):
+            ex=x(e['year']);past=historical_value(e['year'])<=historical_value(year)
+            d.ellipse((ex-4,984,ex+4,992),fill=GOLD if past else MUTED)
+            if ex-last>150:
+                d.text((ex,1005),year_label(e['year']),font=font(13),fill=MUTED,anchor='ma');last=ex
+        ex=x(year);d.ellipse((ex-7,981,ex+7,995),fill=CREAM)
+        d.text((1860,961),f'{int(s["id"]):02} / {len(self.data["scenes"]):02}',font=font(24),fill=GOLD,anchor='ra')
+        d.text((1860,1030),'Geografia fisica: Natural Earth · rilievo Mapzen',font=font(11),fill=MUTED,anchor='ra')
+        d.line((60,1053,1860,1053),fill=(45,65,73),width=3)
+        d.line((60,1053,60+1800*(s['start']+t)/self.total,1053),fill=GOLD,width=3)
+
+    def card(self,s,t,year):
+        # Static text/images are cached. Only charts/timeline/camera advance with time.
+        key=s['id']
+        if key not in self.static_cards:
+            im=self.background.copy().convert('RGBA');d=ImageDraw.Draw(im)
+            kind=s['scene_type']
+            if kind in ('artwork','document') and s.get('asset_ids'):
+                a=self.assets[s['asset_ids'][0]];path=ROOT/a['path']
+                picture=ImageOps.contain(Image.open(path).convert('RGB'),(1080,710),Image.Resampling.LANCZOS)
+                im.paste(picture,(60+(1080-picture.width)//2,177+(710-picture.height)//2))
+                d.text((1200,207),'OPERA' if kind=='artwork' else 'DOCUMENTO',font=font(18),fill=GOLD)
+                y=251+textblock(d,(1200,251),a.get('title',s['title']),630,47,CREAM,'serif',4)
+                y+=24+textblock(d,(1200,y+24),a.get('creator','')+' · '+a.get('date',''),620,23,MUTED,maxlines=3)
+                textblock(d,(1200,y+50),s['facts'][0],630,30,CREAM,'serif',6)
+                textblock(d,(1200,827),a.get('credit',a.get('license','')),630,14,MUTED,maxlines=3)
+            elif kind=='person_intro' and s.get('person_ids'):
+                p=self.people[s['person_ids'][0]]
+                if p.get('portrait') and (ROOT/p['portrait']).exists():
+                    photo=ImageOps.contain(Image.open(ROOT/p['portrait']).convert('RGB'),(670,710),Image.Resampling.LANCZOS);im.paste(photo,(60+(670-photo.width)//2,180+(710-photo.height)//2))
+                else:
+                    d.ellipse((195,245,565,615),outline=(*GOLD,100),width=2);d.text((380,430),''.join(w[0] for w in p['name'].split()[:2]),font=font(138,'serif'),fill=GOLD,anchor='mm')
+                    d.text((380,670),'Ritratto non disponibile',font=font(17),fill=MUTED,anchor='mm')
+                d.text((850,209),p.get('role','PERSONAGGIO STORICO').upper(),font=font(21),fill=GOLD)
+                textblock(d,(845,260),p['name'],955,78,CREAM,'serif',2)
+                d.text((850,462),p.get('period',''),font=font(25),fill=MUTED)
+                textblock(d,(850,540),p.get('intro',s['facts'][0]),930,36,CREAM,'serif',6)
+            elif kind=='comparison':
+                cols=s.get('comparison',[])
+                for i,c in enumerate(cols[:3]):
+                    width=1710/max(1,len(cols[:3]));x=70+i*(width+25)
+                    d.rounded_rectangle((x,220,x+width,860),radius=15,fill=(24,47,59),outline=(64,87,91),width=1)
+                    d.rectangle((x+28,255,x+width-28,259),fill=GOLD)
+                    textblock(d,(x+30,294),c['title'],width-60,39,CREAM,'serif',3)
+                    textblock(d,(x+30,475),c['text'],width-60,29,MUTED,maxlines=9)
+            elif kind=='quote' and s.get('quote'):
+                quote=s['quote'];d.text((125,180),'“',font=font(180,'serif'),fill=GOLD)
+                textblock(d,(250,300),quote['text'],1460,55,CREAM,'serif',6)
+                textblock(d,(250,780),quote.get('author','')+' · '+quote['source'],1460,22,MUTED,maxlines=3)
+            elif kind not in ('timeline','data_visualization'):
+                d.text((120,219),s['kicker'].upper(),font=font(23),fill=GOLD)
+                textblock(d,(112,285),s['facts'][0],1550,67,CREAM,'serif',4)
+                cards=s.get('highlights',[])
+                for i,c in enumerate(cards[:3]):
+                    x=120+i*575;d.line((x,679,x+480,679),fill=GOLD,width=2);textblock(d,(x,716),c,490,27,MUTED,maxlines=5)
+            self.static_cards[key]=im
+        im=self.static_cards[key].copy()
+        if s['scene_type'] in ('artwork','document') and s.get('asset_ids'):
+            # A gentle camera push on the artwork alone; typography stays registered.
+            region=self.static_cards[key].crop((60,177,1140,887))
+            zoom=1+.025*smooth(t/s['duration']);w,h=region.size
+            mx=(w-w/zoom)/2;my=(h-h/zoom)/2
+            region=region.transform((w,h),Image.Transform.EXTENT,(mx,my,w-mx,h-my),Image.Resampling.BICUBIC)
+            im.paste(region,(60,177))
+        if s['scene_type']=='timeline':self.event_cards(im,s,t,year)
+        if s['scene_type']=='data_visualization':self.chart(im,s,t)
+        return im
+
+    def event_cards(self,im,s,t,year):
+        d=ImageDraw.Draw(im);events=[self.events[x] for x in s.get('event_ids',[])][:5]
+        for i,e in enumerate(events):
+            y=205+i*138;past=historical_value(e['year'])<=historical_value(year)
+            d.line((321,y+23,321,min(885,y+155)),fill=GOLD if past else (67,89,95),width=3)
+            d.ellipse((313,y+17,329,y+33),fill=GOLD if past else MUTED)
+            d.text((279,y+7),year_label(e['year']),font=font(30,'serif'),fill=GOLD,anchor='ra')
+            textblock(d,(375,y),e.get('title',e['description']),1400,34,CREAM,'serif',1)
+            textblock(d,(375,y+51),e['description'],1400,23,MUTED,maxlines=2)
+
+    def chart(self,im,s,t):
+        d=ImageDraw.Draw(im);spec=s.get('chart')
+        if not spec:
+            textblock(d,(140,320),'Non sono disponibili dati quantitativi confrontabili.',1600,55,CREAM,'serif');return
+        rows=spec['values'];values=[r['value'] for r in rows];lo=min(0,min(values));hi=max(values)
+        span=max(1,hi-lo);p=smooth(t/min(5,s['duration']*.25));left=530;right=1730;top=285;bottom=800
+        textblock(d,(120,190),spec.get('title',s['title']),1600,37,CREAM,'serif',1)
+        if spec['kind']=='line':
+            xs=[r.get('x',i) for i,r in enumerate(rows)];xmin=min(xs);xmax=max(xs);pts=[]
+            for i,r in enumerate(rows):
+                x=240+1450*(xs[i]-xmin)/max(1,xmax-xmin);y=bottom-(r['value']-lo)/span*460;pts.append((x,y))
+                d.text((x,830),r['label'],font=font(19),fill=MUTED,anchor='ma')
+                d.text((x,y-34),str(r['value']),font=font(23),fill=CREAM,anchor='ma')
+            d.line(partial(pts,p),fill=GOLD,width=5)
+            for x,y in pts:d.ellipse((x-6,y-6,x+6,y+6),fill=GOLD)
+        else:
+            step=min(130,500/max(1,len(rows)))
+            zero=left+(0-lo)/span*(right-left)
+            for i,r in enumerate(rows):
+                y=top+i*step;end=zero+r['value']/span*(right-left)*p
+                d.text((left-28,y+12),r['label'],font=font(26),fill=CREAM,anchor='ra')
+                d.rounded_rectangle((min(zero,end),y,max(zero+.1,end),y+48),radius=5,fill=tuple(r.get('color',GOLD)))
+                d.text((max(zero,end)+16,y+10),str(r['value'])+' '+spec.get('unit',''),font=font(23),fill=CREAM)
+        textblock(d,(120,882),spec.get('note','')+' · Fonti: '+', '.join(spec['sources']),1680,16,MUTED,maxlines=2)

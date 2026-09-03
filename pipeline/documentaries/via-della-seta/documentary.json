@@ -1,0 +1,490 @@
+{
+  "schema_version": 2,
+  "slug": "via-della-seta",
+  "title": "Vie della Seta — Una rete di mondi",
+  "short_title": "Vie della Seta",
+  "documentary_type": "trade_network",
+  "historical_period": {
+    "start": -200,
+    "end": 1500,
+    "calendar": "anni storici senza anno zero"
+  },
+  "target_minutes": 3,
+  "locations": [
+    {
+      "id": "changan",
+      "name": "Chang’an",
+      "pos": [
+        108.94,
+        34.34
+      ]
+    },
+    {
+      "id": "dunhuang",
+      "name": "Dunhuang",
+      "pos": [
+        94.66,
+        40.14
+      ]
+    },
+    {
+      "id": "samarkand",
+      "name": "Samarcanda",
+      "pos": [
+        66.98,
+        39.65
+      ]
+    },
+    {
+      "id": "bukhara",
+      "name": "Bukhara",
+      "pos": [
+        64.43,
+        39.77
+      ],
+      "offset": [
+        -45,
+        -28
+      ]
+    },
+    {
+      "id": "venice",
+      "name": "Venezia",
+      "pos": [
+        12.32,
+        45.44
+      ]
+    },
+    {
+      "id": "hormuz",
+      "name": "Hormuz",
+      "pos": [
+        56.45,
+        27.1
+      ]
+    },
+    {
+      "id": "calicut",
+      "name": "Calicut",
+      "pos": [
+        75.78,
+        11.25
+      ]
+    },
+    {
+      "id": "quanzhou",
+      "name": "Quanzhou",
+      "pos": [
+        118.59,
+        24.91
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "S1",
+      "title": "UNESCO — About the Silk Roads",
+      "url": "https://www.unesco.org/en/silk-roads/about-silk-roads",
+      "use": "Reti terrestri e marittime, pluralità delle merci e diffusione di conoscenze. Il nome moderno è retrospettivo.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "S2",
+      "title": "UNESCO World Heritage — Chang’an–Tianshan Corridor",
+      "url": "https://whc.unesco.org/en/list/1442/",
+      "use": "Rete di corridoi, cronologia generale e ambienti attraversati.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "S3",
+      "title": "UNESCO — Cities along the Silk Roads",
+      "url": "https://en.unesco.org/silkroad/silk-road-themes/cities-silk-roads",
+      "use": "Città come mercati, luoghi di riposo e scambio culturale.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    },
+    {
+      "id": "S4",
+      "title": "UNESCO — Exchange of Technical Knowledge",
+      "url": "https://en.unesco.org/silkroad/content/did-you-know-exchange-technical-knowledge-used-craft-silk-roads-goods",
+      "use": "Scambio di tecniche, merci comuni e beni di prestigio.",
+      "consulted": "2026-09-03",
+      "evidence_status": "consulted"
+    }
+  ],
+  "persons": [],
+  "entities": [],
+  "events": [
+    {
+      "id": "han",
+      "year": -200,
+      "title": "Scambi eurasiatici nell’epoca Han",
+      "description": "Scambi eurasiatici nell’epoca Han",
+      "type": "trade_route_change",
+      "sources": [
+        "S1",
+        "S2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "hubs",
+      "year": 700,
+      "title": "Città e corridoi dell’Asia centrale",
+      "description": "Città e corridoi dell’Asia centrale",
+      "type": "economic_event",
+      "sources": [
+        "S2"
+      ],
+      "certainty": "established"
+    },
+    {
+      "id": "sea",
+      "year": 1200,
+      "title": "Reti marittime dell’Oceano Indiano",
+      "description": "Reti marittime dell’Oceano Indiano",
+      "type": "trade_route_change",
+      "sources": [
+        "S1"
+      ],
+      "certainty": "established"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "01",
+      "title": "Non una strada, ma molte reti",
+      "scene_type": "network_map",
+      "historical_range": [
+        -200,
+        200
+      ],
+      "date": "200 a.C. – 200 d.C.",
+      "lines": [
+        "La Via della Seta non è una strada unica da percorrere tutta in una volta. Il nome, moderno, riunisce reti di scambio sviluppate in epoche diverse attraverso l’Eurasia. Vie terrestri e collegamenti marittimi mettono in relazione comunità lontane, spesso attraverso numerosi intermediari.",
+        "La seta è un bene importante, ma non esaurisce la storia. Viaggiano alimenti, oggetti, tecniche e conoscenze. La carta mostra alcuni nodi e corridoi, senza attribuire loro una capacità commerciale costante. Seguire le reti significa osservare come i collegamenti cambiano e come ogni città partecipa a scambi più vicini oltre che a quelli lontani."
+      ],
+      "sources": [
+        "S1",
+        "S2"
+      ],
+      "location_ids": [
+        "changan",
+        "dunhuang",
+        "samarkand",
+        "venice"
+      ],
+      "camera_end": [
+        66,
+        38,
+        140
+      ],
+      "network": {
+        "nodes": [
+          {
+            "location_id": "changan"
+          },
+          {
+            "location_id": "dunhuang"
+          },
+          {
+            "location_id": "samarkand"
+          }
+        ],
+        "edges": [
+          {
+            "from": "changan",
+            "to": "dunhuang",
+            "points": [
+              [
+                108.94,
+                34.34
+              ],
+              [
+                103.8,
+                36.1
+              ],
+              [
+                98.5,
+                39.7
+              ],
+              [
+                94.66,
+                40.14
+              ]
+            ],
+            "semantic": "trade",
+            "uncertain": true,
+            "sources": [
+              "S2"
+            ]
+          },
+          {
+            "from": "dunhuang",
+            "to": "samarkand",
+            "points": [
+              [
+                94.66,
+                40.14
+              ],
+              [
+                89,
+                42
+              ],
+              [
+                81,
+                43
+              ],
+              [
+                75,
+                42
+              ],
+              [
+                69,
+                41
+              ],
+              [
+                66.98,
+                39.65
+              ]
+            ],
+            "semantic": "trade",
+            "uncertain": true,
+            "sources": [
+              "S2"
+            ]
+          }
+        ]
+      },
+      "kicker": "Il nome è moderno",
+      "facts": [
+        "Una rete di corridoi terrestri e marittimi, non una singola strada."
+      ]
+    },
+    {
+      "id": "02",
+      "title": "Le città rendono possibile il viaggio",
+      "scene_type": "city_focus",
+      "historical_range": [
+        200,
+        700
+      ],
+      "date": "200 d.C. – 700 d.C.",
+      "lines": [
+        "Le distanze contano, ma contano altrettanto i luoghi nei quali fermarsi. Le città offrono mercati, acqua, ospitalità e occasioni per cambiare animali e mediatori. Samarcanda e Bukhara partecipano a questo paesaggio di contatti, insieme a molti altri centri dell’Asia centrale.",
+        "Non tutti i mercanti devono raggiungere l’estremità opposta del continente. Gli scambi possono procedere per segmenti. Una merce passa di mano e acquista nuovi significati. I nodi della mappa non indicano città della stessa grandezza: esprimono la funzione di collegamento. Per confrontarne popolazioni e traffici occorrerebbero serie storiche che qui non possediamo."
+      ],
+      "sources": [
+        "S3"
+      ],
+      "location_ids": [
+        "samarkand",
+        "bukhara",
+        "dunhuang"
+      ],
+      "camera_end": [
+        78,
+        40,
+        55
+      ],
+      "network": {
+        "nodes": [
+          {
+            "location_id": "samarkand"
+          },
+          {
+            "location_id": "bukhara"
+          }
+        ],
+        "edges": [
+          {
+            "from": "bukhara",
+            "to": "samarkand",
+            "semantic": "trade",
+            "sources": [
+              "S3"
+            ]
+          }
+        ]
+      },
+      "kicker": "Mercati e intermediari",
+      "facts": [
+        "I viaggi possono essere segmentati. I nodi non rappresentano un volume di commercio."
+      ]
+    },
+    {
+      "id": "03",
+      "title": "Oltre la seta",
+      "scene_type": "comparison",
+      "historical_range": [
+        700,
+        1000
+      ],
+      "date": "700 d.C. – 1000 d.C.",
+      "lines": [
+        "Gli oggetti di lusso attirano l’attenzione, ma gli scambi comprendono anche prodotti utili nella vita quotidiana. I beni cambiano insieme ai bisogni e alle disponibilità delle comunità. Non esiste un carico standard valido per ogni epoca e per ogni segmento della rete.",
+        "Accanto ai prodotti circolano saperi pratici. Chi conosce una tecnica può essere richiesto lontano dal luogo in cui l’ha appresa. Le informazioni viaggiano con persone reali e possono essere adattate a nuovi materiali e nuovi mercati. Per questo il confronto fra merci e conoscenze aiuta più di una freccia che sembri misurare una quantità inesistente."
+      ],
+      "sources": [
+        "S1",
+        "S4"
+      ],
+      "kicker": "Cose e conoscenze",
+      "facts": [
+        "Le reti trasferiscono prodotti e competenze."
+      ],
+      "comparison": [
+        {
+          "title": "Merci",
+          "text": "Seta, alimenti, materie prime e beni di prestigio; combinazioni diverse nel tempo."
+        },
+        {
+          "title": "Conoscenze",
+          "text": "Tecniche artigianali, lingue, idee e pratiche che cambiano attraverso gli incontri."
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "title": "Anche il mare è una strada",
+      "scene_type": "animated_route",
+      "historical_range": [
+        1000,
+        1300
+      ],
+      "date": "1000 d.C. – 1300 d.C.",
+      "lines": [
+        "L’Oceano Indiano è parte essenziale di questo mondo connesso. Porti, naviganti e mercanti collegano regioni asiatiche e occidentali attraverso rotte marittime. La nostra linea azzurra distingue il mare dai corridoi terrestri: non rappresenta un viaggio unico documentato da un estremo all’altro.",
+        "Le reti dipendono da approdi, condizioni ambientali e poteri politici. I centri acquistano o perdono importanza; i percorsi vengono adattati. La storia non è una semplice sostituzione della terra con il mare. Collegamenti diversi possono coesistere e sostenersi. Per comprendere gli scambi bisogna guardare alle connessioni fra retroterra, città e porti."
+      ],
+      "sources": [
+        "S1",
+        "S3"
+      ],
+      "location_ids": [
+        "hormuz",
+        "calicut",
+        "quanzhou"
+      ],
+      "camera_end": [
+        87,
+        23,
+        106
+      ],
+      "movements": [
+        {
+          "semantic": "sea_trade",
+          "points": [
+            [
+              56.45,
+              27.1
+            ],
+            [
+              61,
+              23
+            ],
+            [
+              68,
+              16
+            ],
+            [
+              75.78,
+              11.25
+            ],
+            [
+              79,
+              6
+            ],
+            [
+              85,
+              5
+            ],
+            [
+              94,
+              5
+            ],
+            [
+              99,
+              2
+            ],
+            [
+              104,
+              1
+            ],
+            [
+              109,
+              12
+            ],
+            [
+              116,
+              22
+            ],
+            [
+              118.59,
+              24.91
+            ]
+          ],
+          "sources": [
+            "S1"
+          ],
+          "uncertain": true
+        }
+      ],
+      "kicker": "Reti terrestri e marittime",
+      "facts": [
+        "Rotta indicativa fra porti: non un itinerario individuale né una misura del traffico."
+      ]
+    },
+    {
+      "id": "05",
+      "title": "Una storia fatta di intermediari",
+      "scene_type": "summary",
+      "historical_range": [
+        1300,
+        1500
+      ],
+      "date": "1300 d.C. – 1500 d.C.",
+      "lines": [
+        "Le Vie della Seta permettono di raccontare la storia da un punto di vista diverso: quello delle relazioni. Gli imperi contano, ma non esauriscono ciò che si muove tra le loro frontiere. Città, mercanti, artigiani e viaggiatori costruiscono collegamenti che nessuna singola autorità controlla per sempre.",
+        "Le reti cambiano senza sparire tutte nello stesso momento. Il loro valore storico non dipende da un percorso perfetto tracciato sulla carta. Sta negli incontri, negli adattamenti e nella trasmissione di beni e conoscenze. La mappa diventa così una domanda: chi collega un luogo all’altro, e quali trasformazioni rende possibili quel collegamento?"
+      ],
+      "sources": [
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "kicker": "Una geografia di relazioni",
+      "facts": [
+        "Nodi, intermediari e percorsi mutano nel tempo."
+      ],
+      "highlights": [
+        "Più vie e più epoche",
+        "Terra e mare collegati",
+        "Scambi materiali e culturali"
+      ]
+    }
+  ],
+  "visual_layers": [],
+  "visual_assets": [],
+  "metadata": {
+    "authoring": "Ricerca e sintesi editoriale assistita; fixture di accettazione verificata.",
+    "status": "researched"
+  },
+  "editorial_notes": [
+    "Date dei processi diffuse nel tempo: le scansioni delle scene servono alla narrazione, non descrivono trasformazioni istantanee.",
+    "Coordinate di città attuali per orientamento; connessioni e regioni esplicitamente schematiche. Nessuna quantità è dedotta dallo spessore dei flussi."
+  ],
+  "source_method": "Pagine di musei, biblioteche, istituzioni e opere storiche consultate il 3 settembre 2026. Distinzione fra fatti, stime e interpretazioni nei dati e nelle note. Narrazione originale.",
+  "territorial_note": "La cartografia fisica è moderna. Aree schematiche e reti non sono confini politici misurati.",
+  "map_notice": "Mappe illustrative su base fisica moderna; reti schematiche e date dei processi indicative.",
+  "fps": 24,
+  "overview": [
+    67,
+    35,
+    137
+  ],
+  "atlas": "assets/geography/atlas-history/atlas.json"
+}

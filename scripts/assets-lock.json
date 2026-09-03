@@ -1,0 +1,72 @@
+[
+  {
+    "path": "assets/fonts/BebasNeue-Regular.ttf",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/bebasneue/BebasNeue-Regular.ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/bebasneue/BebasNeue-Regular.ttf",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "08e4623805102d819f58601e46e345648846075e363b2ceb23313c2d1c83ec73"
+  },
+  {
+    "path": "assets/fonts/bebasneue-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/bebasneue/OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/bebasneue/OFL.txt",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "72082f6cb4d04be2ecf7cc7d9e1e7d73787f0af8a5a278a47cade70c16b78341"
+  },
+  {
+    "path": "assets/fonts/Manrope[wght].ttf",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/manrope/Manrope[wght].ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/manrope/Manrope[wght].ttf",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "d0639be45d0af36e798172419d7bd173c4bd4f29e2b76cbb69db1d11bf8b0a40"
+  },
+  {
+    "path": "assets/fonts/manrope-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/manrope/OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/manrope/OFL.txt",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "e01b637272e0cbdfb240184dd98ea5cc671556d9894dae2668d92ab2c906787c"
+  },
+  {
+    "path": "assets/fonts/CormorantGaramond[wght].ttf",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/cormorantgaramond/CormorantGaramond[wght].ttf",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/cormorantgaramond/CormorantGaramond[wght].ttf",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "b20b7d9626dd956b2c5e558692ad328b1f19e3275e2782db4fa07670d83f35e0"
+  },
+  {
+    "path": "assets/fonts/cormorantgaramond-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/cormorantgaramond/OFL.txt",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/cormorantgaramond/OFL.txt",
+    "license": "SIL Open Font License 1.1",
+    "sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956"
+  },
+  {
+    "path": "assets/voice/kokoro/kokoro-v1.0.onnx",
+    "url": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx",
+    "source": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx",
+    "license": "Apache-2.0",
+    "sha256": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5"
+  },
+  {
+    "path": "assets/voice/kokoro/voices-v1.0.bin",
+    "url": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin",
+    "source": "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin",
+    "license": "Apache-2.0",
+    "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  {
+    "path": "assets/voice/kokoro/MODEL_CARD.md",
+    "url": "https://huggingface.co/hexgrad/Kokoro-82M/raw/main/README.md",
+    "source": "https://huggingface.co/hexgrad/Kokoro-82M/raw/main/README.md",
+    "license": "Model documentation",
+    "sha256": "91dcabced89db6f109b8786642f50402d3ee87450e8189589b6f85520e7f4d78"
+  },
+  {
+    "path": "assets/voice/kokoro/LICENSE",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "source": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "license": "Apache-2.0; model declaration in accompanying MODEL_CARD.md",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+]

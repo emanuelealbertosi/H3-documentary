@@ -1,0 +1,34 @@
+[
+  {
+    "id": "ROM1",
+    "url": "https://www.metmuseum.org/essays/the-roman-republic",
+    "use": "Conquiste e diplomazia, province e crisi della repubblica.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "ROM2",
+    "url": "https://www.metmuseum.org/essays/the-roman-empire-27-b-c-393-a-d",
+    "use": "Augusto, trasformazione istituzionale e massima espansione sotto Traiano.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "ROM3",
+    "url": "https://www.britishmuseum.org/exhibitions/nero-man-behind-myth/introduction-to-ancient-rome",
+    "use": "Estensione imperiale e lettura critica delle mappe.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "ROM4",
+    "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Polybius/1*.html",
+    "use": "Testo antico: guerre puniche e Sicilia; confronto con la cronologia museale.",
+    "cached": true,
+    "cache": "assets/research/history/831b6c00bd395355.source",
+    "sha256": "c604f11d42818ecd507d876722815fe7d7d9e5764b95823761aab663f81871ea"
+  }
+]

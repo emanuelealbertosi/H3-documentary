@@ -1,0 +1,3788 @@
+{
+  "schema_version": 1,
+  "slug": "annibale",
+  "title": "Annibale — Da Cartagine alle porte di Roma",
+  "short_title": "ANNIBALE",
+  "subtitle": "Da Cartagine alle porte di Roma",
+  "display_date": "237–211 a.C.",
+  "language": "it",
+  "date": "-0211",
+  "description": "Un viaggio sulle mappe del Mediterraneo: dalle origini cartaginesi di Annibale alla spedizione del 218 a.C., attraverso i Pirenei e le Alpi, e fino alla minaccia contro Roma nel 211 a.C. Roma non fu conquistata.",
+  "target_minutes": 11,
+  "min_minutes": 10.5,
+  "max_minutes": 11.6,
+  "max_voice_tempo": 1.24,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "output": "output/annibale_documentario_1080p.mp4",
+  "verification_dir": "annibale_verification",
+  "visual_style": "atlas",
+  "atlas": "assets/geography/atlas-v2/atlas.json",
+  "voice_engine": "kokoro",
+  "voice": "assets/voice/kokoro/kokoro-v1.0.onnx",
+  "voice_styles": "assets/voice/kokoro/voices-v1.0.bin",
+  "voice_speaker": "if_sara",
+  "voice_credit": "Kokoro 82M, voce italiana if_sara, sintesi locale gratuita. Pesi Apache-2.0; nessun audio inviato a servizi esterni.",
+  "voice_sentence_chunks": [
+    "13:1",
+    "17:0",
+    "21:0"
+  ],
+  "voice_clause_chunks": [
+    "21:0",
+    "21:1"
+  ],
+  "voice_phoneme_overrides": {
+    "21:0": {
+      "restitʊˈiʃe": "restituˈiʃʃe"
+    }
+  },
+  "voice_chunk_assets": {
+    "21:0": {
+      "2": {
+        "path": "assets/voice/annibale/final-phrase.wav",
+        "text": "la carta restituisce l'ampiezza di un'impresa eccezionale."
+      }
+    }
+  },
+  "voice_custom_chunks": {
+    "21:0": [
+      "Torniamo alla vista d'insieme.",
+      "Cartagine, l'Iberia, il Rodano, le Alpi e l'Italia:",
+      "la carta restituisce l'ampiezza di un'impresa eccezionale.",
+      "Il trasferimento giovanile in Spagna,",
+      "l'invasione del duecentodiciotto e la marcia su Roma del duecentoundici",
+      "sono però fasi diverse."
+    ],
+    "21:1": [
+      "Annibale riuscì a portare la guerra",
+      "dove i Romani non volevano combatterla",
+      "e inflisse sconfitte memorabili.",
+      "Non riuscì a trasformarle nella resa di Roma.",
+      "Il suo percorso ci lascia questa distinzione:",
+      "superare montagne, fiumi ed eserciti",
+      "può aprire una strada.",
+      "Vincere una guerra richiede anche",
+      "spezzare la capacità del nemico di proseguirla."
+    ]
+  },
+  "pronunciation": {
+    "a.C.": "avanti Cristo",
+    "Annibale": "Ànnibale",
+    "Amilcare": "Amìlcare",
+    "Iberia": "Ibèria",
+    "Barca": "Bàrca",
+    "Numidi": "Nùmidi"
+  },
+  "factions": [
+    {
+      "id": "carthage",
+      "label": "Annibale e Cartagine",
+      "color": [
+        239,
+        185,
+        93
+      ],
+      "estimate": "Consistenze variabili per fase",
+      "commander": "Annibale"
+    },
+    {
+      "id": "rome",
+      "label": "Roma",
+      "color": [
+        221,
+        109,
+        101
+      ],
+      "estimate": "Consistenze variabili per fase",
+      "commander": "Consoli e magistrati romani"
+    }
+  ],
+  "commanders": {
+    "hannibal": {
+      "name": "Annibale",
+      "subtitle": "Comandante cartaginese",
+      "side": "carthage",
+      "portrait": "assets/portraits/annibale/hannibal.jpg",
+      "wikipedia_page": "Hannibal",
+      "portrait_note": [
+        "Attribuzione tradizionale",
+        "Busto di Capua · volto non certo"
+      ]
+    }
+  },
+  "atlas_locator": [
+    7,
+    40,
+    43
+  ],
+  "route_legend": "Annibale",
+  "framing": {},
+  "assets": [],
+  "places": {
+    "cartagine": {
+      "name": "Cartagine",
+      "pos": [
+        10.323,
+        36.852
+      ],
+      "size": 28,
+      "color": [
+        239,
+        185,
+        93
+      ]
+    },
+    "roma": {
+      "name": "Roma",
+      "pos": [
+        12.492,
+        41.89
+      ],
+      "size": 28,
+      "color": [
+        221,
+        109,
+        101
+      ]
+    },
+    "gades": {
+      "name": "Gades",
+      "pos": [
+        -6.3,
+        36.53
+      ]
+    },
+    "cartagena": {
+      "name": "Nuova Cartagine",
+      "pos": [
+        -0.986,
+        37.6
+      ],
+      "size": 25,
+      "color": [
+        239,
+        185,
+        93
+      ]
+    },
+    "sagunto": {
+      "name": "Sagunto",
+      "pos": [
+        -0.278,
+        39.681
+      ]
+    },
+    "ebro": {
+      "name": "Ebro",
+      "pos": [
+        0.67,
+        40.72
+      ]
+    },
+    "pirenei": {
+      "name": "Pirenei",
+      "pos": [
+        2.45,
+        42.55
+      ]
+    },
+    "emporion": {
+      "name": "Emporion",
+      "pos": [
+        3.12,
+        42.13
+      ]
+    },
+    "rodano": {
+      "name": "Rodano",
+      "pos": [
+        4.78,
+        44.13
+      ]
+    },
+    "massalia": {
+      "name": "Massalia",
+      "pos": [
+        5.369,
+        43.297
+      ]
+    },
+    "alpi": {
+      "name": "Alpi",
+      "pos": [
+        7.3,
+        45.7
+      ]
+    },
+    "taurini": {
+      "name": "Taurini",
+      "pos": [
+        7.686,
+        45.07
+      ]
+    },
+    "ticino": {
+      "name": "Ticino · 218 a.C.",
+      "pos": [
+        8.95,
+        45.15
+      ]
+    },
+    "trebbia": {
+      "name": "Trebbia · 218 a.C.",
+      "pos": [
+        9.615,
+        45.01
+      ]
+    },
+    "trasimeno": {
+      "name": "Trasimeno · 217 a.C.",
+      "pos": [
+        12.12,
+        43.21
+      ]
+    },
+    "canne": {
+      "name": "Canne · 216 a.C.",
+      "pos": [
+        16.132,
+        41.296
+      ]
+    },
+    "capua": {
+      "name": "Capua",
+      "pos": [
+        14.252,
+        41.083
+      ]
+    },
+    "aniene": {
+      "name": "Aniene",
+      "pos": [
+        12.56,
+        41.95
+      ]
+    },
+    "bernardo": {
+      "name": "Piccolo San Bernardo",
+      "pos": [
+        6.883,
+        45.682
+      ]
+    },
+    "moncenisio": {
+      "name": "Moncenisio",
+      "pos": [
+        6.9,
+        45.26
+      ]
+    },
+    "clapier": {
+      "name": "Clapier",
+      "pos": [
+        6.93,
+        45.17
+      ]
+    },
+    "monginevro": {
+      "name": "Monginevro",
+      "pos": [
+        6.72,
+        44.93
+      ]
+    },
+    "traversette": {
+      "name": "Traversette",
+      "pos": [
+        7.07,
+        44.709
+      ]
+    }
+  },
+  "maps": {
+    "atlas": {
+      "center": [
+        7,
+        41
+      ],
+      "scale": [
+        60,
+        60
+      ],
+      "seed": 218,
+      "north_label": "NORD",
+      "landmarks": [],
+      "rivers": [],
+      "roads": [],
+      "ridges": [],
+      "forests": [],
+      "zones": []
+    }
+  },
+  "scenes": [
+    {
+      "id": "01",
+      "title": "Un viaggio contro Roma",
+      "date": "237–211 a.C.",
+      "lines": [
+        "Guardiamo l'Europa dall'alto. A sud, oltre il Mediterraneo, c'è Cartagine. A nord, la penisola italiana: al suo centro, Roma. Fra queste due città si decide una delle grandi guerre dell'antichità.",
+        "Annibale porterà un esercito attraverso la Spagna, i Pirenei e le Alpi. Ma il viaggio non finirà con una conquista di Roma. Per capire come arriverà alle sue porte, dobbiamo seguire una storia lunga anni, distinguendo la marcia del duecentodiciotto dalla minaccia del duecentoundici avanti Cristo."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        15,
+        52,
+        116
+      ],
+      "camera_end": [
+        7,
+        41,
+        43
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            15,
+            52,
+            116
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            7,
+            41,
+            43
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            7,
+            41,
+            43
+          ]
+        }
+      ],
+      "kicker": "Un esercito attraversa il Mediterraneo occidentale",
+      "facts": [
+        "Dalle origini cartaginesi alla minaccia contro Roma"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "cartagine",
+        "roma",
+        "cartagena"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "IBERIA",
+          "pos": [
+            -3.4,
+            40.1
+          ],
+          "size": 34
+        },
+        {
+          "text": "GALLIA",
+          "pos": [
+            2.0,
+            46.5
+          ],
+          "size": 34
+        },
+        {
+          "text": "ITALIA",
+          "pos": [
+            13.3,
+            43.0
+          ],
+          "size": 34
+        },
+        {
+          "text": "AFRICA",
+          "pos": [
+            8.2,
+            33.3
+          ],
+          "size": 34
+        },
+        {
+          "text": "MARE MEDITERRANEO",
+          "pos": [
+            4.5,
+            37.8
+          ],
+          "size": 29
+        }
+      ],
+      "routes": [],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "opening",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "02",
+      "title": "Cartagine, il punto di partenza",
+      "date": "Dopo il 241 a.C.",
+      "lines": [
+        "La nostra storia comincia sulla costa dell'attuale Tunisia. Cartagine è una potenza marittima, legata da commerci e interessi a molte sponde del Mediterraneo. Annibale nasce in questo mondo, nella famiglia dei Barca.",
+        "La prima guerra punica ha però cambiato gli equilibri. Sconfitta da Roma, Cartagine ha perduto la Sicilia; in seguito perde anche la Sardegna. Restano il peso delle indennità e una rivalità profonda. Il padre di Annibale, Amilcare, cerca nella penisola iberica nuove risorse e una base per ricostruire la potenza della sua città."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        7,
+        41,
+        43
+      ],
+      "camera_end": [
+        9.7,
+        37.2,
+        17
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            7,
+            41,
+            43
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            9.7,
+            37.2,
+            17
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            9.7,
+            37.2,
+            17
+          ]
+        }
+      ],
+      "kicker": "Cartagine e Roma dopo la prima guerra punica",
+      "facts": [
+        "La ricerca di nuove risorse porta i Barca verso l’Iberia"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "cartagine",
+        "roma"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "SICILIA",
+          "pos": [
+            14.3,
+            37.4
+          ],
+          "size": 30
+        },
+        {
+          "text": "AFRICA",
+          "pos": [
+            8.7,
+            34.8
+          ],
+          "size": 34
+        },
+        {
+          "text": "SARDEGNA",
+          "pos": [
+            8.9,
+            40.0
+          ],
+          "size": 26
+        }
+      ],
+      "routes": [],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "03",
+      "title": "La strada passa dalla Spagna",
+      "date": "237–221 a.C.",
+      "lines": [
+        "La camera si sposta verso occidente. Nel duecentotrentasette avanti Cristo, il giovane Annibale accompagna suo padre in Iberia. Il collegamento che vediamo riassume questo trasferimento: non è la marcia dell'esercito che invaderà l'Italia.",
+        "Negli anni successivi, i Barca consolidano un dominio attraverso guerre, accordi e rapporti con le comunità locali. Le miniere, i tributi e il reclutamento sostengono l'esercito. Con Asdrubale il Bello cresce l'importanza di Nuova Cartagine, l'odierna Cartagena: un porto strategico e una base essenziale sul Mediterraneo occidentale."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        9.7,
+        37.2,
+        17
+      ],
+      "camera_end": [
+        1.9,
+        38.4,
+        31
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            9.7,
+            37.2,
+            17
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            1.9,
+            38.4,
+            31
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            1.9,
+            38.4,
+            31
+          ]
+        }
+      ],
+      "kicker": "Il giovane Annibale accompagna Amilcare",
+      "facts": [
+        "237 a.C. · Il trasferimento in Iberia precede l’invasione di 19 anni"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "cartagine",
+        "cartagena",
+        "gades"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "IBERIA",
+          "pos": [
+            -3.4,
+            40.1
+          ],
+          "size": 34
+        },
+        {
+          "text": "MARE MEDITERRANEO",
+          "pos": [
+            4.2,
+            37.7
+          ],
+          "size": 29
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              10.323,
+              36.852
+            ],
+            [
+              9.8,
+              37.5
+            ],
+            [
+              7,
+              37.9
+            ],
+            [
+              3,
+              38.2
+            ],
+            [
+              0,
+              37.4
+            ],
+            [
+              -2.7,
+              36.4
+            ],
+            [
+              -5.1,
+              35.98
+            ],
+            [
+              -5.7,
+              36.05
+            ],
+            [
+              -6.3,
+              36.53
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        },
+        {
+          "points": [
+            [
+              -6.3,
+              36.53
+            ],
+            [
+              -4.4,
+              37.4
+            ],
+            [
+              -2.3,
+              37.7
+            ],
+            [
+              -0.986,
+              37.6
+            ]
+          ],
+          "side": "carthage",
+          "cue": 1,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "04",
+      "title": "Annibale prende il comando",
+      "date": "221 a.C.",
+      "lines": [
+        "Nel duecentoventuno, dopo l'uccisione di Asdrubale, Annibale assume il comando in Iberia. Ha circa ventisei anni. Conosce l'esercito, la guerra e i difficili equilibri fra popoli diversi.",
+        "Le fonti antiche raccontano che, da bambino, aveva giurato al padre ostilità verso Roma. È un episodio della tradizione, non una registrazione delle sue parole. Il progetto che ora prende forma ha comunque una logica concreta: portare la guerra in Italia, battere gli eserciti romani e incrinare la rete di alleanze dalla quale Roma ricava uomini e forza."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        1.9,
+        38.4,
+        31
+      ],
+      "camera_end": [
+        -0.9,
+        38.8,
+        12
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            1.9,
+            38.4,
+            31
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            -0.9,
+            38.8,
+            12
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            -0.9,
+            38.8,
+            12
+          ]
+        }
+      ],
+      "kicker": "Un comandante di circa ventisei anni",
+      "facts": [
+        "221 a.C. · Annibale assume il comando in Iberia"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "cartagena",
+        "sagunto"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "IBERIA",
+          "pos": [
+            -3.3,
+            39.6
+          ],
+          "size": 34
+        }
+      ],
+      "routes": [],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [
+        {
+          "id": "hannibal",
+          "cue": 0
+        }
+      ],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "05",
+      "title": "Sagunto accende la guerra",
+      "date": "219–218 a.C.",
+      "lines": [
+        "Spostiamoci lungo la costa iberica, verso Sagunto. La città è a sud dell'Ebro, ma è legata a Roma. Nel duecentodiciannove Annibale la assedia; dopo una lunga resistenza, Sagunto cade.",
+        "Gli accordi precedenti e i rapporti con gli alleati diventano materia di scontro diplomatico. Polibio distingue questi eventi dalle cause profonde della guerra, maturate negli anni. Nella primavera seguente il conflitto è aperto. Annibale prepara la partenza da Nuova Cartagine, mentre suo fratello Asdrubale Barca rimane a difendere gli interessi cartaginesi in Iberia."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        -0.9,
+        38.8,
+        12
+      ],
+      "camera_end": [
+        0.2,
+        39.55,
+        8
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            -0.9,
+            38.8,
+            12
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            0.2,
+            39.55,
+            8
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            0.2,
+            39.55,
+            8
+          ]
+        }
+      ],
+      "kicker": "Sagunto e la crisi diplomatica",
+      "facts": [
+        "219–218 a.C. · Dall’assedio alla guerra aperta"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "cartagena",
+        "sagunto",
+        "ebro"
+      ],
+      "label_offsets": {},
+      "region_labels": [],
+      "routes": [
+        {
+          "points": [
+            [
+              -0.986,
+              37.6
+            ],
+            [
+              -0.278,
+              39.681
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "06",
+      "title": "Una grande marcia terrestre",
+      "date": "Primavera–estate 218 a.C.",
+      "lines": [
+        "Ora seguiamo la spedizione del duecentodiciotto. Annibale muove verso l'Ebro e i Pirenei. L'esercito comprende contingenti africani e iberici, cavalieri e trentasette elefanti attestati più avanti, al Rodano.",
+        "Le cifre iniziali tramandate dagli autori antichi sono elevate e vanno lette con cautela. Durante il percorso vengono lasciate guarnigioni, congedati uomini e affrontate resistenze. Non ogni riduzione dell'esercito equivale a una morte. Questa spedizione è una colonna da nutrire e proteggere: soldati, animali, equipaggiamento e provviste devono avanzare insieme per centinaia di chilometri."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        0.2,
+        39.55,
+        8
+      ],
+      "camera_end": [
+        0.8,
+        40.8,
+        13
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            0.2,
+            39.55,
+            8
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            0.8,
+            40.8,
+            13
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            0.8,
+            40.8,
+            13
+          ]
+        }
+      ],
+      "kicker": "La spedizione parte da Nuova Cartagine",
+      "facts": [
+        "218 a.C. · Guarnigioni, congedi e perdite riducono la colonna"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "cartagena",
+        "sagunto",
+        "ebro",
+        "emporion",
+        "pirenei"
+      ],
+      "label_offsets": {
+        "pirenei": [
+          -90,
+          -35
+        ],
+        "emporion": [
+          65,
+          24
+        ]
+      },
+      "region_labels": [
+        {
+          "text": "IBERIA",
+          "pos": [
+            -2,
+            40.4
+          ],
+          "size": 34
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              -0.986,
+              37.6
+            ],
+            [
+              -0.5,
+              38.2
+            ],
+            [
+              -0.3,
+              38.8
+            ],
+            [
+              -0.278,
+              39.681
+            ],
+            [
+              0.1,
+              40.1
+            ],
+            [
+              0.67,
+              40.72
+            ],
+            [
+              0.61,
+              40.82
+            ],
+            [
+              0.88,
+              41.0
+            ],
+            [
+              1.14,
+              41.17
+            ],
+            [
+              1.5,
+              41.3
+            ],
+            [
+              2.1,
+              41.7
+            ],
+            [
+              3.12,
+              42.13
+            ],
+            [
+              2.84,
+              42.49
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "march",
+          "cue": 0
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "title": "Oltre i Pirenei",
+      "date": "Estate 218 a.C.",
+      "lines": [
+        "La carta si avvicina ai Pirenei. Il superamento della catena apre l'accesso alla Gallia meridionale. Da qui la marcia prosegue verso il Rodano, attraverso territori che non appartengono né a Cartagine né a Roma.",
+        "Annibale non può trattare ogni comunità come un nemico da distruggere. Gli servono informazioni, guide, passaggi e rifornimenti. Alterna quindi accordi, pagamenti e forza. Il percorso disegnato indica una direttrice generale: le tappe precise restano in parte incerte. La velocità conta, perché un esercito romano sta arrivando per mare verso Massalia, l'attuale Marsiglia."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        0.8,
+        40.8,
+        13
+      ],
+      "camera_end": [
+        3.7,
+        43.5,
+        11
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            0.8,
+            40.8,
+            13
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            3.7,
+            43.5,
+            11
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            3.7,
+            43.5,
+            11
+          ]
+        }
+      ],
+      "kicker": "Attraverso territori e comunità indipendenti",
+      "facts": [
+        "Accordi, guide e rifornimenti rendono possibile la marcia"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "pirenei",
+        "emporion",
+        "rodano",
+        "massalia"
+      ],
+      "label_offsets": {
+        "pirenei": [
+          -45,
+          -32
+        ],
+        "emporion": [
+          50,
+          25
+        ],
+        "rodano": [
+          50,
+          -27
+        ],
+        "massalia": [
+          65,
+          30
+        ]
+      },
+      "region_labels": [
+        {
+          "text": "GALLIA",
+          "pos": [
+            2,
+            44.8
+          ],
+          "size": 34
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              -0.986,
+              37.6
+            ],
+            [
+              -0.5,
+              38.2
+            ],
+            [
+              -0.3,
+              38.8
+            ],
+            [
+              -0.278,
+              39.681
+            ],
+            [
+              0.1,
+              40.1
+            ],
+            [
+              0.67,
+              40.72
+            ],
+            [
+              0.61,
+              40.82
+            ],
+            [
+              0.88,
+              41.0
+            ],
+            [
+              1.14,
+              41.17
+            ],
+            [
+              1.5,
+              41.3
+            ],
+            [
+              2.1,
+              41.7
+            ],
+            [
+              3.12,
+              42.13
+            ],
+            [
+              2.84,
+              42.49
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              2.84,
+              42.49
+            ],
+            [
+              2.95,
+              42.9
+            ],
+            [
+              3.02,
+              43.18
+            ],
+            [
+              3.3,
+              43.45
+            ],
+            [
+              3.9,
+              43.65
+            ],
+            [
+              4.38,
+              43.9
+            ],
+            [
+              4.72,
+              44.13
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "march",
+          "cue": 0
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "title": "Il problema del Rodano",
+      "date": "218 a.C. · Rodano",
+      "lines": [
+        "Il Rodano interrompe la marcia. Sulla sponda opposta si concentrano forze ostili. Attraversare davanti a loro significa esporre uomini e animali mentre sono più vulnerabili.",
+        "Secondo Polibio, Annibale manda un distaccamento a cercare un passaggio più a monte. Quando questi uomini arrivano alle spalle degli avversari, la forza principale comincia l'attraversamento. Le frecce mostrano il principio della manovra, non un guado identificato con certezza. Anche gli elefanti devono passare: le fonti raccontano grandi zattere, ma differiscono nei particolari di un'operazione certamente complessa."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        3.7,
+        43.5,
+        11
+      ],
+      "camera_end": [
+        4.55,
+        44.05,
+        4.8
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            3.7,
+            43.5,
+            11
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            4.55,
+            44.05,
+            4.8
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            4.55,
+            44.05,
+            4.8
+          ]
+        }
+      ],
+      "kicker": "Un attraversamento sotto minaccia",
+      "facts": [
+        "Una forza aggira gli avversari mentre il grosso attraversa"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "rodano",
+        "massalia"
+      ],
+      "label_offsets": {
+        "rodano": [
+          55,
+          -28
+        ]
+      },
+      "region_labels": [],
+      "routes": [
+        {
+          "points": [
+            [
+              4.64,
+              44.09
+            ],
+            [
+              4.66,
+              44.42
+            ],
+            [
+              4.91,
+              44.48
+            ],
+            [
+              4.91,
+              44.18
+            ]
+          ],
+          "side": "carthage",
+          "cue": 1,
+          "uncertain": true
+        },
+        {
+          "points": [
+            [
+              4.64,
+              44.09
+            ],
+            [
+              4.89,
+              44.1
+            ]
+          ],
+          "side": "carthage",
+          "cue": 1
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [
+        {
+          "text": "Guado non identificato con certezza",
+          "pos": [
+            4.77,
+            44.13
+          ],
+          "cue": 0,
+          "offset": [
+            -150,
+            -135
+          ]
+        }
+      ],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "09",
+      "title": "Evitare l'intercettazione",
+      "date": "218 a.C. · Gallia",
+      "lines": [
+        "Il console Publio Cornelio Scipione raggiunge la zona del Rodano, ma Annibale ha già ripreso la marcia verso l'interno. Una ricognizione di cavalleria mette in contatto i due eserciti, senza risolvere la campagna.",
+        "Scipione comprende che il pericolo riguarda ormai l'Italia. Torna quindi a organizzare la difesa nella pianura del Po, mentre il fratello Gneo conduce in Iberia la forza romana destinata a quel teatro. La guerra si apre su più fronti. Annibale, intanto, avanza verso una barriera molto diversa da un fiume: le Alpi."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        4.55,
+        44.05,
+        4.8
+      ],
+      "camera_end": [
+        6.2,
+        44.5,
+        13
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            4.55,
+            44.05,
+            4.8
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            6.2,
+            44.5,
+            13
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            6.2,
+            44.5,
+            13
+          ]
+        }
+      ],
+      "kicker": "Scipione cambia teatro operativo",
+      "facts": [
+        "Annibale prosegue verso l’interno; Roma difende il Po"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "massalia",
+        "rodano",
+        "taurini",
+        "alpi"
+      ],
+      "label_offsets": {
+        "alpi": [
+          70,
+          -25
+        ]
+      },
+      "region_labels": [],
+      "routes": [
+        {
+          "points": [
+            [
+              2.84,
+              42.49
+            ],
+            [
+              2.95,
+              42.9
+            ],
+            [
+              3.02,
+              43.18
+            ],
+            [
+              3.3,
+              43.45
+            ],
+            [
+              3.9,
+              43.65
+            ],
+            [
+              4.38,
+              43.9
+            ],
+            [
+              4.72,
+              44.13
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              4.8,
+              44.13
+            ],
+            [
+              4.9,
+              44.55
+            ],
+            [
+              4.9,
+              44.9
+            ],
+            [
+              5.6,
+              45.18
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        },
+        {
+          "points": [
+            [
+              5.369,
+              43.297
+            ],
+            [
+              6.0,
+              43.35
+            ],
+            [
+              7.0,
+              43.6
+            ],
+            [
+              8.4,
+              44.1
+            ]
+          ],
+          "side": "rome",
+          "cue": 1,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "10",
+      "title": "Quale strada sulle Alpi?",
+      "date": "Autunno 218 a.C.",
+      "lines": [
+        "Avviciniamoci alle montagne. Il rilievo rende evidente il problema: vallate strette, forti dislivelli e pochi passaggi utili a un grande esercito. La stagione sta inoltre diventando sfavorevole.",
+        "Quale valico attraversò Annibale? Non esiste una risposta universalmente accettata. Polibio e Tito Livio offrono descrizioni che hanno alimentato ricostruzioni diverse. Fra le proposte figurano il Piccolo San Bernardo, il Moncenisio, il Clapier, il Monginevro e la Traversette. Sulla carta compare quindi un'area di passaggio incerto: scegliere una linea precisa e presentarla come sicura darebbe una certezza che le fonti non consentono."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        6.2,
+        44.5,
+        13
+      ],
+      "camera_end": [
+        6.2,
+        45.14,
+        8.3
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            6.2,
+            44.5,
+            13
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            6.2,
+            45.14,
+            8.3
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            6.2,
+            45.14,
+            8.3
+          ]
+        }
+      ],
+      "kicker": "La questione del valico resta aperta",
+      "facts": [
+        "Diverse ipotesi: il percorso alpino non è accertato"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Passaggio alpino non accertato",
+      "visible_places": [
+        "bernardo",
+        "moncenisio",
+        "traversette",
+        "taurini"
+      ],
+      "label_offsets": {
+        "bernardo": [
+          -155,
+          -25
+        ],
+        "moncenisio": [
+          -150,
+          5
+        ],
+        "traversette": [
+          -150,
+          30
+        ],
+        "taurini": [
+          45,
+          40
+        ]
+      },
+      "region_labels": [
+        {
+          "text": "ALPI",
+          "pos": [
+            8.45,
+            46.1
+          ],
+          "size": 43
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              4.8,
+              44.13
+            ],
+            [
+              4.9,
+              44.55
+            ],
+            [
+              4.9,
+              44.9
+            ],
+            [
+              5.6,
+              45.18
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        }
+      ],
+      "uncertainty_areas": [
+        {
+          "points": [
+            [
+              5.3,
+              44.7
+            ],
+            [
+              5.3,
+              45.6
+            ],
+            [
+              6.6,
+              46.0
+            ],
+            [
+              7.6,
+              45.45
+            ],
+            [
+              7.7,
+              44.5
+            ],
+            [
+              6.8,
+              44.3
+            ]
+          ]
+        }
+      ],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS",
+        "ALPS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "11",
+      "title": "Il prezzo delle montagne",
+      "date": "Autunno 218 a.C.",
+      "lines": [
+        "Sulle Alpi, le difficoltà si sommano. Le popolazioni locali possono offrire aiuto oppure tendere imboscate. In una gola, basta colpire i bagagli o spaventare gli animali per bloccare la colonna.",
+        "La neve, i pendii e i tratti danneggiati rendono difficile soprattutto la discesa. Gli uomini devono aprire o ripristinare passaggi mentre le scorte diminuiscono. Gli elefanti sono l'immagine più celebre del viaggio, ma la sopravvivenza dell'intero esercito dipende anche dai cavalli e dalle bestie da soma. Arrivare in Italia significa aver superato la barriera, non essere già pronti a vincere."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        6.2,
+        45.14,
+        8.3
+      ],
+      "camera_end": [
+        6.8,
+        45.02,
+        6.7
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            6.2,
+            45.14,
+            8.3
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            6.8,
+            45.02,
+            6.7
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            6.8,
+            45.02,
+            6.7
+          ]
+        }
+      ],
+      "kicker": "Fame, imboscate e passaggi da ripristinare",
+      "facts": [
+        "La discesa mette alla prova uomini, cavalli e animali da soma"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Passaggio alpino non accertato",
+      "visible_places": [
+        "taurini"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "ALPI",
+          "pos": [
+            7.65,
+            45.8
+          ],
+          "size": 40
+        }
+      ],
+      "routes": [],
+      "uncertainty_areas": [
+        {
+          "points": [
+            [
+              5.3,
+              44.7
+            ],
+            [
+              5.3,
+              45.6
+            ],
+            [
+              6.6,
+              46.0
+            ],
+            [
+              7.6,
+              45.45
+            ],
+            [
+              7.7,
+              44.5
+            ],
+            [
+              6.8,
+              44.3
+            ]
+          ]
+        }
+      ],
+      "callouts": [
+        {
+          "text": "Settore di attraversamento incerto",
+          "pos": [
+            6.5,
+            45.1
+          ],
+          "cue": 0,
+          "offset": [
+            -180,
+            -120
+          ]
+        }
+      ],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS",
+        "ALPS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "12",
+      "title": "L'Italia dall'altra parte",
+      "date": "Autunno 218 a.C.",
+      "lines": [
+        "Nell'autunno del duecentodiciotto Annibale scende nella pianura del Po. Polibio riporta circa ventimila fanti e seimila cavalieri rimasti: una cifra antica, non un conteggio moderno verificabile.",
+        "L'esercito ha bisogno di riposo, cibo e nuovi alleati. Il conflitto con i Taurini mostra subito che l'accoglienza non è ovunque favorevole. Altre comunità celtiche, ostili all'espansione romana, diventeranno invece una risorsa decisiva. La carta deve ora cambiare scala: le Alpi sono alle spalle, e davanti ad Annibale ci sono i fiumi, le strade e gli eserciti dell'Italia settentrionale."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        6.8,
+        45.02,
+        6.7
+      ],
+      "camera_end": [
+        8.4,
+        45.15,
+        10.5
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            6.8,
+            45.02,
+            6.7
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            8.4,
+            45.15,
+            10.5
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            8.4,
+            45.15,
+            10.5
+          ]
+        }
+      ],
+      "kicker": "L’esercito raggiunge l’Italia settentrionale",
+      "facts": [
+        "Polibio: circa 20.000 fanti e 6.000 cavalieri all’arrivo"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Fonte delle cifre: Polibio · consistenze indicative",
+      "visible_places": [
+        "taurini",
+        "ticino",
+        "trebbia"
+      ],
+      "label_offsets": {
+        "ticino": [
+          -60,
+          -40
+        ],
+        "trebbia": [
+          70,
+          28
+        ]
+      },
+      "region_labels": [
+        {
+          "text": "PIANURA DEL PO",
+          "pos": [
+            9.8,
+            45.65
+          ],
+          "size": 32
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              5.6,
+              45.18
+            ],
+            [
+              6.25,
+              45.2
+            ],
+            [
+              6.85,
+              45.15
+            ],
+            [
+              7.686,
+              45.07
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "march",
+          "cue": 0
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "title": "Ticino e Trebbia",
+      "date": "218 a.C. · Italia",
+      "lines": [
+        "Il primo successo contro Scipione arriva presso il Ticino, in uno scontro nel quale la cavalleria cartaginese ha un ruolo importante. Poco dopo, i consoli riuniscono le loro forze presso la Trebbia.",
+        "A dicembre, Annibale induce i Romani a combattere dopo un attraversamento faticoso del fiume, nel freddo. L'attacco frontale si combina con la pressione sui fianchi e con uomini nascosti che intervengono alle spalle. Roma subisce una grave sconfitta. La posizione dei combattimenti sulla nostra carta è indicativa; conta soprattutto vedere come Annibale trasformi il terreno in un vantaggio."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        8.4,
+        45.15,
+        10.5
+      ],
+      "camera_end": [
+        9.2,
+        45.0,
+        6.7
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            8.4,
+            45.15,
+            10.5
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            9.2,
+            45.0,
+            6.7
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            9.2,
+            45.0,
+            6.7
+          ]
+        }
+      ],
+      "kicker": "La cavalleria e il terreno diventano decisivi",
+      "facts": [
+        "218 a.C. · Successi cartaginesi al Ticino e alla Trebbia"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "taurini",
+        "ticino",
+        "trebbia"
+      ],
+      "label_offsets": {
+        "ticino": [
+          -80,
+          -35
+        ],
+        "trebbia": [
+          75,
+          36
+        ]
+      },
+      "region_labels": [],
+      "routes": [
+        {
+          "points": [
+            [
+              7.686,
+              45.07
+            ],
+            [
+              8.05,
+              45.06
+            ],
+            [
+              8.55,
+              45.06
+            ],
+            [
+              8.95,
+              45.15
+            ],
+            [
+              9.615,
+              45.01
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [
+        {
+          "text": "Dicembre: battaglia della Trebbia",
+          "pos": [
+            9.615,
+            45.01
+          ],
+          "cue": 1,
+          "offset": [
+            60,
+            -150
+          ]
+        }
+      ],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "14",
+      "title": "L'imboscata del Trasimeno",
+      "date": "217 a.C.",
+      "lines": [
+        "Nella primavera del duecentodiciassette Annibale attraversa gli Appennini e avanza in Etruria. La marcia nelle zone allagate è durissima; le fonti collegano a queste sofferenze la perdita della vista da un occhio.",
+        "Presso il lago Trasimeno prepara un'altra trappola. L'esercito del console Flaminio entra in uno spazio stretto fra acqua e alture. Le forze cartaginesi attaccano e impediscono ai Romani di organizzarsi efficacemente. Flaminio muore e il suo esercito viene sconfitto. Annibale è ormai nell'Italia centrale, ma non sta seguendo una linea diretta e ininterrotta verso le mura di Roma."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        9.2,
+        45.0,
+        6.7
+      ],
+      "camera_end": [
+        11.5,
+        43.6,
+        8.0
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            9.2,
+            45.0,
+            6.7
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            11.5,
+            43.6,
+            8.0
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            11.5,
+            43.6,
+            8.0
+          ]
+        }
+      ],
+      "kicker": "L’acqua e le alture chiudono la trappola",
+      "facts": [
+        "217 a.C. · L’esercito di Flaminio viene sconfitto"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "trasimeno",
+        "roma"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "ETRURIA",
+          "pos": [
+            10.8,
+            43.5
+          ],
+          "size": 33
+        },
+        {
+          "text": "APPENNINI",
+          "pos": [
+            12.35,
+            43.8
+          ],
+          "size": 28
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              9.615,
+              45.01
+            ],
+            [
+              9.85,
+              44.55
+            ],
+            [
+              10.4,
+              44.05
+            ],
+            [
+              10.9,
+              43.65
+            ],
+            [
+              11.45,
+              43.4
+            ],
+            [
+              12.12,
+              43.21
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [
+        {
+          "text": "Lago Trasimeno",
+          "pos": [
+            12.12,
+            43.21
+          ],
+          "cue": 1,
+          "offset": [
+            125,
+            -105
+          ]
+        }
+      ],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "15",
+      "title": "Roma cambia risposta",
+      "date": "217 a.C.",
+      "lines": [
+        "Dopo il Trasimeno, Roma affida poteri eccezionali a Quinto Fabio Massimo. La sua risposta cerca di limitare le occasioni favorevoli ad Annibale: sorvegliarlo, ostacolarne i rifornimenti e sottrarsi a una battaglia scelta dal nemico.",
+        "Annibale attraversa l'Italia e cerca risultati che vadano oltre il campo di battaglia. Vuole convincere gli alleati di Roma che il suo dominio può essere spezzato. È questo il nodo della campagna. Sconfiggere legioni può aprire possibilità politiche, ma non costringe automaticamente una grande città fortificata e i suoi alleati a capitolare."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        11.5,
+        43.6,
+        8.0
+      ],
+      "camera_end": [
+        12.2,
+        42.8,
+        15.4
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            11.5,
+            43.6,
+            8.0
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            12.2,
+            42.8,
+            15.4
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            12.2,
+            42.8,
+            15.4
+          ]
+        }
+      ],
+      "kicker": "Fabio Massimo limita le occasioni di battaglia",
+      "facts": [
+        "La posta in gioco è la rete degli alleati di Roma"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "roma",
+        "trasimeno",
+        "capua",
+        "canne"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "ITALIA",
+          "pos": [
+            13.9,
+            44.1
+          ],
+          "size": 40
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              9.615,
+              45.01
+            ],
+            [
+              9.85,
+              44.55
+            ],
+            [
+              10.4,
+              44.05
+            ],
+            [
+              10.9,
+              43.65
+            ],
+            [
+              11.45,
+              43.4
+            ],
+            [
+              12.12,
+              43.21
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "16",
+      "title": "Canne, la vittoria più grande",
+      "date": "216 a.C.",
+      "lines": [
+        "Nell'estate del duecentosedici la guerra raggiunge Canne, in Apulia. Roma concentra un grande esercito. Annibale dispone le sue forze in modo da sfruttare la pressione del centro romano e la superiorità della propria cavalleria.",
+        "Il centro cartaginese arretra mentre i reparti sui lati entrano in azione; la cavalleria completa l'accerchiamento. È una catastrofe per Roma, anche se le cifre esatte delle perdite divergono fra le fonti. La mappa mostra lo schema della battaglia, non le dimensioni reali dei reparti. Annibale ha ottenuto una vittoria enorme: la guerra, tuttavia, continua."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        12.2,
+        42.8,
+        15.4
+      ],
+      "camera_end": [
+        15.6,
+        41.55,
+        7.3
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            12.2,
+            42.8,
+            15.4
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            15.6,
+            41.55,
+            7.3
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            15.6,
+            41.55,
+            7.3
+          ]
+        }
+      ],
+      "kicker": "Il centro arretra, i fianchi si chiudono",
+      "facts": [
+        "216 a.C. · A Canne Roma subisce una catastrofe"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "canne",
+        "capua"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "APULIA",
+          "pos": [
+            16.8,
+            40.9
+          ],
+          "size": 32
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              12.12,
+              43.21
+            ],
+            [
+              12.7,
+              43.4
+            ],
+            [
+              13.35,
+              43.1
+            ],
+            [
+              13.9,
+              42.8
+            ],
+            [
+              14.55,
+              42.2
+            ],
+            [
+              15.3,
+              41.65
+            ],
+            [
+              16.132,
+              41.296
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [
+        {
+          "text": "CANNE",
+          "pos": [
+            16.132,
+            41.296
+          ],
+          "cue": 0,
+          "offset": [
+            -90,
+            -105
+          ]
+        }
+      ],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": [],
+      "tactical_diagram": {
+        "title": "CANNE · IL DOPPIO ACCERCHIAMENTO",
+        "cue": 1,
+        "units": [
+          {
+            "side": "rome",
+            "pos": [
+              0.35,
+              0.17
+            ],
+            "end": [
+              0.35,
+              0.46
+            ]
+          },
+          {
+            "side": "rome",
+            "pos": [
+              0.45,
+              0.17
+            ],
+            "end": [
+              0.45,
+              0.46
+            ]
+          },
+          {
+            "side": "rome",
+            "pos": [
+              0.55,
+              0.17
+            ],
+            "end": [
+              0.55,
+              0.46
+            ]
+          },
+          {
+            "side": "rome",
+            "pos": [
+              0.65,
+              0.17
+            ],
+            "end": [
+              0.65,
+              0.46
+            ]
+          },
+          {
+            "side": "rome",
+            "pos": [
+              0.35,
+              0.27
+            ],
+            "end": [
+              0.35,
+              0.57
+            ]
+          },
+          {
+            "side": "rome",
+            "pos": [
+              0.45,
+              0.27
+            ],
+            "end": [
+              0.45,
+              0.57
+            ]
+          },
+          {
+            "side": "rome",
+            "pos": [
+              0.55,
+              0.27
+            ],
+            "end": [
+              0.55,
+              0.57
+            ]
+          },
+          {
+            "side": "rome",
+            "pos": [
+              0.65,
+              0.27
+            ],
+            "end": [
+              0.65,
+              0.57
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.36,
+              0.54
+            ],
+            "end": [
+              0.36,
+              0.72
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.46,
+              0.54
+            ],
+            "end": [
+              0.46,
+              0.72
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.56,
+              0.54
+            ],
+            "end": [
+              0.56,
+              0.72
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.66,
+              0.54
+            ],
+            "end": [
+              0.66,
+              0.72
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.2,
+              0.46
+            ],
+            "end": [
+              0.25,
+              0.38
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.2,
+              0.61
+            ],
+            "end": [
+              0.25,
+              0.53
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.2,
+              0.76
+            ],
+            "end": [
+              0.25,
+              0.68
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.8,
+              0.46
+            ],
+            "end": [
+              0.75,
+              0.38
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.8,
+              0.61
+            ],
+            "end": [
+              0.75,
+              0.53
+            ]
+          },
+          {
+            "side": "carthage",
+            "pos": [
+              0.8,
+              0.76
+            ],
+            "end": [
+              0.75,
+              0.68
+            ]
+          }
+        ],
+        "routes": [
+          {
+            "side": "carthage",
+            "points": [
+              [
+                0.13,
+                0.57
+              ],
+              [
+                0.1,
+                0.28
+              ],
+              [
+                0.23,
+                0.12
+              ],
+              [
+                0.45,
+                0.12
+              ],
+              [
+                0.5,
+                0.3
+              ]
+            ]
+          },
+          {
+            "side": "carthage",
+            "points": [
+              [
+                0.87,
+                0.57
+              ],
+              [
+                0.9,
+                0.28
+              ],
+              [
+                0.77,
+                0.12
+              ],
+              [
+                0.55,
+                0.12
+              ],
+              [
+                0.5,
+                0.3
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "17",
+      "title": "Le alleanze e le mura",
+      "date": "216–212 a.C.",
+      "lines": [
+        "Dopo Canne, alcune comunità dell'Italia meridionale abbandonano Roma. Fra le adesioni più importanti c'è Capua. Ma il sistema romano non crolla: molte città restano fedeli e Roma ricostruisce i suoi eserciti.",
+        "La celebre domanda, perché Annibale non marciò subito su Roma, non ammette una risposta semplice. Un assedio richiede mezzi, rifornimenti e condizioni diverse da una battaglia campale. Le fonti trasmettono giudizi e rimproveri, ma non dimostrano che una conquista fosse garantita. Negli anni successivi la guerra diventa una lotta per città, collegamenti e capacità di resistere."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        15.6,
+        41.55,
+        7.3
+      ],
+      "camera_end": [
+        13.8,
+        41.9,
+        13.2
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            15.6,
+            41.55,
+            7.3
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            13.8,
+            41.9,
+            13.2
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            13.8,
+            41.9,
+            13.2
+          ]
+        }
+      ],
+      "kicker": "Una vittoria campale non garantisce una conquista",
+      "facts": [
+        "Capua si schiera con Annibale; molte città restano con Roma"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "roma",
+        "capua",
+        "canne"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "ITALIA",
+          "pos": [
+            15.0,
+            43.8
+          ],
+          "size": 38
+        }
+      ],
+      "routes": [],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL3",
+        "LIVIUS"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "18",
+      "title": "Capua sotto assedio",
+      "date": "211 a.C.",
+      "lines": [
+        "Arriviamo al duecentoundici avanti Cristo. Sono passati anni da Canne. Capua è stretta dall'assedio romano e Annibale non riesce a liberarla con un attacco contro le posizioni degli assedianti.",
+        "Decide allora una manovra audace: avvicinarsi a Roma. Polibio descrive un calcolo preciso. La minaccia alla capitale potrebbe costringere i comandanti romani a lasciare Capua oppure a dividere le loro forze. Il movimento verso Roma nasce dunque anche dalla necessità di salvare un alleato. La carta mette in rapporto le due città: colpire una per allentare la pressione sull'altra."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        13.8,
+        41.9,
+        13.2
+      ],
+      "camera_end": [
+        13.25,
+        41.6,
+        6.7
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            13.8,
+            41.9,
+            13.2
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            13.25,
+            41.6,
+            6.7
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            13.25,
+            41.6,
+            6.7
+          ]
+        }
+      ],
+      "kicker": "Annibale cerca di salvare Capua",
+      "facts": [
+        "211 a.C. · Minacciare Roma per dividere gli assedianti"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "roma",
+        "capua"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "LAZIO",
+          "pos": [
+            12.6,
+            41.55
+          ],
+          "size": 28
+        },
+        {
+          "text": "CAMPANIA",
+          "pos": [
+            14.55,
+            40.7
+          ],
+          "size": 26
+        }
+      ],
+      "routes": [],
+      "uncertainty_areas": [],
+      "callouts": [
+        {
+          "text": "Assedio romano",
+          "pos": [
+            14.252,
+            41.083
+          ],
+          "cue": 0,
+          "offset": [
+            40,
+            -85
+          ]
+        }
+      ],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL9",
+        "LIV26"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    },
+    {
+      "id": "19",
+      "title": "Annibale alle porte",
+      "date": "211 a.C.",
+      "lines": [
+        "Seguiamo l'avanzata dalla Campania verso il Lazio. Le descrizioni antiche non coincidono in tutti i dettagli dell'itinerario; la direttrice che vediamo è una ricostruzione schematica. Il punto di arrivo, però, è chiaro: Annibale si avvicina davvero a Roma.",
+        "Le fonti lo collocano nella zona dell'Aniene, a pochi chilometri dalle mura. In città si diffonde l'allarme. Soldati e difensori occupano le posizioni utili, mentre il nemico devasta il territorio circostante. È il momento ricordato dall'immagine di Annibale alle porte. Le porte, tuttavia, rimangono chiuse."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        13.25,
+        41.6,
+        6.7
+      ],
+      "camera_end": [
+        12.65,
+        41.93,
+        3.3
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            13.25,
+            41.6,
+            6.7
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            12.65,
+            41.93,
+            3.3
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            12.65,
+            41.93,
+            3.3
+          ]
+        }
+      ],
+      "kicker": "La minaccia raggiunge il territorio della capitale",
+      "facts": [
+        "211 a.C. · Annibale si accampa a pochi chilometri dalle mura"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "roma",
+        "aniene"
+      ],
+      "label_offsets": {
+        "roma": [
+          -110,
+          50
+        ],
+        "aniene": [
+          105,
+          -45
+        ]
+      },
+      "region_labels": [],
+      "routes": [
+        {
+          "points": [
+            [
+              14.252,
+              41.083
+            ],
+            [
+              14.05,
+              41.4
+            ],
+            [
+              14.0,
+              41.65
+            ],
+            [
+              13.55,
+              41.91
+            ],
+            [
+              13.25,
+              42.15
+            ],
+            [
+              12.85,
+              42.14
+            ],
+            [
+              12.56,
+              41.95
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [
+        {
+          "text": "Roma viene difesa",
+          "pos": [
+            12.492,
+            41.89
+          ],
+          "cue": 1,
+          "offset": [
+            -160,
+            -130
+          ]
+        }
+      ],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL9",
+        "LIV26"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": [
+        {
+          "type": "march",
+          "cue": 0
+        }
+      ],
+      "local_rivers": [
+        {
+          "name": "Aniene",
+          "points": [
+            [
+              13.11,
+              41.925
+            ],
+            [
+              13.075,
+              41.951
+            ],
+            [
+              13.033,
+              41.985
+            ],
+            [
+              12.985,
+              42.012
+            ],
+            [
+              12.938,
+              42.026
+            ],
+            [
+              12.896,
+              42.017
+            ],
+            [
+              12.847,
+              41.998
+            ],
+            [
+              12.802,
+              41.959
+            ],
+            [
+              12.78,
+              41.96
+            ],
+            [
+              12.746,
+              41.955
+            ],
+            [
+              12.719,
+              41.961
+            ],
+            [
+              12.682,
+              41.958
+            ],
+            [
+              12.657,
+              41.939
+            ],
+            [
+              12.62,
+              41.934
+            ],
+            [
+              12.595,
+              41.945
+            ],
+            [
+              12.56,
+              41.95
+            ],
+            [
+              12.534,
+              41.942
+            ],
+            [
+              12.51,
+              41.94
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "title": "Roma non cede",
+      "date": "211 a.C.",
+      "lines": [
+        "Roma dispone di truppe e continua a difendersi. Le narrazioni di Polibio e Livio divergono su alcuni movimenti e particolari, ma il risultato strategico è lo stesso: l'assedio di Capua non viene abbandonato.",
+        "Annibale si allontana senza conquistare Roma e senza ottenere il risultato decisivo sperato. Capua cade ai Romani. Non è ancora la fine della seconda guerra punica: Annibale rimarrà in Italia per altri anni. Ma questo episodio rivela il limite della sua minaccia. Avvicinarsi alla capitale non basta, se l'avversario conserva eserciti, alleanze e volontà di continuare."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        12.65,
+        41.93,
+        3.3
+      ],
+      "camera_end": [
+        13.1,
+        41.75,
+        7.0
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            12.65,
+            41.93,
+            3.3
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            13.1,
+            41.75,
+            7.0
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            13.1,
+            41.75,
+            7.0
+          ]
+        }
+      ],
+      "kicker": "La manovra non libera Capua",
+      "facts": [
+        "Annibale si ritira; Roma non viene conquistata"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "roma",
+        "aniene",
+        "capua"
+      ],
+      "label_offsets": {
+        "roma": [
+          -95,
+          38
+        ],
+        "aniene": [
+          95,
+          -33
+        ]
+      },
+      "region_labels": [],
+      "routes": [
+        {
+          "points": [
+            [
+              14.252,
+              41.083
+            ],
+            [
+              14.05,
+              41.4
+            ],
+            [
+              14.0,
+              41.65
+            ],
+            [
+              13.55,
+              41.91
+            ],
+            [
+              13.25,
+              42.15
+            ],
+            [
+              12.85,
+              42.14
+            ],
+            [
+              12.56,
+              41.95
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              12.56,
+              41.95
+            ],
+            [
+              12.9,
+              42.1
+            ],
+            [
+              13.25,
+              42.0
+            ]
+          ],
+          "side": "carthage",
+          "cue": 1,
+          "uncertain": true
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "map",
+      "commanders": [],
+      "sources": [
+        "POL9",
+        "LIV26"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": [],
+      "local_rivers": [
+        {
+          "name": "Aniene",
+          "points": [
+            [
+              13.11,
+              41.925
+            ],
+            [
+              13.075,
+              41.951
+            ],
+            [
+              13.033,
+              41.985
+            ],
+            [
+              12.985,
+              42.012
+            ],
+            [
+              12.938,
+              42.026
+            ],
+            [
+              12.896,
+              42.017
+            ],
+            [
+              12.847,
+              41.998
+            ],
+            [
+              12.802,
+              41.959
+            ],
+            [
+              12.78,
+              41.96
+            ],
+            [
+              12.746,
+              41.955
+            ],
+            [
+              12.719,
+              41.961
+            ],
+            [
+              12.682,
+              41.958
+            ],
+            [
+              12.657,
+              41.939
+            ],
+            [
+              12.62,
+              41.934
+            ],
+            [
+              12.595,
+              41.945
+            ],
+            [
+              12.56,
+              41.95
+            ],
+            [
+              12.534,
+              41.942
+            ],
+            [
+              12.51,
+              41.94
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "title": "La distanza fra arrivare e vincere",
+      "date": "237–211 a.C.",
+      "lines": [
+        "Torniamo alla vista d'insieme. Cartagine, l'Iberia, il Rodano, le Alpi e l'Italia: la carta restituisce l'ampiezza di un'impresa eccezionale. Il trasferimento giovanile in Spagna, l'invasione del duecentodiciotto e la marcia su Roma del duecentoundici sono però fasi diverse.",
+        "Annibale riuscì a portare la guerra dove i Romani non volevano combatterla e inflisse sconfitte memorabili. Non riuscì a trasformarle nella resa di Roma. Il suo percorso ci lascia questa distinzione: superare montagne, fiumi ed eserciti può aprire una strada. Vincere una guerra richiede anche spezzare la capacità del nemico di proseguirla."
+      ],
+      "map": "atlas",
+      "camera_start": [
+        13.1,
+        41.75,
+        7.0
+      ],
+      "camera_end": [
+        7,
+        41,
+        43
+      ],
+      "camera_keys": [
+        {
+          "at": 0,
+          "view": [
+            13.1,
+            41.75,
+            7.0
+          ]
+        },
+        {
+          "at": 0.34,
+          "view": [
+            7,
+            41,
+            43
+          ]
+        },
+        {
+          "at": 1,
+          "view": [
+            7,
+            41,
+            43
+          ]
+        }
+      ],
+      "kicker": "Tre fasi diverse, una lunga guerra",
+      "facts": [
+        "237: Iberia · 218: invasione dell’Italia · 211: alle porte di Roma"
+      ],
+      "note": "Percorsi schematici; le fasi e le incertezze sono indicate.",
+      "caption_note": "Itinerario schematico · non una traccia di marcia esatta",
+      "visible_places": [
+        "cartagine",
+        "cartagena",
+        "roma",
+        "rodano",
+        "capua"
+      ],
+      "label_offsets": {},
+      "region_labels": [
+        {
+          "text": "IBERIA",
+          "pos": [
+            -3.4,
+            40.1
+          ],
+          "size": 34
+        },
+        {
+          "text": "GALLIA",
+          "pos": [
+            2.0,
+            46.5
+          ],
+          "size": 34
+        },
+        {
+          "text": "ITALIA",
+          "pos": [
+            13.3,
+            43.0
+          ],
+          "size": 34
+        },
+        {
+          "text": "AFRICA",
+          "pos": [
+            8.2,
+            33.3
+          ],
+          "size": 34
+        },
+        {
+          "text": "MARE MEDITERRANEO",
+          "pos": [
+            4.5,
+            37.8
+          ],
+          "size": 29
+        }
+      ],
+      "routes": [
+        {
+          "points": [
+            [
+              10.323,
+              36.852
+            ],
+            [
+              9.8,
+              37.5
+            ],
+            [
+              7,
+              37.9
+            ],
+            [
+              3,
+              38.2
+            ],
+            [
+              0,
+              37.4
+            ],
+            [
+              -2.7,
+              36.4
+            ],
+            [
+              -5.1,
+              35.98
+            ],
+            [
+              -5.7,
+              36.05
+            ],
+            [
+              -6.3,
+              36.53
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              -0.986,
+              37.6
+            ],
+            [
+              -0.5,
+              38.2
+            ],
+            [
+              -0.3,
+              38.8
+            ],
+            [
+              -0.278,
+              39.681
+            ],
+            [
+              0.1,
+              40.1
+            ],
+            [
+              0.67,
+              40.72
+            ],
+            [
+              0.61,
+              40.82
+            ],
+            [
+              0.88,
+              41.0
+            ],
+            [
+              1.14,
+              41.17
+            ],
+            [
+              1.5,
+              41.3
+            ],
+            [
+              2.1,
+              41.7
+            ],
+            [
+              3.12,
+              42.13
+            ],
+            [
+              2.84,
+              42.49
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              2.84,
+              42.49
+            ],
+            [
+              2.95,
+              42.9
+            ],
+            [
+              3.02,
+              43.18
+            ],
+            [
+              3.3,
+              43.45
+            ],
+            [
+              3.9,
+              43.65
+            ],
+            [
+              4.38,
+              43.9
+            ],
+            [
+              4.72,
+              44.13
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              4.8,
+              44.13
+            ],
+            [
+              4.9,
+              44.55
+            ],
+            [
+              4.9,
+              44.9
+            ],
+            [
+              5.6,
+              45.18
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              5.6,
+              45.18
+            ],
+            [
+              6.25,
+              45.2
+            ],
+            [
+              6.85,
+              45.15
+            ],
+            [
+              7.686,
+              45.07
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              7.686,
+              45.07
+            ],
+            [
+              8.05,
+              45.06
+            ],
+            [
+              8.55,
+              45.06
+            ],
+            [
+              8.95,
+              45.15
+            ],
+            [
+              9.615,
+              45.01
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              9.615,
+              45.01
+            ],
+            [
+              9.85,
+              44.55
+            ],
+            [
+              10.4,
+              44.05
+            ],
+            [
+              10.9,
+              43.65
+            ],
+            [
+              11.45,
+              43.4
+            ],
+            [
+              12.12,
+              43.21
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              12.12,
+              43.21
+            ],
+            [
+              12.7,
+              43.4
+            ],
+            [
+              13.35,
+              43.1
+            ],
+            [
+              13.9,
+              42.8
+            ],
+            [
+              14.55,
+              42.2
+            ],
+            [
+              15.3,
+              41.65
+            ],
+            [
+              16.132,
+              41.296
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        },
+        {
+          "points": [
+            [
+              14.252,
+              41.083
+            ],
+            [
+              14.05,
+              41.4
+            ],
+            [
+              14.0,
+              41.65
+            ],
+            [
+              13.55,
+              41.91
+            ],
+            [
+              13.25,
+              42.15
+            ],
+            [
+              12.85,
+              42.14
+            ],
+            [
+              12.56,
+              41.95
+            ]
+          ],
+          "side": "carthage",
+          "cue": 0,
+          "uncertain": true,
+          "complete": true,
+          "alpha": 135,
+          "marker": false
+        }
+      ],
+      "uncertainty_areas": [],
+      "callouts": [],
+      "mode": "ending",
+      "commanders": [],
+      "sources": [
+        "POL9",
+        "LIV26"
+      ],
+      "arrows": [],
+      "units": [],
+      "focus": [],
+      "sfx": []
+    }
+  ],
+  "sources": [
+    {
+      "id": "POL3",
+      "title": "Polibio, Storie III (traduzione W. R. Paton, 1922; testo antico)",
+      "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Polybius/3*.html",
+      "use": "Fonte antica consultata per cause della guerra, Iberia, Rodano, Alpi, forze superstiti, Ticino, Trebbia, Trasimeno e Canne. Traduzione storica in pubblico dominio. Le sue stime non sono conteggi moderni."
+    },
+    {
+      "id": "POL9",
+      "title": "Polibio, Storie IX, 3–9: la marcia su Roma",
+      "url": "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Polybius/9*.html",
+      "use": "Fonte antica primaria: obiettivo di soccorrere Capua, avvicinamento all’Aniene, difesa di Roma, allontanamento. Consultato il testo della traduzione storica in pubblico dominio."
+    },
+    {
+      "id": "LIV26",
+      "title": "Tito Livio, Storia di Roma XXVI, 7–12",
+      "url": "https://www.perseus.tufts.edu/hopper/text?doc=26&fromdoc=Perseus%3Atext%3A1999.02.0158",
+      "use": "Fonte antica primaria, consultata in traduzione: percorso del 211, Fulvio Flacco, Aniene, mancata conquista. Confrontata con Polibio; non fuse le divergenze in una cronaca fittiziamente precisa."
+    },
+    {
+      "id": "LIVIUS",
+      "title": "Jona Lendering, Hannibal Barca, Livius.org",
+      "url": "https://www.livius.org/articles/person/hannibal-3-barca/",
+      "use": "Sintesi moderna di confronto per la cronologia di Amilcare, Asdrubale, Annibale e la permanenza italiana. Non adottata la tesi teleologica di una inevitabile unificazione mediterranea."
+    },
+    {
+      "id": "ALPS",
+      "title": "Livius.org, Hannibal in the Alps",
+      "url": "https://www.livius.org/articles/person/hannibal-3-barca/hannibal-in-the-alps/",
+      "use": "Confronto fra descrizioni antiche e varie ipotesi di valico. Il suo giudizio sui valichi non è presentato come consenso. La carta evidenzia l’incertezza."
+    },
+    {
+      "id": "NE",
+      "title": "Natural Earth II: physical raster and rivers, public domain",
+      "url": "https://www.naturalearthdata.com/downloads/10m-raster-data/10m-natural-earth-2/",
+      "use": "Base geografica ad alta risoluzione con rilievo e copertura ideale del suolo. Coordinate fisiche moderne, senza confini politici, strade moderne o pretesa di ricostruire esattamente coste e vegetazione antiche."
+    },
+    {
+      "id": "DEM",
+      "title": "Mapzen Terrain Tiles — AWS Open Data",
+      "url": "https://registry.opendata.aws/terrain-tiles/",
+      "use": "Quote moderne per l’ombreggiatura di Alpi e Italia. Dati gratuiti elaborati localmente, non filmati o immagini satellitari della campagna antica."
+    }
+  ],
+  "source_method": "Confronto fra Polibio e Livio, con sintesi moderna Livius. Racconto originale, senza dialoghi inventati o testimonianze fittizie. La divergenza fra le fonti resta esplicita.",
+  "editorial_notes": [
+    "La spedizione del 218 a.C. parte da Nuova Cartagine in Iberia, non direttamente da Cartagine in Africa. Il trasferimento giovanile del 237 è distinto in voce e grafica.",
+    "Annibale raggiunge il territorio prossimo a Roma nel 211 a.C., non subito dopo le Alpi né immediatamente dopo Canne. Non conquista Roma.",
+    "Il valico alpino e molti tratti dell’itinerario sono discussi. L’area alpina e i segmenti tratteggiati sono esplicitamente schematici. Il riepilogo non certifica una scelta di valico.",
+    "Nella scena del Rodano, le frecce illustrano la manovra di aggiramento in un settore indicativo, senza identificare un guado preciso.",
+    "Le cifre di 20.000 fanti, 6.000 cavalieri e 37 elefanti sono dati tramandati da Polibio per momenti diversi. I congedi e i distaccamenti non vanno conteggiati come morti.",
+    "Il busto di Capua è tradizionalmente attribuito ad Annibale: il volto non è identificato con sicurezza. La didascalia non lo presenta come ritratto certo.",
+    "Geografia fisica moderna usata come riferimento visivo, senza confini o strade moderni. Non si ricostruiscono precisamente coste, laghi e vegetazione del III secolo a.C.",
+    "Il rilievo deriva da quote moderne Natural Earth e Mapzen, con ombreggiatura e colori rielaborati. Gli zoom non introducono geometrie casuali o etichette ricalcolate per collisione."
+  ],
+  "territorial_note": "Nessun confine nazionale moderno. Le etichette Iberia, Gallia, Italia e Africa indicano regioni di orientamento, non territori politici con confini certi.",
+  "map_notice": "Base fisica moderna senza confini politici; itinerari schematici, passaggio alpino incerto. Quote e colori rielaborati per la visualizzazione.",
+  "extra_credits": "Cartografia: Natural Earth II e Natural Earth rivers, pubblico dominio, https://www.naturalearthdata.com/about/terms-of-use/. Rilievo: Mapzen Terrain Tiles, https://registry.opendata.aws/terrain-tiles/. Europe terrain data produced using Copernicus data and information funded by the European Union - EU-DEM layers. Global GMTED2010 and SRTM terrain data courtesy of the U.S. Geological Survey. Global ETOPO1 terrain data: DOC/NOAA/NESDIS/NCEI. Quote elaborate con ombreggiatura, ritaglio e ricampionamento. Licenze e manifest in assets/geography/terrain-attribution.md e assets/geography/manifest.json."
+}

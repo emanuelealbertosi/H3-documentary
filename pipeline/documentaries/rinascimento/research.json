@@ -1,0 +1,90 @@
+[
+  {
+    "id": "R1",
+    "url": "https://www.vam.ac.uk/articles/donatellos-florence",
+    "use": "Firenze, cantieri, contesto urbano e committenze; interpretazione del rapporto fra città e arte.",
+    "cache": "assets/research/history/41e0d79bd9387c3f.source",
+    "sha256": "932538f3448cc7c4f5aa7ac7d398625dd39d9ad0d38df8d0de5c42602f82428a",
+    "cached": true
+  },
+  {
+    "id": "R2",
+    "url": "https://www.metmuseum.org/essays/painting-in-oil-in-the-low-countries-and-its-spread-to-southern-europe",
+    "use": "Tecnica a olio e circolazione dal Nord verso il Sud; evita il mito di una diffusione unidirezionale.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "R3",
+    "url": "https://www.metmuseum.org/art/collection/search/459052",
+    "use": "Petrus Christus, 1449; descrizione visiva originale. Identificazione del committente controversa, non asserita.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "R4",
+    "url": "https://www.loc.gov/item/2021666734/",
+    "use": "Magonza e stampa a metà Quattrocento; la stima della tiratura dipende da una testimonianza, non usata come conteggio esatto.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "R5",
+    "url": "https://82nd-and-fifth.metmuseum.org/toah/ht/08/eustn.html",
+    "use": "Prima stampa a Venezia nel 1469; tipografi provenienti dal Nord e sviluppo editoriale.",
+    "cache": "assets/research/history/bebcd65df9b4713c.source",
+    "sha256": "c2f1f74bb0f3ee14d8e5a64d996046b390bb4c673712e7547c9ae007e19424c5",
+    "cached": true
+  },
+  {
+    "id": "R6",
+    "url": "https://www.metmuseum.org/essays/albrecht-durer-1471-1528",
+    "use": "Norimberga; viaggi italiani 1494–95 e 1505–07; diffusione delle stampe.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "R7",
+    "url": "https://www.metmuseum.org/art/collection/search/336222",
+    "use": "Incisione del 1504, tecnica e soggetto. Riproduzione in pubblico dominio.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "R8",
+    "url": "https://www.chateau-amboise.com/lhistoire-du-chateau/",
+    "use": "Leonardo al Clos Lucé nel 1516–1519, invito di Francesco I e attività di corte.",
+    "cache": "assets/research/history/aa6be2193d59b1a9.source",
+    "sha256": "264d2cb5be1cd74d67f572432f763d76de1f15ea87502dc10c4f146337dbdea0",
+    "cached": true
+  },
+  {
+    "id": "R9",
+    "url": "https://www.metmuseum.org/art/collection/search/459080",
+    "use": "Ritratto di Holbein e bottega circa 1532; lettere di presentazione del 1526. Nascita di Erasmo non certa: 1466/1469.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "R10",
+    "url": "https://www.metmuseum.org/exhibitions/listings/2019/renaissance-of-etching",
+    "use": "Trasferimento della tecnica dalle armature alle stampe; centri tedeschi, fiamminghi, italiani e francesi.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  },
+  {
+    "id": "R11",
+    "url": "https://www.metmuseum.org/essays/italian-renaissance-frames",
+    "use": "Legame delle opere con gli ambienti originari e con la funzione, non immagini isolate.",
+    "cached": false,
+    "error": "HTTPError",
+    "note": "Consultazione web documentata nella ricerca; download diretto non disponibile."
+  }
+]

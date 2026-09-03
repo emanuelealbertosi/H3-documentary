@@ -1,0 +1,26 @@
+[
+  {
+    "id": "N1",
+    "url": "https://www.napoleon.org/histoire-des-2-empires/biographies/napoleon-ier-1769-1821-empereur/",
+    "use": "Cronologia della vita; formazione, carriera, politica ed esilio.",
+    "cache": "assets/research/history/004092320b18d686.source",
+    "sha256": "f30fe37ebd02270a4fdffefc8ac9718b76248275f281b74fecfeacf66d757aa4",
+    "cached": true
+  },
+  {
+    "id": "N2",
+    "url": "https://www.napoleon.org/en/young-historians/napodoc/timeline-consulate1st-french-empire/",
+    "use": "Colpo di stato, impero, campagne, abdicazioni, esilio e morte.",
+    "cache": "assets/research/history/cb77c6411a3fe1ed.source",
+    "sha256": "04fa9d06116e8ef9dfe872e6e23e0ce80962b7192ef9de6b5d9dfa47b9cfa3f8",
+    "cached": true
+  },
+  {
+    "id": "N3",
+    "url": "https://www.napoleon.org/histoire-des-2-empires/dossiers-thematiques/1769-1793-la-jeunesse-dun-futur-empereur/",
+    "use": "Contesto corso, formazione e Rivoluzione francese.",
+    "cache": "assets/research/history/947ac4df4bb1f4cd.source",
+    "sha256": "052027c647cab02b3cfebe3ddf2fc7c3a39df73188975cba9feb811815237155",
+    "cached": true
+  }
+]
