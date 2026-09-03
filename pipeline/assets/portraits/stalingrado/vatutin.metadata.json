@@ -1,0 +1,95 @@
+{
+  "thumburl": "https://upload.wikimedia.org/wikipedia/commons/2/26/Nikolai_Vatutin_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "thumbwidth": 960,
+  "thumbheight": 1262,
+  "thumbattribs": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/2/26/Nikolai_Vatutin_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1262
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Nikolai_Vatutin_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Nikolai_Vatutin_3.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=65536152",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2021-09-19 19:54:08",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Nikolai Vatutin 3",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Nikolai Vatutin|Media from the Russian Ministry of Defence",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "Николай Фёдорович Ватутин (1901 — 1944) — советский военачальник, генерал армии",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1940s<div style=\"display: none;\">date QS:P,+1940-00-00T00:00:00Z/8</div>",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external text\" href=\"http://encyclopedia.mil.ru/encyclopedia/history/more.htm?id=12109412@cmsArticle\">mil.ru</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "Unknown author.",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "CC BY 4.0",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Creative Commons Attribution 4.0",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "true",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Attribution": {
+      "value": "Mil.ru",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "LicenseUrl": {
+      "value": "https://creativecommons.org/licenses/by/4.0",
+      "source": "commons-desc-page"
+    },
+    "Copyrighted": {
+      "value": "True",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "cc-by-4.0",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

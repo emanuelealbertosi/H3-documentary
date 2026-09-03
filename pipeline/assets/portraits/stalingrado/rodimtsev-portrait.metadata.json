@@ -1,0 +1,95 @@
+{
+  "thumburl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Photo_of_Aleksandr_Rodimtsev_from_mil.ru.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "thumbwidth": 960,
+  "thumbheight": 1347,
+  "thumbattribs": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Photo_of_Aleksandr_Rodimtsev_from_mil.ru.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1347
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Photo_of_Aleksandr_Rodimtsev_from_mil.ru.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Photo_of_Aleksandr_Rodimtsev_from_mil.ru.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=128792620",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2023-02-17 04:31:29",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Photo of Aleksandr Rodimtsev from mil.ru",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Aleksandr Rodimtsev|Template Unknown (author)|Media from the Russian Ministry of Defence",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "Twice Hero of the Soviet Union Aleksandr Ilyich Rodimtsev",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1940s<div style=\"display: none;\">date QS:P,+1940-00-00T00:00:00Z/8</div>",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://encyclopedia.mil.ru/encyclopedia/history/more.htm?id=12281734@cmsArticle\">mil.ru</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "Unknown author<span style=\"display: none;\">Unknown author</span>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "CC BY 4.0",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Creative Commons Attribution 4.0",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "true",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Attribution": {
+      "value": "Mil.ru",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "LicenseUrl": {
+      "value": "https://creativecommons.org/licenses/by/4.0",
+      "source": "commons-desc-page"
+    },
+    "Copyrighted": {
+      "value": "True",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "cc-by-4.0",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

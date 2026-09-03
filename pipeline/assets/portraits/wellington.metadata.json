@@ -1,0 +1,90 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg/960px-Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1312,
+  "responsiveUrls": {
+    "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg/1920px-Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg/960px-Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1312,
+    "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg/1920px-Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Sir_Arthur_Wellesley%2C_1st_Duke_of_Wellington.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sir_Arthur_Wellesley,_1st_Duke_of_Wellington.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=141928834",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2023-12-09 11:01:29",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "<div class=\"fn\">\n<div style=\"font-weight:bold;display:inline-block;\"><div style=\"display:inline-block\" dir=\"ltr\" lang=\"en\"><i>Arthur Wellesley (1769–1852), 1st Duke of Wellington <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q114997291#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span></i></div></div><div style=\"display: none;\">title QS:P1476,en:\"Arthur Wellesley (1769–1852), 1st Duke of Wellington <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q114997291#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>\"</div><div style=\"display: none;\">label QS:Len,\"Arthur Wellesley (1769–1852), 1st Duke of Wellington <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q114997291#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>\"</div><div style=\"display: none;\">label QS:Lja,\"ウェリントン公爵の肖像 (ローレンス)\"</div></div>",
+      "source": "commons-desc-page"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Images with annotations|Arthur Wellesley, Duke of Wellington (Thomas Lawrence - Apsley House)|PD-old-100-expired|Files uploaded by Yann Forget|PD-Art (PD-old-100-expired)|Artworks with Wikidata item|Artworks with known accession number|CC-PD-Mark|Artworks with accession number from Wikidata|Artworks digital representation of 2D work|History of King's College London",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Thomas_Lawrence\" class=\"extiw\" title=\"w:en:Thomas Lawrence\"><span title=\"English portrait painter (1769–1830)\">Thomas Lawrence</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "ImageDescription": {
+      "value": "The Duke of Wellington is standing at half-length, wearing Field Marshal’s uniform, with the Garter star and sash, the badge of the Golden Fleece, and a special badge ordered by the Prince Regent to be worn from 1815 by Knights Grand Cross of the Military Division of the Order of the Bath who were also Knights Companion of the Order of the Garter.",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "between circa 1815 and circa 1816<div style=\"display: none;\">date QS:P,+1815-00-00T00:00:00Z/8,P1319,+1815-00-00T00:00:00Z/9,P1326,+1816-00-00T00:00:00Z/9,P1480,Q5727902</div> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q114997291#P571\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<ul><li><a rel=\"nofollow\" class=\"external text\" href=\"https://www.english-heritage.org.uk/siteassets/home/visit/places-to-visit/apsley-house/collection-gallery/apsley-lawrence.jpg\">English Heritage Images</a></li>\n<li><a rel=\"nofollow\" class=\"external free\" href=\"http://artcontrarian.blogspot.ca/2013_01_01_archive.html\">http://artcontrarian.blogspot.ca/2013_01_01_archive.html</a></li>\n<li><a rel=\"nofollow\" class=\"external free\" href=\"https://alaintruong2014.wordpress.com/category/exhibitions/#post-15968\">https://alaintruong2014.wordpress.com/category/exhibitions/#post-15968</a> <a rel=\"nofollow\" class=\"external text\" href=\"https://alaintruong2014.files.wordpress.com/2015/01/npg_896_1337_arthurwellesle.jpg\">image</a></li></ul>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

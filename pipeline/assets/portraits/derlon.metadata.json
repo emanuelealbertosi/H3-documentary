@@ -1,0 +1,82 @@
+{
+  "thumburl": "https://upload.wikimedia.org/wikipedia/commons/2/21/Larivi%C3%A8re_-_Jean-Baptiste_Drouet_d%27Erlon_%281765-1844%29_-_MV_1179.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "thumbwidth": 960,
+  "thumbheight": 1479,
+  "thumbattribs": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/2/21/Larivi%C3%A8re_-_Jean-Baptiste_Drouet_d%27Erlon_%281765-1844%29_-_MV_1179.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1479
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/2/21/Larivi%C3%A8re_-_Jean-Baptiste_Drouet_d%27Erlon_%281765-1844%29_-_MV_1179.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Larivi%C3%A8re_-_Jean-Baptiste_Drouet_d%27Erlon_(1765-1844)_-_MV_1179.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=10318536",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2020-11-06 01:47:50",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "<a href=\"https://fr.wikipedia.org/wiki/Jean-Baptiste_Drouet_d%27Erlon\" class=\"extiw\" title=\"fr:Jean-Baptiste Drouet d'Erlon\">Jean-Baptiste Drouet d'Erlon</a>, maréchal de France (1765-1844)",
+      "source": "commons-desc-page"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Jean-Baptiste Drouet d'Erlon|PD-old-100-expired|PD-Art (PD-old-auto-expired)|Artworks with Wikidata item|Artworks with known accession number|PD-old files by User:Jimmy from fr.wikipedia|Base Joconde|French army under king Louis-Philippe (1830-1848)|CC-PD-Mark|1840s portrait paintings from France (male)|Artworks with accession number from Wikidata|19th-century oil portraits of standing men at full length in military uniforms|Portrait paintings of men holding marshal's baton|1843 oil on canvas paintings in France|Sash of the Legion of Honour in portrait paintings|Portraits of Marshals of France (series commissioned by Louis Philippe I - Versailles)|1844 portrait paintings of men|PD-Art missing SDC copyright status|PD-old missing SDC copyright status|Artworks digital representation of 2D work|Portraits by Charles-Philippe Larivière",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Charles-Philippe_Larivi%C3%A8re\" class=\"extiw\" title=\"w:en:Charles-Philippe Larivière\"><span title=\"French painter (1798-1876)\">Charles-Philippe Larivière</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1843<div style=\"display: none;\">date QS:P571,+1843-00-00T00:00:00Z/9</div>",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external text\" href=\"http://www.culture.gouv.fr/documentation/joconde/fr/pres.htm\">Base Joconde</a> / <a href=\"//commons.wikimedia.org/wiki/User:Jimmy44\" title=\"User:Jimmy44\">Jimmy44</a>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

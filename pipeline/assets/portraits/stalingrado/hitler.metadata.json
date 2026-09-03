@@ -1,0 +1,99 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Hitler_portrait_crop_%28cropped%29%282%29.jpg/960px-Hitler_portrait_crop_%28cropped%29%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1302,
+  "responsiveUrls": {
+    "2": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Hitler_portrait_crop_%28cropped%29%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Hitler_portrait_crop_%28cropped%29%282%29.jpg/960px-Hitler_portrait_crop_%28cropped%29%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1302,
+    "srcset": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Hitler_portrait_crop_%28cropped%29%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Hitler_portrait_crop_%28cropped%29%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Hitler_portrait_crop_(cropped)(2).jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=178545364",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2026-03-17 09:57:55",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Hitler portrait crop (cropped)(2)",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Retouched pictures|Images from the German Federal Archive|Nazi symbols|Extracted images|Adolf Hitler in 1938|Recipients of the Golden Party Badge|Photographs by Heinrich Hoffmann|Armbands of Nazi Germany|People with Iron Cross (1914)|Portrait photographs of Adolf Hitler|People wearing Verwundetenabzeichen (1918)",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "1938 portrait photograph of <a href=\"https://en.wikipedia.org/wiki/Adolf_Hitler\" class=\"extiw\" title=\"en:Adolf Hitler\">Adolf Hitler</a>",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1938",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<table class=\"layouttemplate\" lang=\"en\" dir=\"ltr\" style=\"margin:.5em auto;width:100%;background:var(--background-color-neutral-subtle,#f8f8f8);border:2px solid var(--border-color-muted,#EEE);color: inherit;padding:5px\">\n\n<tbody><tr>\n<td style=\"padding:5px\"><div class=\"wpImageAnnotatorControl wpImageAnnotatorOff\"><span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:Applications-graphics.svg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Applications-graphics.svg/60px-Applications-graphics.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"45\" height=\"45\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Applications-graphics.svg/120px-Applications-graphics.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"48\" data-file-height=\"48\"></a></span></div>\n</td>\n<td style=\"width:100%\">This  is a <i><b><span lang=\"en\" dir=\"ltr\"><a href=\"https://en.wikipedia.org/wiki/Image_editing\" class=\"extiw\" title=\"en:Image editing\"><span lang=\"en\" dir=\"ltr\">retouched picture</span></a></span></b></i>, which means that it has been digitally altered from its original version. Modifications: <i>3:4 portrait crop, some dust and scratches removed, contrast/brightness changed</i>. The original can be viewed here: <b><a href=\"//commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-H1216-0500-002,_Adolf_Hitler.jpg\" title=\"File:Bundesarchiv Bild 183-H1216-0500-002, Adolf Hitler.jpg\">Bundesarchiv Bild 183-H1216-0500-002, Adolf Hitler.jpg</a>: <span class=\"mw-image-border\" typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_183-H1216-0500-002,_Adolf_Hitler.jpg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Bundesarchiv_Bild_183-H1216-0500-002%2C_Adolf_Hitler.jpg/20px-Bundesarchiv_Bild_183-H1216-0500-002%2C_Adolf_Hitler.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"16\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Bundesarchiv_Bild_183-H1216-0500-002%2C_Adolf_Hitler.jpg/40px-Bundesarchiv_Bild_183-H1216-0500-002%2C_Adolf_Hitler.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"528\" data-file-height=\"800\"></a></span></b>. Modifications made by <a href=\"//commons.wikimedia.org/wiki/User:Notwist\" title=\"User:Notwist\">Notwist</a>.\n<p><span class=\"layouttemplateargs\" style=\"display:none;speak:none;\" title=\"template=Retouched+picture 1%3D3%3A4+portrait+crop%2C+some+dust+and+scratches+removed%2C+contrast%2Fbrightness+changed 2%3DBundesarchiv+Bild+183-H1216-0500-002%2C+Adolf+Hitler.jpg 3%3DNotwist 4%3D 5%3D\"> </span>\n</p>\n</td></tr></tbody></table>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Heinrich_Hoffmann_(photographer)\" class=\"extiw\" title=\"w:en:Heinrich Hoffmann (photographer)\"><span title=\"German photographer, personal photographer of Adolf Hitler (1885-1957)\">Heinrich Hoffmann</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "CC BY-SA 3.0 de",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Creative Commons Attribution-Share Alike 3.0 de",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "true",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Attribution": {
+      "value": "Bundesarchiv, Bild 183-H1216-0500-002 / CC-BY-SA",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "LicenseUrl": {
+      "value": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+      "source": "commons-desc-page"
+    },
+    "Copyrighted": {
+      "value": "True",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "nazi",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "cc-by-sa-3.0-de",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

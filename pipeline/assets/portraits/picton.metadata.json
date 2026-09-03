@@ -1,0 +1,86 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Lieutenant-General_Sir_Thomas_Picton_A17581.jpg/960px-Lieutenant-General_Sir_Thomas_Picton_A17581.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1179,
+  "responsiveUrls": {
+    "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Lieutenant-General_Sir_Thomas_Picton_A17581.jpg/1920px-Lieutenant-General_Sir_Thomas_Picton_A17581.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Lieutenant-General_Sir_Thomas_Picton_A17581.jpg/960px-Lieutenant-General_Sir_Thomas_Picton_A17581.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1179,
+    "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Lieutenant-General_Sir_Thomas_Picton_A17581.jpg/1920px-Lieutenant-General_Sir_Thomas_Picton_A17581.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/d/de/Lieutenant-General_Sir_Thomas_Picton_A17581.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Lieutenant-General_Sir_Thomas_Picton_A17581.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=50797914",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2016-08-21 11:47:21",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "<div class=\"fn\">\nLieutenant-General Sir Thomas Picton</div>",
+      "source": "commons-desc-page"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Knights Grand Cross of the Order of the Bath|Uploaded with pattypan|PD-1996|PD-Art (PD-old-100)|Artworks with Wikidata item|Artworks with known accession number|CC-PD-Mark|Sash of the Order of the Bath in portrait paintings|Star of the Order of the Bath in portrait paintings|Artworks digital representation of 2D work|Portrait paintings of males in the National Gallery of Art|Portrait paintings of males by William Beechey|Portrait paintings of Thomas Picton|Army Gold Cross in portrait paintings|Badges of the Military Order of the Tower and Sword in portrait paintings|Star of the Military Order of the Tower and Sword in portrait paintings",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:William_Beechey\" class=\"extiw\" title=\"w:en:William Beechey\"><span title=\"English painter (1753–1839)\">William Beechey</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "between 1815 and 1817<div style=\"display: none;\">date QS:P571,+1815-00-00T00:00:00Z/8,P1319,+1815-00-00T00:00:00Z/9,P1326,+1817-00-00T00:00:00Z/9</div>",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external free\" href=\"http://www.nga.gov/content/ngaweb/Collection/art-object-page.46092.html\">http://www.nga.gov/content/ngaweb/Collection/art-object-page.46092.html</a>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

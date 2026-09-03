@@ -1,0 +1,86 @@
+{
+  "thumburl": "https://upload.wikimedia.org/wikipedia/commons/8/89/Georges_Mouton%2C_comte_de_Lobau_%281770-1838%29%2C_mar%C3%A9chal_de_France.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "thumbwidth": 960,
+  "thumbheight": 1474,
+  "thumbattribs": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/8/89/Georges_Mouton%2C_comte_de_Lobau_%281770-1838%29%2C_mar%C3%A9chal_de_France.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1474
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/8/89/Georges_Mouton%2C_comte_de_Lobau_%281770-1838%29%2C_mar%C3%A9chal_de_France.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Georges_Mouton,_comte_de_Lobau_(1770-1838),_mar%C3%A9chal_de_France.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=146010028",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2024-03-02 18:19:49",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Georges Mouton, comte de Lobau (1770-1838), maréchal de France",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Georges Mouton|PD-old-100-expired|PD-Art (PD-old-auto-expired)|CC-PD-Mark|Portrait paintings in the Musée national du Château de Versailles|1835 portrait paintings from France|1835 portrait paintings of men|Portrait paintings by Ary Scheffer",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "Portrait of Marshal Georges Mouton",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1835",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://art.rmngp.fr/fr/library/artworks/ary-scheffer_georges-mouton-comte-de-lobau-1770-1838-marechal-de-france_huile-sur-toile?force-download=209674\">https://art.rmngp.fr/fr/library/artworks/ary-scheffer_georges-mouton-comte-de-lobau-1770-1838-marechal-de-france_huile-sur-toile?force-download=209674</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Ary_Scheffer\" class=\"extiw\" title=\"w:en:Ary Scheffer\"><span title=\"Dutch painter (1795-1858)\">Ary Scheffer</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

@@ -20,9 +20,13 @@ pipeline/assets/voice/DATASET_LICENSE.md
 pipeline/assets/tts/
 pipeline/assets/qa/
 pipeline/assets/geography/
-pipeline/assets/portraits/
+pipeline/assets/portraits/**
+!pipeline/assets/portraits/**/
+!pipeline/assets/portraits/**/*.metadata.json
 pipeline/assets/artworks/
-pipeline/assets/history/
+pipeline/assets/history/**
+!pipeline/assets/history/**/
+!pipeline/assets/history/**/*.metadata.json
 pipeline/assets/manifest.json
 pipeline/tools/.bootstrap/
 pipeline/timeline.json

@@ -1,0 +1,86 @@
+{
+  "thumburl": "https://upload.wikimedia.org/wikipedia/commons/1/16/Field_Marshal_Prince_von_Blucher.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "thumbwidth": 960,
+  "thumbheight": 1271,
+  "thumbattribs": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/1/16/Field_Marshal_Prince_von_Blucher.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1271
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Field_Marshal_Prince_von_Blucher.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Field_Marshal_Prince_von_Blucher.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=192004226",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2026-05-15 07:25:21",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Field Marshal Prince von Blucher",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Author died more than 70 years ago public domain images|PD US expired|CC-PD-Mark|All media needing categories as of 2026|Media needing categories as of 15 May 2026",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "Field Marshal Prince von Blucher",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1818-01-01",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.meisterdrucke.ie/fine-art-prints/George-Dawe/1457517/Field-Marshal-Prince-von-Blucher.html\">https://www.meisterdrucke.ie/fine-art-prints/George-Dawe/1457517/Field-Marshal-Prince-von-Blucher.html</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "George Dawe",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

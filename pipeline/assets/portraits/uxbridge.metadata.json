@@ -1,0 +1,86 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg/960px-Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1216,
+  "responsiveUrls": {
+    "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg/1920px-Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg/960px-Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1216,
+    "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg/1920px-Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Henry_William_Paget%2C_1st_Marquess_of_Anglesey_by_William_Salter.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Henry_William_Paget,_1st_Marquess_of_Anglesey_by_William_Salter.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=6365294",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2009-03-29 14:18:30",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "<div class=\"fn\">\n<div style=\"font-weight:bold;display:inline-block;\"><div style=\"display:inline-block\" dir=\"ltr\" lang=\"en\"><i>Henry William Paget, 1st Marquess of Anglesey <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q28049222#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span></i></div></div><div style=\"display: none;\">title QS:P1476,en:\"Henry William Paget, 1st Marquess of Anglesey <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q28049222#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>\"</div><div style=\"display: none;\">label QS:Len,\"Henry William Paget, 1st Marquess of Anglesey <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q28049222#P1476\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>\"</div></div>",
+      "source": "commons-desc-page"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Henry William Paget|William Salter|Images from the National Portrait Gallery, London|PD-old-100-expired|PD-Art (PD-old-auto-expired)|Artworks with Wikidata item|Artworks with known accession number|Items with copyright claims|CC-PD-Mark|Artworks with accession number from Wikidata|19th-century portrait paintings in the National Portrait Gallery, London|PD-Art missing SDC copyright status|PD-old missing SDC copyright status|Artworks digital representation of 2D work",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:William_Salter_(painter)\" class=\"extiw\" title=\"w:en:William Salter (painter)\"><span title=\"British portrait painter (1804-1875)\">William Salter</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1830s<div style=\"display: none;\">date QS:P,+1830-00-00T00:00:00Z/8</div> <span class=\"mw-valign-text-top noprint\" typeof=\"mw:File/Frameless\"><a href=\"https://www.wikidata.org/wiki/Q28049222#P571\" title=\"Edit this at Wikidata\"><img alt=\"Edit this at Wikidata\" src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/OOjs_UI_icon_edit-ltr-progressive.svg/20px-OOjs_UI_icon_edit-ltr-progressive.svg.png?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"10\" height=\"10\" class=\"mw-file-element\" data-file-width=\"20\" data-file-height=\"20\"></a></span>",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "one or more <b>third parties have made copyright claims against Wikimedia Commons in relation to the work from which this is sourced or a purely mechanical reproduction thereof</b>. This may be due to recognition of the \"<a href=\"https://en.wikipedia.org/wiki/sweat_of_the_brow\" class=\"extiw\" title=\"w:sweat of the brow\">sweat of the brow</a>\" doctrine, allowing works to be eligible for protection through skill and labour, and not purely by originality as is the case in the United States (where this website is hosted). These claims may or may not be valid in all jurisdictions.\nAs such, use of this image in the jurisdiction of the claimant or other countries <i>may</i> be regarded as <b>copyright infringement</b>. Please see <a href=\"//commons.wikimedia.org/wiki/Commons:When_to_use_the_PD-Art_tag\" title=\"Commons:When to use the PD-Art tag\">Commons:When to use the PD-Art tag</a> for more information.",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

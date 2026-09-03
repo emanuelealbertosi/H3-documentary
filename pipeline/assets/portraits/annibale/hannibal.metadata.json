@@ -1,0 +1,90 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Hannibal_Barca_bust_from_Capua_photo.jpg/960px-Hannibal_Barca_bust_from_Capua_photo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1162,
+  "responsiveUrls": {
+    "2": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Hannibal_Barca_bust_from_Capua_photo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Hannibal_Barca_bust_from_Capua_photo.jpg/960px-Hannibal_Barca_bust_from_Capua_photo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1162,
+    "srcset": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Hannibal_Barca_bust_from_Capua_photo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Hannibal_Barca_bust_from_Capua_photo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Hannibal_Barca_bust_from_Capua_photo.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=143554037",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2024-01-05 16:20:29",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Hannibal Barca bust from Capua photo",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Fotografia Alinari|PD-old-100-expired|Capuan bust of Hannibal|Glass plate photographs|CC-PD-Mark|PD Old (assumed) expired|PD-old missing SDC copyright status",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "A glass plate photograph of the marble bust of Hannibal Barca. The bust of the Carthaginian general was discovered in the Italian city of Capua in 1667. The Roman era bust was made between the 1st century BC and 4 century AD (I sec.a.C.- IV sec. d.C.). It is preserved in the National Archaeological Museum of Naples. The photograph was taken by Fratelli Alinari in the National Archaeological Museum, Naples, Italy, circa 1900.",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "Circa 1900",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "Reddit - <a rel=\"nofollow\" class=\"external free\" href=\"https://www.reddit.com/r/europe/comments/d0szfs/a_marble_bust_of_hannibal_%F0%90%A4%87%F0%90%A4%8D%F0%90%A4%81%F0%90%A4%8F%F0%90%A4%8B_originally_found/\">https://www.reddit.com/r/europe/comments/d0szfs/a_marble_bust_of_hannibal_𐤇𐤍𐤁𐤏𐤋_originally_found/</a>  . The original photograph source = <a rel=\"nofollow\" class=\"external text\" href=\"https://www.alinari.it/en/explore?isPostBack=1&amp;page=0&amp;step=64&amp;position=0&amp;viewtype=grid&amp;id%20dossier=&amp;showPageInfo=1&amp;getCodiciSearch=0&amp;language=&amp;filterFor=advsearch&amp;panelAdvSearch=closed&amp;query=ACA-F-011036-0000&amp;paginate%20pageNum=1&amp;view=&amp;cercaInCurrent=all&amp;chk\">alinari.it</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "Fratelli Alinari",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

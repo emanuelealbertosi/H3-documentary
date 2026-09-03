@@ -1,0 +1,86 @@
+{
+  "thumburl": "https://upload.wikimedia.org/wikipedia/commons/9/97/GrafVonZieten.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+  "thumbwidth": 960,
+  "thumbheight": 1139,
+  "thumbattribs": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/9/97/GrafVonZieten.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1139
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/9/97/GrafVonZieten.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:GrafVonZieten.png",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=153604412",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2024-10-06 12:56:06",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "GrafVonZieten",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Portraits|PD-Art (PD-old-100)|CC-PD-Mark|PD-Art missing SDC copyright status|PD-old missing SDC copyright status",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "Graf Von Zieten Portrait by Franz Kruger Remaster",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1848",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "Wikipedia",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "Franz Kruger",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

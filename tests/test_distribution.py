@@ -57,3 +57,20 @@ def test_geo_cache_never_modifies_external_pipeline(tmp_path,monkeypatch):
     (raw/'rivers.geojson.part').write_text('unfinished')
     pipeline.cache_geographic_inputs(work,bundled)
     assert not (bundled/'assets/geography/rivers.geojson.part').exists()
+
+def test_example_portraits_are_downloadable_without_original_assets():
+    for pattern in ['battles/*/battle.json','documentaries/*/documentary.json']:
+        for path in (ROOT/'pipeline').glob(pattern):
+            doc=json.loads(path.read_text(encoding='utf-8'))
+            people=doc.get('commanders',doc.get('persons',[]))
+            if isinstance(people,dict):people=people.values()
+            for person in people:
+                if person.get('portrait'):
+                    metadata=(ROOT/'pipeline'/person['portrait']).with_suffix('.metadata.json')
+                    assert metadata.exists() or person.get('commons_file') or person.get('wikipedia_page'),person['name']
+
+def test_preserved_engine_baseline():
+    baseline=json.loads((ROOT/'docs/engine-baseline.json').read_text())
+    for name,expected in baseline['normalized_sha256'].items():
+        data=(ROOT/'pipeline/engine'/name).read_bytes().replace(b'\r\n',b'\n')
+        assert hashlib.sha256(data).hexdigest()==expected,name

@@ -1,0 +1,103 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Marechal_Ney.jpg/960px-Marechal_Ney.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1143,
+  "responsiveUrls": {
+    "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Marechal_Ney.jpg/1920px-Marechal_Ney.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Marechal_Ney.jpg/960px-Marechal_Ney.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1143,
+    "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e9/Marechal_Ney.jpg/1920px-Marechal_Ney.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Marechal_Ney.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Marechal_Ney.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=6831856",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2020-05-15 03:09:57",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "<div class=\"fn\">\n<div style=\"font-weight:bold;display:inline-block;\"><div style=\"display:inline-block\" dir=\"ltr\" lang=\"en\"><i>Marshal Michel Ney, duc d'Elchingen, prince de la Moskova</i></div></div><div style=\"display: none;\">label QS:Len,\"Marshal Michel Ney, duc d'Elchingen, prince de la Moskova\"</div></div>",
+      "source": "commons-desc-page"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Michel Ney|PD-old-100-expired|PD-Art (PD-old-auto-expired)|19th-century portrait paintings of men, location missing|Artworks with Wikidata item|CC-PD-Mark|1800s portrait paintings from France (male)|On OSM|Portrait paintings with neutral background|19th-century oil portraits of men at bust length in military uniforms|Males with sideburns in art|Badges of the Napoleonic Order of the Iron Crown in portrait paintings|Badges of the Legion of Honour in portrait paintings|Sash of the Legion of Honour in portrait paintings|Star of the Legion of Honour in portrait paintings|1805 portrait paintings of men|Template Unknown (unspecified)|Artworks with Wikidata item missing genre|Files with coordinates missing SDC location of creation (50° N, 1° E)|PD-Art missing SDC copyright status|PD-old missing SDC copyright status|Artworks with Wikidata item missing institution|Artworks digital representation of 2D work|Metalwork embroidery in art (male)|Portrait paintings of French nobility by François Gérard",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "GPSLatitude": {
+      "value": "50.734118",
+      "source": "commons-desc-page"
+    },
+    "GPSLongitude": {
+      "value": "1.601636",
+      "source": "commons-desc-page"
+    },
+    "GPSMapDatum": {
+      "value": "WGS-84",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Fran%C3%A7ois_G%C3%A9rard\" class=\"extiw\" title=\"w:en:François Gérard\"><span title=\"French painter (1770–1837)\">François Gérard</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "ImageDescription": {
+      "value": "<i>Marshal Michel Ney, duc d'Elchingen, prince de la Moskova</i>",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "circa 1805<div style=\"display: none;\">date QS:P571,+1805-00-00T00:00:00Z/9,P1480,Q5727902</div>",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external text\" href=\"http://www.christies.com/lotfinder/lot_details.aspx?intObjectID=5649640\">Christie's</a>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

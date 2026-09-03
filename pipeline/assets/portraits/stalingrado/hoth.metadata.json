@@ -1,0 +1,90 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg/960px-Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1195,
+  "responsiveUrls": {
+    "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg/1920px-Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg/960px-Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1195,
+    "srcset": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg/1920px-Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Hermann_Hoth%2C_defendant_in_High_Command_Trial.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:Hermann_Hoth,_defendant_in_High_Command_Trial.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=126832972",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2024-08-29 21:32:31",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Hermann Hoth, defendant in High Command Trial",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "PD US Government|Nuremberg Trials|Hermann Hoth|High Command trial|CC-PD-Mark",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "Hermann Hoth, defendant in the High Command Trial, 30 December 1947-28 October 1948 (twelfth of the Subsequent Nuremberg Trials) held at the Palace of Justice, Nuremberg",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1947-12-30",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://catalog.archives.gov/id/169157807\">https://catalog.archives.gov/id/169157807</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "Office of Military Government for Germany, United States",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/StalinCropped1943.jpg/960px-StalinCropped1943.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+  "thumbwidth": 960,
+  "thumbheight": 1280,
+  "responsiveUrls": {
+    "2": "https://upload.wikimedia.org/wikipedia/commons/0/08/StalinCropped1943.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  "thumbattribs": {
+    "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/StalinCropped1943.jpg/960px-StalinCropped1943.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "decoding": "async",
+    "loading": "lazy",
+    "width": 960,
+    "height": 1280,
+    "srcset": "https://upload.wikimedia.org/wikipedia/commons/0/08/StalinCropped1943.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled 2x"
+  },
+  "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/StalinCropped1943.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+  "descriptionurl": "https://commons.wikimedia.org/wiki/File:StalinCropped1943.jpg",
+  "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=137047900",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2026-05-04 22:29:43",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "StalinCropped1943",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "PD US Government|Images with extracted images|Extracted images|Files allowed to be overwritten by everyone|CC-PD-Mark|Joseph Stalin in 1943|Portraits of Joseph Stalin|Joseph Stalin at the Tehran Conference",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "A cropped image of <a href=\"https://en.wikipedia.org/wiki/Joseph_Stalin\" class=\"extiw\" title=\"en:Joseph Stalin\">Joseph Stalin</a> during the <a href=\"https://en.wikipedia.org/wiki/Tehran_Conference\" class=\"extiw\" title=\"en:Tehran Conference\">Tehran Conference</a>. In the full photo he is sitting beside <a href=\"https://en.wikipedia.org/wiki/Franklin_D._Roosevelt\" class=\"extiw\" title=\"en:Franklin D. Roosevelt\">Franklin D. Roosevelt</a>, and <a href=\"https://en.wikipedia.org/wiki/Winston_Churchill\" class=\"extiw\" title=\"en:Winston Churchill\">Winston Churchill</a> on the <a href=\"https://en.wikipedia.org/wiki/Portico\" class=\"extiw\" title=\"en:Portico\">portico</a> of the <a href=\"https://en.wikipedia.org/wiki/Diplomatic_missions_of_Russia\" class=\"extiw\" title=\"en:Diplomatic missions of Russia\">Russian Embassy</a>.",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "1943-11-28",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.flickr.com/photos/fdrlibrary/5692883651/in/photolist-9F4vYp-22ae5pb-pJ7JqW-K3WmE1-aLPLs-6Vabay-NqPyuh-HWjDm-c6vbJb-6nB5GV-2nz3Z3L-2ng3EXs-jPHsby-2mjXbtV-2mk35mZ-2mk1R6S-N3mAhq-badiTV-Tbz48z-8FEJKL-cW5Ai3-6DbnWC-2mk2hny-8r4J3U-rf4YtS-2mk2dbs-Pc4H6w-c7JERw-2mjTwCr-2mk2fmV-2mk33V2-2mjYipt-2mk27yL-c6v3hU-puHocy-2mjXmTY-2mjYHHd-2mk23wn-2mjTgEF-2mjTmiZ-2mk3cUj-2mk23vR-2mjYxkK-2mjX2vj-2mjTfnq-2mk3746-2mjYpQV-2mk33Uv-9qqUDz-2mawZaz\">https://www.flickr.com/photos/fdrlibrary/5692883651/in/photolist-9F4vYp-22ae5pb-pJ7JqW-K3WmE1-aLPLs-6Vabay-NqPyuh-HWjDm-c6vbJb-6nB5GV-2nz3Z3L-2ng3EXs-jPHsby-2mjXbtV-2mk35mZ-2mk1R6S-N3mAhq-badiTV-Tbz48z-8FEJKL-cW5Ai3-6DbnWC-2mk2hny-8r4J3U-rf4YtS-2mk2dbs-Pc4H6w-c7JERw-2mjTwCr-2mk2fmV-2mk33V2-2mjYipt-2mk27yL-c6v3hU-puHocy-2mjXmTY-2mjYHHd-2mk23wn-2mjTgEF-2mjTmiZ-2mk3cUj-2mk23vR-2mjYxkK-2mjX2vj-2mjTfnq-2mk3746-2mjYpQV-2mk33Uv-9qqUDz-2mawZaz</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "Franklin D. Roosevelt Library Public Domain Photographs",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

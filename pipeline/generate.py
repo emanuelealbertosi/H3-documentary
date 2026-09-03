@@ -76,6 +76,7 @@ def main():
         if args.duration and abs(args.duration-pack['target_minutes'])>.01:raise ValueError('Il pack ha già una sceneggiatura dimensionata. Per una nuova durata usa la richiesta in linguaggio naturale senza --pack/--example.')
         ensure_geography(pack,path)
         if args.prepare_only:
+            subprocess.run([sys.executable,'-X','utf8',str(ROOT/'documentary.py'),'assets','--document',str(path)],cwd=ROOT,check=True)
             if raw.get('schema_version')==2:
                 from tools.preview_history import preview
                 preview(path)
