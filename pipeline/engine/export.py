@@ -58,6 +58,11 @@ def export_documents(timeline):
        timeline.get('voice_credit','Voce sintetica locale; modello e licenza nel manifest degli asset.'),
        '', 'Kokoro: https://huggingface.co/hexgrad/Kokoro-82M. Kokoro-ONNX: https://github.com/thewh1teagle/kokoro-onnx. Attribuzioni dei dati dichiarate dalla model card: Koniwa, CC BY 3.0, https://github.com/koniwa/koniwa; SIWIS, CC BY 4.0, https://datashare.ed.ac.uk/handle/10283/2353. Le model card e licenze sono conservate negli asset. Il prototipo Piper/Paola è conservato come alternativa tecnica, ma non è la voce del video finale.',
        '', '## Ritratti storici','']
+    # BEGIN H3 TTS CREDIT
+    if timeline.get('voice_engine')=='chatterbox':
+        legacy='Kokoro: https://huggingface.co/hexgrad/Kokoro-82M. Kokoro-ONNX: https://github.com/thewh1teagle/kokoro-onnx. Attribuzioni dei dati dichiarate dalla model card: Koniwa, CC BY 3.0, https://github.com/koniwa/koniwa; SIWIS, CC BY 4.0, https://datashare.ed.ac.uk/handle/10283/2353. Le model card e licenze sono conservate negli asset. Il prototipo Piper/Paola è conservato come alternativa tecnica, ma non è la voce del video finale.'
+        credits[credits.index(legacy)]='Chatterbox Multilingual V3: https://github.com/resemble-ai/chatterbox e https://huggingface.co/ResembleAI/chatterbox. Codice e pesi MIT alle revisioni registrate nel manifest. Sintesi eseguita localmente; il campione one-shot, quando usato, resta nel progetto. Chatterbox applica il proprio watermark audio.'
+    # END H3 TTS CREDIT
     if timeline.get('video_license'):
         credits[2:2]=['## Licenza del video',timeline['video_license'],'']
     portrait_credits=[]

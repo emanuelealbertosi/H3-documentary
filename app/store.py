@@ -27,6 +27,10 @@ def init():
         c.execute("UPDATE projects SET status='interrupted',error='L’app si è chiusa durante la produzione. Puoi riprendere dai passaggi salvati.' WHERE status IN ('running','queued','cancelling')")
         if "use_media" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN use_media INTEGER DEFAULT 0")
+        if "tts_engine" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
+            c.execute("ALTER TABLE projects ADD COLUMN tts_engine TEXT DEFAULT 'kokoro'")
+        if "tts_reference_id" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
+            c.execute("ALTER TABLE projects ADD COLUMN tts_reference_id TEXT DEFAULT ''")
 def project(pid):
     with connect() as c: row=c.execute("SELECT * FROM projects WHERE id=?",(pid,)).fetchone()
     if not row: raise KeyError(pid)
@@ -36,14 +40,17 @@ def projects():
     return [project(i) for i in ids]
 def create(req):
     pid=secrets.token_hex(8);ts=now()
+    cfg=settings();engine=cfg['tts_engine'] if req.tts_engine=='default' else req.tts_engine
+    reference=req.tts_reference_id or (cfg.get('tts_reference_id','') if req.tts_engine=='default' and engine=='chatterbox' else '')
     with connect() as c:
         c.execute("INSERT INTO projects(id,topic,minutes,notes,source_urls,status,stage,created,updated) VALUES (?,?,?,?,?,'draft','Pronto per iniziare',?,?)",
           (pid,req.topic,req.minutes,req.notes,json.dumps(req.source_urls),ts,ts))
         c.execute("UPDATE projects SET documentary_type=? WHERE id=?",(req.documentary_type,pid))
         c.execute("UPDATE projects SET use_media=? WHERE id=?",(req.use_media,pid))
+        c.execute("UPDATE projects SET tts_engine=?,tts_reference_id=? WHERE id=?",(engine,reference,pid))
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
-    allowed={"status","stage","progress","error","result","notes","source_urls","use_media"}
+    allowed={"status","stage","progress","error","result","notes","source_urls","use_media","tts_engine","tts_reference_id"}
     if not fields.keys()<=allowed: raise ValueError("Campi non consentiti")
     fields["updated"]=now()
     fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls") else v for k,v in fields.items()}

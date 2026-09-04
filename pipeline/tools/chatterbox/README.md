@@ -1,6 +1,6 @@
-# Prova locale di Chatterbox
+# Chatterbox locale
 
-Ambiente opzionale e separato in `.venv-chatterbox`, Python 3.11.16 e PyTorch 2.6.0 CPU. Usa Chatterbox Multilingual V3 dal repository ufficiale, con revisioni fissate di codice, watermark e pesi. Non modifica il TTS Kokoro/Piper della pipeline né le impostazioni di Studio.
+Ambiente separato in `.venv-chatterbox`, Python 3.11.16 e PyTorch 2.6.0 CPU. Usa Chatterbox Multilingual V3 dal repository ufficiale, con revisioni fissate di codice, watermark e pesi. Studio può selezionarlo per un progetto e preparare l’intera cache vocale prima di affidare al motore condiviso la timeline, il montaggio e la verifica.
 
 I nuovi campioni e le misure vengono salvati in `pipeline/output/chatterbox-test`. I risultati della prova originaria non sono distribuiti nello ZIP sorgente. La voce inclusa nel modello permette di provare italiano e inglese senza fornire una registrazione personale. Non costituisce una prova della clonazione della voce dell’utente.
 
@@ -8,7 +8,7 @@ I nuovi campioni e le misure vengono salvati in `pipeline/output/chatterbox-test
 
 ## Utilizzo da PowerShell
 
-Dalla cartella `pipeline/` di H3-documentary, dopo INSTALLA.bat -Chatterbox:
+Dalla cartella `pipeline/` di H3-documentary, dopo `INSTALLA.bat`:
 
 ```powershell
 # Installazione o ripristino; richiede rete soltanto per i download.
@@ -41,7 +41,7 @@ Per il campione di riferimento usare circa 10–20 secondi di parlato pulito, co
 
 `speech-check.json` registra decodifica, lingua riconosciuta e trascrizione indipendente. Il confronto ASR non valuta la naturalezza né certifica la somiglianza della voce. L’ascolto dei campioni resta il confronto utile per scegliere un narratore.
 
-Il test non aggiunge ancora un selettore TTS all’app, non sostituisce le voci dei documentari esistenti e non produce MP4 multitraccia. Serve a valutare concretamente questo motore e il suo costo sul PC prima dell’integrazione.
+Il selettore si trova sia nel nuovo documentario sia nella pagina del progetto interrotto. Cambiare voce conserva ricerca, testo, mappe e asset; invalida soltanto voce, anteprime, rendering e montaggio successivi. I vecchi progetti mantengono Kokoro. Questa versione non produce ancora MP4 multitraccia.
 
 ## Provenienza
 

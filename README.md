@@ -66,7 +66,9 @@ Anche le battaglie vengono ora progettate in passaggi salvati: prima luoghi, faz
 
 La versione **1.1.6** conserva più connessioni al modello. Ogni coppia provider/indirizzo ricorda l'ultimo modello e i propri parametri; le chiavi rimangono cifrate separatamente con il profilo Windows. In Amministrazione puoi scegliere una voce da **Connessioni salvate** oppure cambiare scheda provider: l'app ripristina indirizzo, modello e stato della chiave senza mostrarne il contenuto al browser. Inserendo un secondo endpoint non si cancella più la chiave del primo; cambiando soltanto modello, la chiave del server viene conservata.
 
-La versione **1.1.8** aggiunge il controllo del reasoning per ogni connessione: comportamento del server, forzato attivo a livello medio oppure forzato disattivato. Il controllo è sempre visibile nella pagina Admin, accanto alla configurazione del modello. Il client invia `reasoning_effort` tramite Chat Completions, supportato dalle versioni correnti di LM Studio, Ollama e vLLM; per server compatibili che non lo accettano si lascia il valore predefinito. Con LM Studio, **Modalità JSON** usa il relativo JSON Schema invece del vecchio `json_object`, non accettato dalle versioni recenti. La sceneggiatura indica la lunghezza di ciascun paragrafo, riporta i conteggi errati e, se un gruppo non obbedisce, passa automaticamente a una scena per volta con checkpoint separati. Aumentare i token non viene più suggerito quando il modello termina volontariamente con testi troppo corti.
+La versione **1.2.0** aggiunge il controllo del reasoning per ogni connessione: comportamento del server, forzato attivo a livello medio oppure forzato disattivato. Il controllo è sempre visibile nella pagina Admin, accanto alla configurazione del modello. Il client invia `reasoning_effort` tramite Chat Completions, supportato dalle versioni correnti di LM Studio, Ollama e vLLM; per server compatibili che non lo accettano si lascia il valore predefinito. Con LM Studio, **Modalità JSON** usa il relativo JSON Schema invece del vecchio `json_object`, non accettato dalle versioni recenti. Se un modello locale inserisce correttamente i dati dentro il contenitore `properties` dello schema, il client recupera i valori senza scambiare lo schema per la risposta. La sceneggiatura indica la lunghezza di ciascun paragrafo, riporta i conteggi errati e, se un gruppo non obbedisce, passa automaticamente a una scena per volta con checkpoint separati.
+
+Per le battaglie, un passaggio visuale dedicato richiede al modello soltanto direzione e significato dei movimenti, usando ID di località verificati. Il programma trasforma questi dati in frecce, percorsi e simboli di unità senza chiedere coordinate tattiche inventate. Se il modello omette un movimento evidente viene applicato un fallback conservativo. Le località più usate possono essere ricontrollate tramite OpenStreetMap Nominatim: massimo dodici richieste sequenziali, intervallo superiore a un secondo, User-Agent identificativo e cache permanente nel progetto. Se il servizio non è disponibile, la produzione prosegue dichiarando illustrative le coordinate del modello.
 
 ## Immagini personali insieme alle mappe
 
@@ -74,16 +76,15 @@ Apri **Immagini e riquadri** per caricare JPG, PNG e WebP tramite drag and drop,
 
 ## Voce e Chatterbox
 
-La voce predefinita è **Kokoro `if_sara`**, italiana, gratuita e locale; i suoi pesi vengono scaricati automaticamente. L'eSpeak usato per la pronuncia e FFmpeg arrivano con le librerie: non vanno installati a mano.
+Studio permette di scegliere per ogni progetto fra **Kokoro `if_sara`** e **Chatterbox Multilingual V3**. Kokoro è la scelta veloce e resta assegnata ai progetti creati dalle versioni precedenti. Chatterbox viene usato realmente per la narrazione e supporta il cloning one-shot: in Amministrazione si carica un WAV PCM con 10–20 secondi di parlato pulito, poi lo si sceglie nel nuovo documentario. Campione e sintesi restano sul computer; il documento conserva il credito e il watermark previsto dal modello.
 
-Il pacchetto include anche **l'esperimento opzionale Chatterbox Multilingual**, con ambiente separato e supporto al campione vocale:
+`INSTALLA.bat` prepara anche l’ambiente separato di Chatterbox e scarica circa 3 GB di pesi. Chi vuole una sola installazione leggera può usare `INSTALLA.bat -SenzaChatterbox`; Studio segnalerà chiaramente che quel motore non è disponibile, senza ripiegare in silenzio su Kokoro. Sul PC CPU della prova, circa 13 secondi di italiano hanno richiesto 94 secondi e quasi 7 GB di memoria del processo. La pipeline carica il modello una volta e mantiene una cache per ogni frase, quindi un documentario può essere ripreso senza rigenerare l’audio già pronto.
+
+La prova da terminale resta disponibile:
 
 ```powershell
-.\INSTALLA.bat -Chatterbox
-powershell -NoProfile -ExecutionPolicy Bypass -File .\pipeline\tools\chatterbox\prova.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\pipeline\tools\chatterbox\prova.ps1 -Reference "C:\percorso\voce.wav"
 ```
-
-Scarica circa 3 GB di pesi oltre alle librerie. Per usare una registrazione propria, aggiungi `-Reference "C:\percorso\voce.wav"` al secondo comando. Sul PC CPU usato per le prove, circa 13 secondi di italiano hanno richiesto 94 secondi e quasi 7 GB di memoria del processo. È una prova opzionale da terminale: **Chatterbox non è ancora selezionabile come voce dei documentari nell'interfaccia**. La sua installazione non sostituisce Kokoro.
 
 Questa versione produce documentari in italiano con una traccia audio e sottotitoli italiani. Server TTS esterni, doppiaggio multilingua e tracce audio multiple restano estensioni da integrare; non sono presentati come funzioni già pronte.
 

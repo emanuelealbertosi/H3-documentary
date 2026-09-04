@@ -1,4 +1,4 @@
-param([switch]$Chatterbox)
+param([switch]$Chatterbox,[switch]$SenzaChatterbox)
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $h3Root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
@@ -59,7 +59,8 @@ try {
     $h3AppPython = Join-Path $h3Root '.venv/Scripts/python.exe'
     Run-Checked $h3AppPython @('-X','utf8',(Join-Path $h3Root 'scripts/bootstrap_assets.py'))
     Run-Checked $h3AppPython @('-X','utf8',(Join-Path $h3Root 'scripts/check_install.py'),'--write-state')
-    if ($Chatterbox) {
+    if ($Chatterbox -or -not $SenzaChatterbox) {
+        Write-Host 'Preparo Chatterbox Multilingual V3 (download iniziale di circa 3 GB)...'
         & (Join-Path $h3Root 'pipeline/tools/chatterbox/setup.ps1')
         if ($LASTEXITCODE -ne 0) { throw 'Installazione opzionale Chatterbox non completata.' }
     }

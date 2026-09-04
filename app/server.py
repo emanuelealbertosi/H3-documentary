@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse,JSONResponse
 from fastapi.staticfiles import StaticFiles
 from .paths import ROOT,DATA,JOBS
 from . import store
-from .models import Settings,ProjectRequest
+from .models import Settings,ProjectRequest,VoiceChoice
 from .llm import LLM,ModelError
 from .library import library
 from .media_routes import router as media_router
@@ -82,6 +82,20 @@ def test_connection(value:Settings):
     if not isinstance(result,dict) or result.get("ok") is not True:raise ModelError("Il server risponde, ma il test di risposta strutturata non è riuscito.")
     return {"ok":True,"seconds":round(time.monotonic()-start,2),"message":"Connessione e risposta JSON verificate."}
 
+@app.get('/api/tts')
+def tts_status():
+    from . import tts
+    return tts.status(store.settings())
+
+@app.post('/api/tts/references',status_code=201)
+async def tts_reference(request:Request,filename:str='Voce.wav'):
+    from . import tts
+    raw=bytearray()
+    async for chunk in request.stream():
+        raw.extend(chunk)
+        if len(raw)>tts.MAX_REFERENCE_BYTES:raise HTTPException(413,'Usa un WAV PCM fino a 20 MB.')
+    return tts.upload_reference(bytes(raw),filename)
+
 @app.get("/api/projects")
 def list_projects():return store.projects()
 @app.post("/api/projects",status_code=201)
@@ -104,6 +118,10 @@ def start_project(pid:str):
 def cancel_project(pid:str):
     from .runner import cancel
     cancel(pid);return store.project(pid)
+@app.put('/api/projects/{pid}/voice')
+def project_voice(pid:str,value:VoiceChoice):
+    from .tts import change_project_voice
+    return change_project_voice(pid,value)
 @app.patch("/api/projects/{pid}")
 async def revise_project(pid:str,request:Request):
     p=store.project(pid)

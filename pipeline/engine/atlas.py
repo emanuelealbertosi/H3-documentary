@@ -192,6 +192,39 @@ class AtlasVisuals:
                     # Simple original standard: spear and banner, readable at every zoom.
                     d.line((x*SS,(y-8)*SS,x*SS,(y+8)*SS),fill=CREAM,width=2*SS)
                     d.polygon([(x*SS,(y-8)*SS),((x+9)*SS,(y-5)*SS),(x*SS,(y-2)*SS)],fill=col)
+        # BEGIN H3 BATTLE ATLAS TACTICS
+        # Direction heads and unit counters use the same smooth cue progress as
+        # routes. Their positions are deterministic, so no per-frame jitter is
+        # introduced while labels and counters move with the geographic camera.
+        for arrow in s.get('arrows',[]):
+            p=progress(s,arrow,t)
+            if p<=0:continue
+            points=partial([screen(x,cam) for x in arrow['points']],p)
+            if len(points)<2:continue
+            x,y=points[-1];px,py=points[-2];angle=math.atan2(y-py,x-px);col=self.colors.get(arrow.get('side'),GOLD)
+            size=18*SS
+            tip=(x*SS,y*SS)
+            left=(x*SS-size*math.cos(angle)+size*.48*math.sin(angle),y*SS-size*math.sin(angle)-size*.48*math.cos(angle))
+            right=(x*SS-size*math.cos(angle)-size*.48*math.sin(angle),y*SS-size*math.sin(angle)+size*.48*math.cos(angle))
+            d.polygon([tip,left,right],fill=(*col,int(245*fade)),outline=(*INK,int(220*fade)))
+        for unit in s.get('units',[]):
+            if t<cue_start(s,unit.get('cue',0)):continue
+            if unit.get('until') is not None and t>cue_start(s,unit['until']):continue
+            pos=partial(unit['path'],progress(s,unit,t))[-1] if unit.get('path') else unit['pos']
+            x,y=screen(pos,cam)
+            if not 40<x<W-40 or not 175<y<H-175:continue
+            col=self.colors.get(unit.get('side'),GOLD);count=max(1,min(4,int(unit.get('count',1))))
+            for n in range(count):
+                ox=(n-(count-1)/2)*16*SS
+                d.rounded_rectangle((x*SS-22*SS+ox,y*SS-8*SS,x*SS+22*SS+ox,y*SS+8*SS),radius=3*SS,fill=(*col,int(238*fade)),outline=(*CREAM,int(235*fade)),width=SS)
+            kind=unit.get('kind','infantry')
+            if kind=='cavalry':d.line(((x-10)*SS,(y+5)*SS,(x+10)*SS,(y-5)*SS),fill=(*INK,int(245*fade)),width=2*SS)
+            elif kind=='artillery':d.ellipse(((x-5)*SS,(y-5)*SS,(x+5)*SS,(y+5)*SS),fill=(*INK,int(245*fade)))
+            else:
+                d.line(((x-8)*SS,(y-5)*SS,(x+8)*SS,(y+5)*SS),fill=(*INK,int(235*fade)),width=SS)
+                d.line(((x-8)*SS,(y+5)*SS,(x+8)*SS,(y-5)*SS),fill=(*INK,int(235*fade)),width=SS)
+            label(overlay,(x,y-30),unit.get('label',''),16,(*col,255),fade)
+        # END H3 BATTLE ATLAS TACTICS
         labels=self.geography_labels(s,cam,fade);overlay.alpha_composite(labels)
         for item in s.get('callouts',[]):
             age=t-cue_start(s,item.get('cue',0))

@@ -23,6 +23,9 @@ class Settings(BaseModel):
     search_url: str = ""
     research_mode: Literal["hybrid", "strict"] = "hybrid"
     instructions: str = Field("", max_length=12000)
+    tts_engine: Literal["kokoro","chatterbox"] = "kokoro"
+    tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+    chatterbox_threads: int = Field(4, ge=1, le=8)
 
     @field_validator("base_url")
     @classmethod
@@ -45,6 +48,12 @@ class ProjectRequest(BaseModel):
     start: bool = True
     use_media: bool = True
     documentary_type: Literal["auto","battle","war","territorial_expansion","migration","cultural_movement","religious_expansion","trade_network","exploration","political_history","revolution","economic_history","technology_history","biography","general_history"] = "auto"
+    tts_engine: Literal["default","kokoro","chatterbox"] = "default"
+    tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+
+class VoiceChoice(BaseModel):
+    tts_engine: Literal["kokoro","chatterbox"]
+    tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
 
 class GeoPoint(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -70,6 +79,9 @@ class Route(BaseModel):
     side: Literal["a","b"] = "a"
     points: list[tuple[float,float]] = Field(min_length=2,max_length=30)
     uncertain: bool = True
+    kind: Literal["attack","advance","retreat","reinforcement","march"] = "advance"
+    label: str = Field("",max_length=34)
+    unit_kind: Literal["infantry","cavalry","artillery"] = "infantry"
     @field_validator("points")
     @classmethod
     def coordinates(cls,points):

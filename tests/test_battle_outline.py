@@ -3,6 +3,8 @@ import copy,json
 from pathlib import Path
 import pytest
 from app.battle_outline import build_battle_outline
+from app.battle_visuals import verify_place_coordinates,enrich_battle_outline
+from app.compiler import compile_pack
 from app.llm import LLM
 from app.models import Settings
 from app.research import assessment
@@ -57,3 +59,49 @@ def test_battle_reference_error_names_scene_field_bad_values_and_allowed_ids():
     with pytest.raises(ValueError) as caught:Outline.model_validate(value)
     message=str(caught.value)
     assert all(term in message for term in ['Scena 1 (Assalto)','focus',"['attacco']",'waterloo','non temi'])
+
+
+def test_battle_geocoder_repairs_places_and_existing_route_endpoints(tmp_path):
+    value={**copy.deepcopy(CATALOG),'scenes':[{'title':'Ritirata','date':'1815','focus':['ligny','waterloo'],
+        'event':'Le forze si ritirano verso Waterloo.','source_ids':[],
+        'routes':[{'side':'b','points':[[4.87,50.52],[4.412,50.68]]}],'commander_ids':[]} for _ in range(3)]}
+    answers={'Waterloo':[{'lon':'4.3977','lat':'50.7154','display_name':'Waterloo, Brabant wallon, Belgique'}],
+             'Ligny':[{'lon':'4.5747','lat':'50.5121','display_name':'Ligny, Namur, Belgique'}]}
+    class Response:
+        def __init__(self,data):self.data=data
+        def raise_for_status(self):pass
+        def json(self):return self.data
+    class Session:
+        headers={}
+        def get(self,url,params,timeout):return Response(answers[params['q']])
+    result=verify_place_coordinates(value,tmp_path,lambda _:None,Session(),lambda _:None)
+    positions={p['id']:p['pos'] for p in result['places']}
+    assert positions['ligny']==[4.5747,50.5121] and positions['waterloo']==[4.3977,50.7154]
+    assert result['scenes'][0]['routes'][0]['points']==[positions['ligny'],positions['waterloo']]
+    assert (tmp_path/'battle-geocoding.json').exists()
+
+
+def test_battle_visual_pass_uses_semantic_endpoints_and_compiler_draws_tactics(tmp_path):
+    value={**copy.deepcopy(CATALOG),'scenes':[
+        {'title':'Apertura','date':'1815','focus':['waterloo'],'event':'Il campo di battaglia.','source_ids':['S1'],'routes':[],'commander_ids':['napoleone']},
+        {'title':'Assalto','date':'1815','focus':['waterloo'],'event':'La cavalleria francese carica il centro.','source_ids':['S1'],'routes':[],'commander_ids':['napoleone','wellington']},
+        {'title':'Ritirata','date':'1815','focus':['waterloo','ligny'],'event':'Le forze francesi si ritirano.','source_ids':['S1'],'routes':[],'commander_ids':['wellington']} ]}
+    # Avoid network in the visual-plan test; geocoding itself is covered above.
+    (tmp_path/'battle-geocoding.json').write_text('[]')
+    class Model:
+        def structured(self,system,prompt,schema,validator=None):
+            rows=[]
+            if "'index': 1" in prompt:rows.append({'index':1,'moves':[{'side':'a','kind':'attack','label':'Cavalleria francese','unit_kind':'cavalry','to_place':'waterloo','approach':'south'}]})
+            if "'index': 2" in prompt:rows.append({'index':2,'moves':[{'side':'a','kind':'retreat','label':'Armata francese','unit_kind':'infantry','from_place':'waterloo','to_place':'ligny'}]})
+            return validator({'scenes':rows})
+    result=enrich_battle_outline(Model(),'Sistema',value,tmp_path,lambda _:None,lambda:None)
+    assert result['scenes'][1]['routes'][0]['kind']=='attack'
+    assert result['scenes'][1]['routes'][0]['points'][-1]==[4.412,50.68]
+    paragraph=' '.join(['Narrazione']+['storica']*49)
+    narration=[{'index':i,'lines':[paragraph,paragraph],'fact':'Fatto storico della scena.','kicker':'Movimento sulla mappa'} for i in range(3)]
+    pack,_=compile_pack(result,narration,[{'id':'S1','title':'Fonte','url':'https://example.org','retrieved':'2026-01-01'}],
+        {'id':'fixture','minutes':2},{'fps':30,'research_context':{'fallback_used':False}})
+    assert pack['scenes'][1]['camera_end'][2]<.2
+    assert pack['scenes'][1]['routes'] and pack['scenes'][1]['arrows']
+    assert {u['side'] for u in pack['scenes'][1]['units']}=={'a','b'}
+    assert pack['commanders']['wellington']['side']=='b'

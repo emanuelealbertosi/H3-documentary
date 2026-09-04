@@ -59,6 +59,15 @@ def test_geo_cache_never_modifies_external_pipeline(tmp_path,monkeypatch):
     pipeline.cache_geographic_inputs(work,bundled)
     assert not (bundled/'assets/geography/rivers.geojson.part').exists()
 
+def test_broad_cached_patch_is_not_reused_for_close_tactical_map(tmp_path):
+    from app import pipeline
+    source=tmp_path/'pipeline';atlas=source/'assets/geography/atlas-v2';atlas.mkdir(parents=True)
+    (atlas/'atlas.json').write_text(json.dumps({'layers':[{'levels':['unused.npy']}]}))
+    (source/'assets/geography/manifest.json').write_text(json.dumps({'bounds':[0,0,10,10],'patches':{'broad':[0,0,10,10]}}))
+    work=tmp_path/'work';work.mkdir()
+    geo={'bounds':[4,4,6,6],'patches':{'close':[4.9,4.9,5.1,5.1]},'output':'assets/geography/new'}
+    assert pipeline.reuse_atlas(work,source,geo) is False
+
 def test_example_portraits_are_downloadable_without_original_assets():
     for pattern in ['battles/*/battle.json','documentaries/*/documentary.json']:
         for path in (ROOT/'pipeline').glob(pattern):
@@ -77,7 +86,9 @@ def test_preserved_engine_baseline():
         expected=baseline.get('hybrid_extensions_sha256',{}).get(name,expected)
         data=(ROOT/'pipeline/engine'/name).read_bytes().replace(b'\r\n',b'\n')
         # Strip only named additive hooks; all other original renderer/TTS bytes are checked.
-        if name in {'visuals.py','render.py','export.py'}:
+        if name in {'visuals.py','render.py','export.py','atlas.py'}:
             data=re.sub(rb'(?m)^ +# BEGIN H3 IMAGE INSETS\n.*?^ +# END H3 IMAGE INSETS\n',b'',data,flags=re.S)
             data=re.sub(rb'(?m)^ +# BEGIN H3 RESEARCH PROVENANCE\n.*?^ +# END H3 RESEARCH PROVENANCE\n',b'',data,flags=re.S)
+            data=re.sub(rb'(?m)^ +# BEGIN H3 BATTLE ATLAS TACTICS\n.*?^ +# END H3 BATTLE ATLAS TACTICS\n',b'',data,flags=re.S)
+            data=re.sub(rb'(?m)^ +# BEGIN H3 TTS CREDIT\n.*?^ +# END H3 TTS CREDIT\n',b'',data,flags=re.S)
         assert hashlib.sha256(data).hexdigest()==expected,name

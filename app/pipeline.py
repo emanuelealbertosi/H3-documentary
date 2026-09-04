@@ -68,7 +68,10 @@ def reuse_atlas(work,source,geo):
     if not old or not(old[0]<=new[0] and old[1]<=new[1] and old[2]>=new[2] and old[3]>=new[3]):return False
     # Only reuse if every requested detailed patch also has coverage in the existing map.
     existing=read_json(manifest).get("patches",{})
-    if any(not any(o[0]<=b[0] and o[1]<=b[1] and o[2]>=b[2] and o[3]>=b[3] for o in existing.values()) for b in geo["patches"].values()):return False
+    def area(bounds):return max(1e-9,(bounds[2]-bounds[0])*(bounds[3]-bounds[1]))
+    # Coverage alone is insufficient: a very broad old patch becomes blurred
+    # when a later production asks for a close tactical view.
+    if any(not any(o[0]<=b[0] and o[1]<=b[1] and o[2]>=b[2] and o[3]>=b[3] and area(o)<=area(b)*8 for o in existing.values()) for b in geo["patches"].values()):return False
     for layer in atlas["layers"]:
         layer["levels"]=[str(source/p) for p in layer["levels"]]
         if "alpha" in layer:layer["alpha"]=str(source/layer["alpha"])

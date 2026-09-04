@@ -12,9 +12,11 @@ from .compiler import compile_pack
 from .general import history_tools,HistoryOutline
 from .outline_builder import build_history_outline
 from .battle_outline import build_battle_outline
+from .battle_visuals import enrich_battle_outline
 from .narration_builder import build_narration
 from .pack_migrations import repair_pack
 from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine
+from . import tts
 
 POOL=ThreadPoolExecutor(max_workers=1,thread_name_prefix="documentary")
 LOCK=threading.RLock();FLAGS={};FUTURES={}
@@ -35,6 +37,7 @@ def enqueue(pid):
     p=store.project(pid);cfg=store.settings(True)
     if not cfg["model"]:raise ValueError("Configura un modello in Amministrazione prima di avviare il progetto.")
     verify_pipeline(cfg["pipeline_path"])
+    tts.ensure_available(p.get('tts_engine') or 'kokoro',p.get('tts_reference_id') or '',cfg['pipeline_path'])
     with LOCK:
         if pid in FUTURES and not FUTURES[pid].done():raise ValueError("Questo progetto è già in coda o in esecuzione.")
         if p["status"]=="completed":raise ValueError("Il documentario è già completato.")
@@ -114,6 +117,7 @@ def produce(pid,cfg):
             store.write_json(cp/"outline.json",obj)
         stage("outline",do_outline)
         outline=store.read_json(cp/"outline.json")
+        if kind=='battle':outline=enrich_battle_outline(llm,system,outline,cp,log,cancel)
         if outline.get('narrative_basis')=='literary_tradition':
             system+='\nIl documentario racconta una tradizione letteraria o mitologica. Dichiara questa cornice, distingui luoghi accertati e localizzazioni leggendarie e non trasformare episodi narrativi in fatti storici verificati.'
         def do_narration():
@@ -153,9 +157,10 @@ def produce(pid,cfg):
             if n and not (work/'engine/image_insets.py').is_file():
                 raise ValueError('Il motore esterno configurato non supporta i riquadri. Seleziona il motore incluso in Amministrazione e crea una nuova revisione.')
             if selection:log(f'Immagini personali: {n} riquadri associati alle frasi. Le immagini senza corrispondenza restano nella libreria.')
+            tts.configure_pack(pack,p,work,src)
             store.write_json(packpath,pack);store.write_json(geopath,geo)
         repair_pack(packpath,work,log)
-        pack=store.read_json(packpath);geo=store.read_json(geopath)
+        pack=store.read_json(packpath);tts.configure_pack(pack,p,work,src);store.write_json(packpath,pack);geo=store.read_json(geopath)
         rel=str(packpath.relative_to(work));georel=str(geopath.relative_to(work))
         cmd=lambda name,*extra:run(pid,python,work,["documentary.py",name,"--battle",rel,*extra],cancel,log)
         if pack.get('schema_version')==2:
@@ -169,7 +174,13 @@ def produce(pid,cfg):
                 run(pid,python,work,["tools/prepare_atlas.py","--config",georel],cancel,log,max_hours=3)
         stage("geography",geography)
         stage("assets",lambda:cmd("assets"))
-        stage("voice",lambda:cmd("voice"))
+        def voice():
+            if pack.get('voice_engine')=='chatterbox':
+                _,tts_python,model,worker=tts.chatterbox_paths(src)
+                log('Chatterbox Multilingual V3: sintesi locale'+(' con campione vocale one-shot.' if pack.get('voice_reference') else ' con la voce inclusa.'))
+                run(pid,tts_python,work,[str(worker),'--workspace',str(work),'--pack',rel,'--model',str(model),'--threads',str(cfg.get('chatterbox_threads',4))],cancel,log,max_hours=12)
+            cmd("voice")
+        stage("voice",voice)
         def preview():
             if kind=="battle":run(pid,python,work,[str(ROOT/"app/layout_worker.py"),str(packpath)],cancel,log)
             else:run(pid,python,work,["tools/history_layout.py",rel],cancel,log)

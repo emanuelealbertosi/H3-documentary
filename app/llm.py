@@ -19,6 +19,19 @@ def extract_json(text):
         except ValueError:pass
     raise ModelError("Il modello non ha restituito un oggetto JSON valido.")
 
+def unwrap_schema_echo(obj,spec):
+    """Recover data when a small model writes values inside a schema wrapper."""
+    if not isinstance(obj,dict):return obj
+    required=set(spec.get('required',[])) if isinstance(spec,dict) else set()
+    title=str(spec.get('title','')).strip() if isinstance(spec,dict) else ''
+    keys=['properties','data','result']
+    if title:keys.extend([title,title[:1].lower()+title[1:],re.sub(r'(?<!^)(?=[A-Z])','_',title).lower()])
+    for key in dict.fromkeys(keys):
+        value=obj.get(key)
+        if isinstance(value,dict) and (not required or required<=set(value)):
+            return value
+    return obj
+
 class LLM:
     def __init__(self,config,cancel=lambda:None,audit=None):
         self.config=config;self.cancel=cancel;self.audit=audit;self.calls=0
@@ -94,7 +107,7 @@ class LLM:
         for attempt in range(attempts):
             try:
                 text=self.chat(messages,response_format=response_format)
-                obj=extract_json(text)
+                obj=unwrap_schema_echo(extract_json(text),spec)
                 obj=schema.model_validate(obj).model_dump() if hasattr(schema,"model_validate") else obj
                 if validator is not None:obj=validator(obj)
                 return obj

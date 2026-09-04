@@ -1,10 +1,10 @@
-import os,json,threading,copy
+import os,json,threading,copy,io,wave,array
 from pathlib import Path
 from http.server import ThreadingHTTPServer,BaseHTTPRequestHandler
 import pytest
 os.environ.setdefault("DOCUMENTARIAI_DATA",str(Path(__file__).parent/"output/state"))
 from app import store,server,pipeline,runner
-from app.models import Settings,ProjectRequest,Outline
+from app.models import Settings,ProjectRequest,Outline,Review
 from app.llm import LLM,extract_json,ModelError
 from fastapi.testclient import TestClient
 
@@ -76,12 +76,24 @@ def test_cross_site_mutations_blocked(client):
     assert c.post("/api/projects",json={"topic":"Waterloo"}).status_code==403
     assert client.get("/api/health",headers={"Host":"evil.example"}).status_code==403
 def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
+    version=(Path(__file__).resolve().parents[1]/'VERSION').read_text().strip()
     shell=client.get('/admin')
     assert shell.status_code==200 and shell.headers['cache-control']=='no-cache'
-    assert '/static/app.js?v=1.1.8' in shell.text
-    frontend=client.get('/static/app.js?v=1.1.8')
+    assert f'/static/app.js?v={version}' in shell.text
+    frontend=client.get(f'/static/app.js?v={version}')
     assert frontend.headers['cache-control']=='no-cache'
     assert frontend.text.index("select('reasoning_mode','Reasoning del modello'") < frontend.text.index("'<details><summary>Parametri del modello")
+    assert 'Voce e cloning one-shot' in frontend.text
+    assert any(x['id']=='chatterbox' and 'Chatterbox Multilingual V3' in x['name'] for x in client.get('/api/tts').json()['engines'])
+
+def test_voice_reference_upload_and_project_selection(client):
+    pcm=array.array('h',[800]*16000*5);raw=io.BytesIO()
+    with wave.open(raw,'wb') as f:f.setnchannels(1);f.setsampwidth(2);f.setframerate(16000);f.writeframes(pcm.tobytes())
+    uploaded=client.post('/api/tts/references?filename=MiaVoce.wav',content=raw.getvalue(),headers={'Content-Type':'audio/wav'});assert uploaded.status_code==201
+    voice=uploaded.json();status=client.get('/api/tts').json()
+    assert status['voices'][0]['id']==voice['id'] and status['voices'][0]['name']=='MiaVoce'
+    project=client.post('/api/projects',json={'topic':'Battaglia di prova','start':False,'tts_engine':'chatterbox','tts_reference_id':voice['id']}).json()
+    assert project['tts_engine']=='chatterbox' and project['tts_reference_id']==voice['id']
 def test_create_draft_and_preserve_on_revision(client):
     p=client.post("/api/projects",json={"topic":"Battaglia di prova","minutes":5,"start":False}).json()
     assert p["status"]=="draft"
@@ -104,6 +116,13 @@ def test_missing_provider_does_not_start(client):
 def test_json_thinking_and_invalid():
     assert extract_json('<think>reasoning</think>\n```json\n{"ok":true}\n```')=={"ok":True}
     with pytest.raises(ModelError):extract_json("No JSON")
+def test_structured_recovers_values_from_schema_echo():
+    llm=LLM(Settings(model='fixture').model_dump())
+    llm.chat=lambda *args,**kwargs: json.dumps({'properties':{
+        'acceptable':True,'issues':[],'source_ids':['S1'],'summary':'Controllo completato.'
+    },'required':['acceptable','summary'],'title':'Review','type':'object'})
+    result=llm.structured('system','review',Review)
+    assert result=={'acceptable':True,'issues':[],'source_ids':['S1'],'summary':'Controllo completato.'}
 def test_public_research_refuses_internal():
     from app.research import public_url
     for url in ["http://127.0.0.1/private","http://169.254.169.254/latest","file:///C:/Windows","http://10.0.0.1"]:
