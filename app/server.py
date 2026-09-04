@@ -34,7 +34,12 @@ async def local_boundary(request:Request,call_next):
     response.headers["X-Content-Type-Options"]="nosniff"
     response.headers["Referrer-Policy"]="no-referrer"
     response.headers["Content-Security-Policy"]="default-src 'self'; img-src 'self' data:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'"
-    if request.url.path.startswith("/api/"):response.headers["Cache-Control"]="no-store"
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"]="no-store"
+    elif request.url.path.startswith("/static/") or request.url.path in ("/","/admin","/library","/media") or request.url.path.startswith("/projects/"):
+        # This is a local application that is upgraded in place. Revalidate its
+        # shell and assets so the browser never keeps an older Admin interface.
+        response.headers["Cache-Control"]="no-cache"
     return response
 
 @app.exception_handler(KeyError)

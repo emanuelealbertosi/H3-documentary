@@ -75,6 +75,13 @@ def test_cross_site_mutations_blocked(client):
     c=TestClient(server.app)
     assert c.post("/api/projects",json={"topic":"Waterloo"}).status_code==403
     assert client.get("/api/health",headers={"Host":"evil.example"}).status_code==403
+def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
+    shell=client.get('/admin')
+    assert shell.status_code==200 and shell.headers['cache-control']=='no-cache'
+    assert '/static/app.js?v=1.1.8' in shell.text
+    frontend=client.get('/static/app.js?v=1.1.8')
+    assert frontend.headers['cache-control']=='no-cache'
+    assert frontend.text.index("select('reasoning_mode','Reasoning del modello'") < frontend.text.index("'<details><summary>Parametri del modello")
 def test_create_draft_and_preserve_on_revision(client):
     p=client.post("/api/projects",json={"topic":"Battaglia di prova","minutes":5,"start":False}).json()
     assert p["status"]=="draft"
