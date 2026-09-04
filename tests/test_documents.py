@@ -88,6 +88,22 @@ def test_document_api_paste_metadata_and_project_selection(client):
         assert any(name.endswith("/original.txt") for name in archive.namelist())
 
 
+def test_completed_project_can_choose_new_documents_for_its_next_version(client):
+    first = documents.paste(documents.PastedDocument(title="Prima fonte", text=long_text("Prima")))
+    second = documents.paste(documents.PastedDocument(title="Nuova fonte", text=long_text("Seconda")))
+    project = store.create(ProjectRequest(topic="Storia documentata", start=False, document_ids=[first["id"]]))
+    store.update(project["id"], status="completed", stage="Documentario completato", progress=100)
+    payload = {"topic": project["topic"], "minutes": 8, "notes": "Usa la nuova fonte", "source_urls": [],
+               "documentary_type": "general_history", "start": False, "use_media": True,
+               "review_visuals": True, "use_documents": True, "document_ids": [second["id"]],
+               "tts_engine": "kokoro", "tts_profile_id": "", "tts_reference_id": ""}
+    response = client.post(f"/api/projects/{project['id']}/regenerate", json=payload)
+    assert response.status_code == 200, response.text
+    regenerated = response.json()["project"]
+    assert regenerated["document_ids"] == [second["id"]] and regenerated["use_documents"] == 1
+    assert regenerated["review_visuals"] == 1 and store.project(project["id"])["document_ids"] == [first["id"]]
+
+
 def test_pdf_without_text_is_kept_with_clear_ocr_status(client):
     from pypdf import PdfWriter
     stream = io.BytesIO()

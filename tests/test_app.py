@@ -98,6 +98,8 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     assert "new URLSearchParams(location.search).get('slot')" in media_frontend and "media?slot=" in frontend.text
     assert 'Inserisci le mie immagini associate' not in frontend.text and 'use_media:true' in frontend.text
     assert 'project-use-media' not in media_frontend and 'enableProjectMedia' in media_frontend
+    assert 'Impostazioni per la prossima versione' in frontend.text and 'reg-review-visuals' in frontend.text
+    assert 'data-reg-document' in frontend.text and 'a.pathname+a.search+a.hash' in frontend.text
     assert any(x['id']=='chatterbox' and 'Chatterbox Multilingual V3' in x['name'] for x in client.get('/api/tts').json()['engines'])
 
 def test_voice_reference_upload_and_project_selection(client):
@@ -141,6 +143,22 @@ def test_completed_regeneration_creates_numbered_twins_and_keeps_original(client
     third=client.post('/api/projects/'+original['id']+'/regenerate').json()['project']
     assert third['version']==3 and third['family_id']==v2['family_id']==original['id']
 
+def test_completed_regeneration_accepts_a_complete_new_configuration(client):
+    original=client.post('/api/projects',json={'topic':'Biografia iniziale','minutes':3,'notes':'Prima versione','start':False,'review_visuals':False}).json()
+    store.update(original['id'],status='completed',stage='Documentario completato',progress=100,result={'sha256':'old'})
+    response=client.post('/api/projects/'+original['id']+'/regenerate',json={
+        'topic':'Biografia aggiornata di Napoleone','minutes':12,'notes':'Segui soprattutto gli anni italiani',
+        'source_urls':['https://museum.example/napoleone'],'documentary_type':'biography','start':False,
+        'use_media':False,'review_visuals':True,'use_documents':False,'document_ids':[],
+        'tts_engine':'kokoro','tts_profile_id':'','tts_reference_id':''})
+    assert response.status_code==200,response.text
+    changed=response.json()['project']
+    assert response.json()['mode']=='new_version' and changed['version']==2 and changed['parent_id']==original['id']
+    assert changed['topic']=='Biografia aggiornata di Napoleone' and changed['minutes']==12
+    assert changed['notes']=='Segui soprattutto gli anni italiani' and changed['source_urls']==['https://museum.example/napoleone']
+    assert changed['documentary_type']=='biography' and changed['review_visuals']==1 and changed['use_documents']==0
+    assert changed['use_media']==1 and store.project(original['id'])['notes']=='Prima versione'
+
 def test_processing_time_accumulates_across_resumes(client):
     project=client.post('/api/projects',json={'topic':'Cronometro di prova','start':False}).json();pid=project['id']
     store.begin_processing(pid,'2026-09-04T10:00:00+00:00')
@@ -156,6 +174,11 @@ def test_failed_regeneration_restarts_same_project_and_archives_attempt(client):
     checkpoint=server.JOBS/pid/'checkpoints/research.done.json';checkpoint.parent.mkdir();checkpoint.write_text('{}')
     workspace=server.JOBS/pid/'workspace/partial.txt';workspace.parent.mkdir();workspace.write_text('tentativo precedente')
     store.event(pid,'Vecchio errore','error')
+    rejected=client.post('/api/projects/'+pid+'/regenerate',json={
+        'topic':'Progetto da correggere','start':False,'use_documents':True,'document_ids':['0'*24]})
+    assert rejected.status_code==404
+    assert store.project(pid)['status']=='failed' and checkpoint.is_file() and workspace.is_file()
+    assert [x['message'] for x in store.events(pid)]==['Vecchio errore']
     response=client.post('/api/projects/'+pid+'/regenerate')
     assert response.status_code==200 and response.json()['mode']=='restart' and response.json()['project']['id']==pid
     restarted=store.project(pid);assert restarted['status']=='draft' and restarted['progress']==0 and restarted['result']=={} and not restarted['error']

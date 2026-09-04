@@ -130,17 +130,24 @@ def cancel_project(pid:str):
     from .runner import cancel
     cancel(pid);return store.project(pid)
 @app.post('/api/projects/{pid}/regenerate')
-def regenerate_project(pid:str):
+def regenerate_project(pid:str,value:ProjectRequest|None=None):
     from .runner import active
     current=store.project(pid)
     if active(pid) or current['status'] in ('running','queued','cancelling'):
         raise HTTPException(409,'Interrompi la produzione prima di rigenerarla.')
+    from .documents import validate_selection
+    resolved=None
+    if value is not None:
+        value=value.model_copy(update={'start':False,'use_media':True})
+        validate_selection(value.document_ids,value.use_documents)
+        resolved=store.request_fields(value)
     if current['status']=='completed':
-        from .documents import validate_selection
-        validate_selection(current.get('document_ids',[]),bool(current.get('use_documents')))
-        project=store.clone_completed(pid);mode='new_version'
+        if value is None:validate_selection(current.get('document_ids',[]),bool(current.get('use_documents')))
+        project=store.clone_completed(pid,value);mode='new_version'
     else:
         project=store.restart_project(pid);mode='restart'
+        if resolved is not None:
+            store.update(project['id'],**resolved);project=store.project(project['id'])
     if store.settings()['model']:
         from .runner import enqueue
         enqueue(project['id'])

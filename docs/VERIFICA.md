@@ -1,5 +1,7 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.10.0: ogni progetto espone un pannello richiudibile per configurare la rigenerazione. La richiesta può sostituire argomento, durata, tipo, prompt editoriale, link, revisione visuale, documenti, TTS e campione; le impostazioni vengono validate prima di archiviare un tentativo. Un progetto completato conserva immutata la versione precedente e crea il gemello numerato. La navigazione interna conserva query e identificatore dell’immagine selezionata. **162 test automatici superati.**
+
 Aggiornamento 1.9.4: rimossa dall’interfaccia la spunta generale **Inserisci le mie immagini associate**. I nuovi progetti abilitano automaticamente le immagini e ogni collegamento creato in un vecchio progetto ancora modificabile riattiva in modo trasparente il campo compatibile. Il formato persistente e i progetti precedenti restano leggibili. **160 test automatici superati.**
 
 Aggiornamento 1.9.3: **Collega** usa una finestra modale con trascinamento, selezione da Esplora file e scelta dalla libreria. La miniatura appena associata appare immediatamente sulla scheda del soggetto; **Cambia** e **Scollega** operano sul collegamento visibile. Le miniature della pagina progetto includono l’identificatore dello slot nell’indirizzo e la galleria apre l’editor sullo stesso elemento, portandolo al centro dell’elenco. **160 test automatici superati.**
