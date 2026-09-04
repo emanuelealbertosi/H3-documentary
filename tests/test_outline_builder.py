@@ -6,6 +6,7 @@ from app.models import Settings
 from app.general import HistoryOutline,history_tools
 from app.outline_builder import build_history_outline,HistoryCatalog,merge_rows,normalize_visual_role
 from app.outline_normalization import collections,movement_endpoints,technical_id
+from app.movement_sync import prepare_scene,plan_issue
 from app.research import assessment
 from app.llm import LLM,ModelError,TruncatedResponse,extract_json
 
@@ -240,3 +241,34 @@ def test_visual_assignment_names_are_deterministically_mapped_to_real_components
     assert normalize_visual_role(route,'journey_progress')['scene_type']=='animated_route'
     anchor={'scene_type':'geographic_anchor','focus':['itaca'],'person_ids':[],'movements':[]}
     assert normalize_visual_role(anchor,'geographic_anchor')['scene_type']=='map_overview'
+
+
+def test_movement_cue_distinguishes_arrival_and_departure():
+    outbound={'focus':['loc-a'],'movements':[{'from':'loc-a','to':'loc-b'}]}
+    inbound={'focus':['loc-b'],'movements':[{'from':'loc-a','to':'loc-b'}]}
+    assert prepare_scene(outbound,CATALOG['places'])==1 and outbound['movements'][0]['cue']==1
+    assert prepare_scene(inbound,CATALOG['places'])==1 and inbound['movements'][0]['cue']==0
+    bad={**outbound,'title':'Partenza','event':'Il gruppo lascia il primo luogo.'}
+    assert 'Luogo B' in plan_issue(bad,CATALOG['places'])
+    bad['event']='Il gruppo procede verso Luogo B.'
+    assert plan_issue(bad,CATALOG['places'])==''
+
+
+def test_outline_retries_a_route_assigned_to_the_wrong_scene(tmp_path):
+    bad=True;feedback=[]
+    def reply(title,payload,number):
+        nonlocal bad
+        result=normal_reply(title,payload,number)
+        if title=='HistorySceneBatch' and assignment(payload)[0]['index']==0:
+            result['scenes'][0].update(scene_type='animated_route',focus=['loc-a'],
+                movements=[{'from':'loc-a','to':'loc-b','semantic':'journey','sources':[]}])
+            if bad:
+                bad=False;result['scenes'][0]['event']='Il gruppo lascia il primo luogo.'
+            else:
+                result['scenes'][0]['event']='Il gruppo procede verso Luogo B.'
+                if len(payload['messages'])>2:feedback.append(payload['messages'][-1]['content'])
+        return result
+    llm,audit,logs=model(reply);result=build(llm,tmp_path,logs)
+    movement=result['scenes'][0]['movements'][0]
+    assert movement['cue']==1 and movement['to_label']=='Luogo B'
+    assert feedback and 'stessa scena' in feedback[0] and 'Luogo B' in feedback[0]

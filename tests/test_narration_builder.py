@@ -38,3 +38,24 @@ def test_short_group_falls_back_to_checkpointed_single_scenes(tmp_path):
     class Forbidden:
         def structured(self,*args):raise AssertionError('model called')
     assert build_narration(Forbidden(),'Sistema',outline(),project,[],tmp_path,logs.append,lambda:None)==result
+
+
+def test_journey_narration_must_name_the_destination_in_the_matching_cue(tmp_path):
+    data=outline();data['visual_direction']={'movement_sync':1}
+    data['places']=[{'id':'loc-a','name':'Luogo A','pos':[14,41]},{'id':'loc-b','name':'Luogo B','pos':[15,42]}]
+    data['scenes'][0]['movements']=[{'from':'loc-a','to':'loc-b','points':[[14,41],[15,42]],'semantic':'journey','cue':1}]
+    prompts=[]
+    class Model:
+        calls=0
+        def structured(self,system,prompt,schema):
+            self.calls+=1;prompts.append(prompt)
+            marker=prompt.split('indici esatti ')[1].split('.')[0]
+            indices=[int(x) for x in marker.strip('[]').split(',') if x.strip()]
+            rows=[scene(i) for i in indices]
+            if self.calls>1:rows[0]['lines'][1]=paragraph('Verso Luogo B',40,'navigazione')
+            return {'scenes':rows}
+    model=Model();logs=[]
+    result=build_narration(model,'Sistema',data,{'minutes':1.5},[],tmp_path,logs.append,lambda:None)
+    assert model.calls==2 and 'Luogo B' in result[0]['lines'][1]
+    assert 'lines[cue]' in prompts[0]
+    assert any('freccia arriva' in message for message in logs)

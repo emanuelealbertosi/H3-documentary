@@ -1,5 +1,5 @@
-import {mediaPage} from './media.js?v=1.10.1';
-import {documentsPage} from './documents.js?v=1.10.1';
+import {mediaPage} from './media.js?v=1.10.2';
+import {documentsPage} from './documents.js?v=1.10.2';
 import {mountTtsAdmin,ttsSelection,projectTtsSelection,bindReference} from './tts-api.js?v=1.8.0';
 let disposeMedia,disposeDocuments;
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

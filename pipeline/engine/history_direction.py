@@ -7,7 +7,7 @@ MAP_SCENES={'map_overview','animated_route','territorial_change','city_focus','n
 def direction_for(topic,kind,basis='history'):
     text=''.join(c for c in unicodedata.normalize('NFKD',topic.lower()) if not unicodedata.combining(c))
     journey=kind=='exploration' or bool(re.search(r'\bviaggi\w*|\bitinerar\w*|\bperiplo\b|\brientr\w*|\btraversat\w*|\bspostament\w*|\britorno.*(?:ulisse|odisseo|itaca)|\b(?:ulisse|odisse[ao]).*(?:ritorn\w*|rientr\w*|itaca)|\bodisse[ao]\b',text))
-    return {'version':1,'journey':journey,'map_led':journey or kind in {'migration','trade_network','territorial_expansion'},
+    return {'version':1,'movement_sync':1,'journey':journey,'map_led':journey or kind in {'migration','trade_network','territorial_expansion'},
             'timeline_mode':'sequence' if basis=='literary_tradition' else 'historical','auto_persons':True}
 
 
@@ -29,6 +29,7 @@ La sola presenza di ID di personaggi nel catalogo non equivale a raccontarli: co
         text+='''\nLa richiesta riguarda un VIAGGIO: conserva una regia prevalentemente cartografica. La prima e ultima scena mostrano partenza e arrivo con focus pertinenti; per l'apertura usa entrambi quando utili all'orientamento.
 Le assegnazioni journey_progress richiedono animated_route con movements oppure schematic_journey e una carta di orientamento. Le supporting_scene possono mostrare personaggi, opere o brevi spiegazioni. Non decidere che la carta è secondaria al racconto e non trasformare il viaggio in una successione di sole slide.
 Per ogni gruppo di scene conserva continuità delle tappe, evitando episodi duplicati. La narrazione deve raccontare esattamente ciò che queste scene permettono di vedere.'''
+        text+='''\nOgni movements geografico usa from e to come ID del catalogo e cue=0 oppure cue=1. La scena deve nominare nel proprio event la destinazione to: non assegnare alla tappa attuale la freccia verso una tappa che verrà raccontata soltanto nella scena successiva. cue=0 accompagna il primo paragrafo narrato, di norma un arrivo; cue=1 accompagna il secondo, di norma una partenza o la prosecuzione del percorso.'''
     if direction.get('timeline_mode')=='sequence':
         text+='\nMostra la successione narrativa degli episodi, senza far scorrere anni inventati. historical_period resta una cornice; historical_range non rappresenta la durata del viaggio.'
     return text

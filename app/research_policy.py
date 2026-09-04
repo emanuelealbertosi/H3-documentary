@@ -39,10 +39,12 @@ def review_instruction(research):
     if research.get("fallback_used"):
         return ("Revisiona cronologia, luoghi, protagonisti e coerenza usando le pagine disponibili e, per il resto, "
                 "la tua conoscenza interna. La mancanza di fonti da sola NON rende acceptable=false. "
+                "Controlla anche che ogni movimento del piano sia descritto nella stessa scena e nella medesima direzione. "
                 "Rifiuta errori materiali riconoscibili, contraddizioni, fonti o citazioni inventate e numeri precisi non supportati. "
                 "Per incertezze non risolvibili richiedi di qualificare oppure omettere l'affermazione. "
                 "Non affermare di avere verificato fatti privi di evidenza esterna. source_ids solo da pagine fornite, oppure []. ")
     return ("Verifica questa sceneggiatura confrontandola SOLO con le fonti. Controlla cronologia, luoghi, protagonisti, "
+            "e che ogni movimento del piano sia descritto nella stessa scena e nella medesima direzione. "
             "numeri e interpretazioni. acceptable=false soltanto per errori storici materiali, supporto insufficiente "
             "o contraddizioni; non per differenze stilistiche. Riporta problemi concreti e source_ids verificabili. ")
 

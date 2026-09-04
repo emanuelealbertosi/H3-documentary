@@ -157,6 +157,11 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
     def validate(batch,first,last):
         for scene in batch.get('scenes',[]):normalize_visual_role(scene,shot_role(direction,scene.get('index',first),count))
         batch=movement_endpoints(place_references(batch,catalog['places']),catalog['places'])
+        from .movement_sync import prepare_scene,plan_issue
+        for scene in batch.get('scenes',[]):
+            prepare_scene(scene,catalog['places'])
+            problem=plan_issue(scene,catalog['places'])
+            if problem:raise ValueError(f"Scena {scene.get('index',first)+1}: {problem}")
         indices=[s['index'] for s in batch['scenes']]
         if sorted(indices)!=list(range(first,last)):
             raise ValueError(f'Restituisci esattamente gli indici {list(range(first,last))}; ricevuti {indices}.')
