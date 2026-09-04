@@ -72,9 +72,7 @@ def ensure_available(engine,reference_id,pipeline_path,profile_id='',config=None
         current=config or profile(profile_id)
         if reference_id and current.get('provider')!='higgs':raise ValueError('Il campione one-shot è disponibile soltanto per Chatterbox e Higgs TTS.')
     if reference_id and engine in ('chatterbox','api'):
-        record=voice(reference_id)
-        if engine=='api' and current.get('provider')=='higgs' and record.get('duration_seconds',0)>30:
-            raise ValueError('Higgs accetta riferimenti vocali inferiori a 30 secondi. Usa un campione pulito di 5–20 secondi.')
+        voice(reference_id)
 
 def _copy_reference(reference_id,work):
     if not reference_id:return '',None

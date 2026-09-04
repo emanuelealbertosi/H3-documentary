@@ -85,7 +85,7 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
    <div class="actions"><button type="button" class="secondary" id="tts-higgs-status">Controlla stato</button><button type="button" class="secondary" id="tts-higgs-load">Carica modello</button><button type="button" class="secondary" id="tts-higgs-unload">Scarica modello</button></div>
    <p id="tts-higgs-result" class="connection-result" role="status"></p>
    <div class="divider"></div><h3>Cloning e voce persistente</h3>
-   <div class="field"><label for="tts-api-reference">Campione vocale salvato in H3</label><select id="tts-api-reference">${referenceOptions(voices)}</select><span class="hint">Higgs: parlato mono pulito di 5–20 secondi, sempre inferiore a 30; la trascrizione esatta viene inviata insieme all’audio.</span></div>
+   <div class="field"><label for="tts-api-reference">Campione vocale salvato in H3</label><select id="tts-api-reference">${referenceOptions(voices)}</select><span class="hint">Higgs: usa un parlato pulito; 10–20 secondi sono spesso sufficienti, ma H3 accetta campioni da 4 a 60 secondi. La trascrizione esatta viene inviata insieme all’audio.</span></div>
    <div class="form-grid"><div class="field"><label for="tts-higgs-voice-id">Nome della voce sul server</label><input id="tts-higgs-voice-id" pattern="[A-Za-z0-9_-]+" placeholder="emanuele_it"></div><label class="check"><input id="tts-higgs-overwrite" type="checkbox"> Sostituisci la voce se esiste già</label></div>
    <button type="button" class="secondary" id="tts-higgs-upload">Registra questa voce sul server</button>
   </div>

@@ -40,7 +40,7 @@ max_new_tokens
 response_format
 ```
 
-Il campo file si chiama esattamente `reference_audio`; la trascrizione viene inviata separatamente come `reference_text`. Per Higgs usa una registrazione pulita di 5–20 secondi e comunque inferiore a 30 secondi. La trascrizione deve riportare esattamente ciò che viene pronunciato nel campione ed è particolarmente utile per il cloning fra lingue diverse.
+Il campo file si chiama esattamente `reference_audio`; la trascrizione viene inviata separatamente come `reference_text`. H3 accetta campioni WAV da 4 a 60 secondi e non impone un limite specifico di 30 secondi al provider Higgs. Una registrazione pulita di 10–20 secondi è spesso sufficiente. La trascrizione deve riportare esattamente ciò che viene pronunciato nel campione ed è particolarmente utile per il cloning fra lingue diverse.
 
 Puoi anche registrare il campione sul PC Higgs come voce riutilizzabile. Seleziona il campione in Amministrazione, assegna un ID composto da lettere, numeri, trattino o trattino basso e usa **Registra questa voce sul server**. H3 chiama `POST /v1/voices/upload` con `voice_id`, `reference_audio`, `reference_text` e `overwrite`. Il nome restituito viene inserito nel campo **Voce / voice ID persistente**; salva il profilo per usarlo successivamente tramite `/v1/audio/speech`.
 

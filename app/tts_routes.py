@@ -30,7 +30,6 @@ def test_profile(value:TTSTestRequest):
         from . import tts
         record=tts.voice(value.reference_id)
         if value.provider!='higgs':raise ValueError('Il campione one-shot nella prova è disponibile soltanto con Higgs TTS.')
-        if record.get('duration_seconds',0)>30:raise ValueError('Higgs accetta riferimenti inferiori a 30 secondi. Usa un campione pulito di 5–20 secondi.')
         reference_path=tts.voice_folder(value.reference_id)/'reference.wav';reference_text=record.get('reference_text','')
     audio=tts_api.test_voice(value,reference_path=reference_path,reference_text=reference_text)
     return Response(audio,media_type='audio/wav',headers={'Content-Disposition':'inline; filename="prova-tts.wav"'})
@@ -52,6 +51,5 @@ def remote_model(profile_id:str,action:str):
 def remote_voice(profile_id:str,value:HiggsVoiceUpload):
     from . import tts
     config,key=_higgs(profile_id);record=tts.voice(value.reference_id)
-    if record.get('duration_seconds',0)>30:raise ValueError('Higgs accetta riferimenti inferiori a 30 secondi. Usa un campione pulito di 5–20 secondi.')
     path=tts.voice_folder(value.reference_id)/'reference.wav'
     return tts_api.higgs_upload_voice(config,path,record.get('reference_text',''),value.voice_id,value.overwrite,key)

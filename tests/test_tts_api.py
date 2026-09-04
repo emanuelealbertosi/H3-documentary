@@ -142,3 +142,13 @@ def test_higgs_status_and_persistent_voice_contract(monkeypatch,tmp_path):
     assert result.status_code==200 and result.json()['voice']=='emanuele_it.wav'
     assert calls[-1][0].endswith('/v1/voices/upload') and calls[-1][1]['data']['reference_text']=='Testo pronunciato'
     assert calls[-1][1]['files']['reference_audio'][0]=='reference.wav'
+
+def test_higgs_reference_longer_than_thirty_seconds_reaches_test_and_voice_routes(monkeypatch,tmp_path):
+    item=saved(timeout=900,response_format='wav');record=tts.upload_reference(wav_bytes(31),'campione-lungo.wav','Trascrizione completa')
+    tts.ensure_available('api',record['id'],tmp_path,item['id'],tts_api.snapshot(item['id']))
+    monkeypatch.setattr(tts_api,'test_voice',lambda value,**kwargs:wav_bytes())
+    monkeypatch.setattr(tts_api,'higgs_upload_voice',lambda *args,**kwargs:{'ok':True,'voice':'campione_lungo.wav'})
+    client=TestClient(server.app,headers={'X-DocumentariAI':'studio'})
+    preview=client.post('/api/tts/profiles/test',json={**tts_api.profile(item['id']),'reference_id':record['id']})
+    uploaded=client.post('/api/tts/profiles/'+item['id']+'/voices/upload',json={'reference_id':record['id'],'voice_id':'campione_lungo'})
+    assert preview.status_code==200 and uploaded.status_code==200
