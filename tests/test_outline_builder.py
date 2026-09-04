@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest,requests
 from app.models import Settings
 from app.general import HistoryOutline,history_tools
-from app.outline_builder import build_history_outline,HistoryCatalog,merge_rows
+from app.outline_builder import build_history_outline,HistoryCatalog,merge_rows,normalize_visual_role
 from app.outline_normalization import collections,movement_endpoints,technical_id
 from app.research import assessment
 from app.llm import LLM,ModelError,TruncatedResponse,extract_json
@@ -231,3 +231,12 @@ def test_keyed_movements_and_exact_catalog_endpoints_are_losslessly_normalized()
     assert mapped['scenes'][0]['movements'][0]['points']==[[14,41],[15,42]]
     unknown=movement_endpoints({'scenes':[{'movements':[{'from':'unknown','to':'loc-b'}]}]},CATALOG['places'])
     assert 'points' not in unknown['scenes'][0]['movements'][0]
+
+
+def test_visual_assignment_names_are_deterministically_mapped_to_real_components():
+    supporting={'scene_type':'supporting_scene','person_ids':['ulisse'],'movements':[]}
+    assert normalize_visual_role(supporting,'supporting_scene')['scene_type']=='person_intro'
+    route={'scene_type':'journey_progress','person_ids':[],'movements':[{'points':[[1,2],[2,3]]}]}
+    assert normalize_visual_role(route,'journey_progress')['scene_type']=='animated_route'
+    anchor={'scene_type':'geographic_anchor','focus':['itaca'],'person_ids':[],'movements':[]}
+    assert normalize_visual_role(anchor,'geographic_anchor')['scene_type']=='map_overview'

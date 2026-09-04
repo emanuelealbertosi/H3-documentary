@@ -154,6 +154,9 @@ def test_completed_project_api_lists_all_replaceable_images_and_clone_omits_old_
     client=TestClient(server.app,headers={"X-DocumentariAI":"studio"})
     response=client.get(f"/api/projects/{pid}/visual-slots")
     assert response.status_code==200 and len(response.json()["slots"])==3
+    targets=client.get(f"/api/projects/{pid}/media").json()['targets']
+    preview=next(x for x in targets if x.get('visual_slot_id') and x.get('visual_has_preview'))
+    assert client.get(f"/api/projects/{pid}/visual-slots/{preview['visual_slot_id']}/image").status_code==200
     slot=response.json()['slots'][0]
     edited=client.put(f"/api/projects/{pid}/visual-slots/{slot['id']}",json={'enabled':False})
     assert edited.status_code==200 and edited.json()['change_count']==1

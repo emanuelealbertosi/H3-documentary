@@ -38,6 +38,13 @@ def test_journey_shot_roles_require_progress_and_full_plan_reports_counts():
     with pytest.raises(ValueError,match='deve fare avanzare il viaggio'):require_coverage(doc)
 
 
+def test_partial_plan_does_not_treat_the_last_saved_scene_as_the_final_arrival():
+    direction=direction_for('Il ritorno di Odisseo','general_history','literary_tradition')
+    direction['scene_count']=10
+    report=require_coverage({'visual_direction':direction,'scenes':[journey_scene(i) for i in range(4)]})
+    assert report['passed'] and not any('partenza/arrivo' in issue for issue in report['issues'])
+
+
 def test_schematic_journey_requires_context_distinct_stops_and_explanation():
     direction=direction_for('Viaggio di Odisseo','exploration','literary_tradition')
     scene=journey_scene(1);scene['schematic_journey']={'stops':['Ciclope','Ciclope'],'note':''};scene['focus']=scene['location_ids']=[]

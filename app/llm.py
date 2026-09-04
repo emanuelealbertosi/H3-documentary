@@ -5,6 +5,43 @@ from .models import Settings
 class ModelError(RuntimeError): pass
 class TruncatedResponse(ModelError): pass
 
+def provider_error(response,secret=''):
+    """Return the provider's useful JSON error without echoing requests or keys."""
+    try:
+        data=response.json()
+    except Exception:
+        return ''
+    if isinstance(data,dict):
+        data=data.get('error',data)
+    if isinstance(data,dict):
+        parts=[]
+        for key in ('message','detail','type','code','param'):
+            value=data.get(key)
+            if isinstance(value,(str,int,float)) and str(value).strip():parts.append(str(value).strip())
+        detail=' · '.join(dict.fromkeys(parts))
+    elif isinstance(data,str):detail=data.strip()
+    else:detail=''
+    if secret:detail=detail.replace(secret,'[chiave rimossa]')
+    detail=re.sub(r'(?i)bearer\s+[a-z0-9._~+/-]+','Bearer [chiave rimossa]',detail)
+    return re.sub(r'\s+',' ',detail)[:700]
+
+def compatibility_retry(payload,detail,attempt,token_parameter):
+    """Adjust one rejected OpenAI-compatible request without changing saved settings."""
+    lower=detail.lower()
+    context=any(term in lower for term in ('context length','context window','maximum context','too many tokens','prompt is too long','n_ctx'))
+    if context and payload.get(token_parameter,0)>512:
+        payload[token_parameter]=max(512,int(payload[token_parameter])//2)
+        return f"richiesta troppo lunga; spazio di risposta ridotto a {payload[token_parameter]} token"
+    if 'reasoning_effort' in payload and any(term in lower for term in ('reasoning_effort','reasoning effort','reasoning parameter')):
+        payload.pop('reasoning_effort',None)
+        return 'controllo reasoning non accettato; riprovo usando le impostazioni native del server'
+    if 'response_format' in payload and any(term in lower for term in ('response_format','json_schema','json schema')):
+        payload.pop('response_format',None)
+        return 'formato JSON strutturato non accettato; riprovo con lo schema nelle istruzioni'
+    if attempt==0:
+        return 'rifiuto temporaneo; riprovo una volta la stessa richiesta'
+    return ''
+
 def validation_message(error):
     if hasattr(error,'errors'):
         return '; '.join('.'.join(map(str,e['loc']))+': '+e['msg'] for e in error.errors(include_url=False,include_input=False))[:2200]
@@ -42,17 +79,38 @@ class LLM:
     def notify(self,message):
         callback=getattr(self,'progress',None)
         if callback:callback(message)
+    def load_lmstudio_model(self):
+        """Load the configured model through LM Studio's native management API."""
+        if self.config.get('provider')!='lmstudio':return False
+        base=self.config['base_url'].rstrip('/')
+        if base.endswith('/v1'):base=base[:-3]
+        body={'model':self.config['model']}
+        if self.config.get('context_length'):body['context_length']=self.config['context_length']
+        self.notify('LM Studio: nessun modello caricato; carico '+self.config['model']+'.')
+        try:
+            response=self.session.post(base+'/api/v1/models/load',json=body,
+                timeout=(15,self.config['timeout']),allow_redirects=False)
+        except requests.RequestException as error:
+            raise ModelError('LM Studio non ha completato il caricamento automatico del modello.') from error
+        if response.status_code not in (200,201):
+            detail=provider_error(response,self.config.get('api_key',''))
+            raise ModelError(f"LM Studio non riesce a caricare {self.config['model']} (HTTP {response.status_code})"+(f": {detail}" if detail else '')+". Apri Developer in LM Studio e controlla il modello selezionato.")
+        self.notify('LM Studio: modello caricato; riprendo la richiesta.')
+        return True
     def models(self):
         self.cancel()
         try:r=self.session.get(self.config["base_url"]+"/models",timeout=(10,30),allow_redirects=False)
         except requests.RequestException as e:raise ModelError("Server non raggiungibile. Controlla indirizzo, porta e accesso dalla rete.") from e
-        if r.status_code!=200:raise ModelError(f"Il server modelli risponde HTTP {r.status_code}. Controlla endpoint e credenziali.")
+        if r.status_code!=200:
+            detail=provider_error(r,self.config.get('api_key',''))
+            raise ModelError(f"Il server modelli risponde HTTP {r.status_code}"+(f": {detail}" if detail else '')+". Controlla endpoint e credenziali.")
         data=r.json();return [str(x["id"]) for x in data.get("data",[]) if x.get("id")]
     def chat(self,messages,max_tokens=None,response_format=None):
         self.cancel()
         if self.calls>=self.config.get("request_limit",100):raise ModelError("Raggiunto il limite di richieste per questa esecuzione.")
+        token_parameter=self.config.get("token_parameter","max_tokens")
         payload={"model":self.config["model"],"messages":messages,"stream":False,
-                 self.config.get("token_parameter","max_tokens"):max_tokens or self.config["max_tokens"]}
+                 token_parameter:max_tokens or self.config["max_tokens"]}
         if self.config.get("temperature") is not None:payload["temperature"]=self.config["temperature"]
         reasoning=self.config.get('reasoning_mode','server')
         if reasoning!='server':payload['reasoning_effort']='medium' if reasoning=='on' else 'none'
@@ -78,7 +136,21 @@ class LLM:
                     for _ in range(2**attempt):self.cancel();time.sleep(1)
                     continue
                 if r.status_code!=200:
-                    raise ModelError(f"Il modello risponde HTTP {r.status_code}. Verifica credenziali, modello, formato JSON e parametro token in Amministrazione.")
+                    detail=provider_error(r,self.config.get('api_key',''))
+                    if self.audit:self.audit({"call":self.calls,"model":self.config['model'],"status":r.status_code,"seconds":round(time.monotonic()-started,1),"error":detail or "nessun dettaglio restituito"})
+                    if r.status_code==400 and attempt<2:
+                        if 'no models loaded' in detail.lower() and self.load_lmstudio_model():
+                            continue
+                        adjustment=compatibility_retry(payload,detail,attempt,token_parameter)
+                        if adjustment:
+                            self.notify("Modello: HTTP 400, "+adjustment+".")
+                            time.sleep(1)
+                            continue
+                    message=f"Il modello risponde HTTP {r.status_code}"+(f": {detail}" if detail else '')+"."
+                    if r.status_code in (401,403):message+=' Controlla la chiave associata a questo server.'
+                    elif r.status_code==400:message+=' Il progetto resta riprendibile; il dettaglio del server è stato conservato.'
+                    else:message+=' Verifica endpoint e modello in Amministrazione.'
+                    raise ModelError(message)
                 data=r.json();choice=data["choices"][0];text=choice["message"].get("content") or ""
                 if isinstance(text,list):text="".join(x.get("text","") for x in text if isinstance(x,dict))
                 elapsed=round(time.monotonic()-started,1)

@@ -11,6 +11,7 @@ class Settings(BaseModel):
     clear_api_key: bool = False
     timeout: int = Field(180, ge=10, le=1800)
     max_tokens: int = Field(8192, ge=512, le=65536)
+    context_length: int = Field(0, ge=0, le=262144)
     temperature: float | None = Field(0.25, ge=0, le=2)
     token_parameter: Literal["max_tokens","max_completion_tokens"] = "max_tokens"
     reasoning_mode: Literal["server","on","off"] = "server"

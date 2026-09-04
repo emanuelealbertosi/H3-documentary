@@ -5,7 +5,7 @@ import pytest
 os.environ.setdefault("DOCUMENTARIAI_DATA",str(Path(__file__).parent/"output/state"))
 from app import store,server,pipeline,runner
 from app.models import Settings,ProjectRequest,Outline,Review
-from app.llm import LLM,extract_json,ModelError
+from app.llm import LLM,extract_json,ModelError,provider_error
 from fastapi.testclient import TestClient
 
 @pytest.fixture(autouse=True)
@@ -87,7 +87,11 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     assert 'Voce e cloning one-shot' in frontend.text
     assert 'sidebar-toggle' in shell.text and 'h3-sidebar-collapsed' in frontend.text
     assert 'Tempo di elaborazione:' in frontend.text
-    assert 'Immagini del film' in frontend.text and 'Aggiorna solo le scene interessate' in client.get(f'/static/media.js?v={version}').text
+    media_frontend=client.get(f'/static/media.js?v={version}').text
+    media_styles=client.get('/static/media.css').text
+    assert 'Immagini del film' in frontend.text and 'Aggiorna solo le scene interessate' in media_frontend
+    assert 'media-column-resizer' in media_frontend and 'h3-media-target-width' in media_frontend
+    assert '--media-target-width:380px' in media_styles and 'cursor:col-resize' in media_styles
     assert any(x['id']=='chatterbox' and 'Chatterbox Multilingual V3' in x['name'] for x in client.get('/api/tts').json()['engines'])
 
 def test_voice_reference_upload_and_project_selection(client):
@@ -174,6 +178,40 @@ def test_missing_provider_does_not_start(client):
 def test_json_thinking_and_invalid():
     assert extract_json('<think>reasoning</think>\n```json\n{"ok":true}\n```')=={"ok":True}
     with pytest.raises(ModelError):extract_json("No JSON")
+
+def test_provider_error_is_safe_and_400_retries_once():
+    class Response:
+        status_code=400
+        def json(self):return {'error':{'message':'backend busy; Bearer private-token','type':'server_busy'}}
+    assert provider_error(Response(),'private-token')=='backend busy; Bearer [chiave rimossa] · server_busy'
+    class Session:
+        def __init__(self):self.calls=[]
+        def post(self,*args,**kwargs):
+            self.calls.append(copy.deepcopy(kwargs['json']))
+            if len(self.calls)==1:return Response()
+            return type('Ok',(),{'status_code':200,'json':lambda self:{'choices':[{'finish_reason':'stop','message':{'content':'{"ok":true}'}}]}})()
+    llm=LLM(Settings(model='fixture',api_key='private-token',reasoning_mode='off').model_dump());llm.session=Session()
+    assert extract_json(llm.chat([{'role':'user','content':'test'}]))=={'ok':True}
+    assert len(llm.session.calls)==2
+
+def test_lmstudio_loads_the_configured_model_when_memory_is_empty():
+    class Response:
+        def __init__(self,status,data):self.status_code=status;self.data=data
+        def json(self):return self.data
+    class Session:
+        def __init__(self):self.calls=[];self.chat_calls=0
+        def post(self,url,**kwargs):
+            self.calls.append((url,copy.deepcopy(kwargs['json'])))
+            if url.endswith('/api/v1/models/load'):
+                return Response(200,{'status':'loaded','model_instance_id':'fixture'})
+            self.chat_calls+=1
+            if self.chat_calls==1:return Response(400,{'error':{'message':'No models loaded. Please load a model.','type':'invalid_request_error','param':'model'}})
+            return Response(200,{'choices':[{'finish_reason':'stop','message':{'content':'{"ok":true}'}}]})
+    config=Settings(provider='lmstudio',base_url='http://localhost:1234/v1',model='google/gemma-fixture',context_length=65536,reasoning_mode='off').model_dump()
+    llm=LLM(config);llm.session=Session()
+    assert extract_json(llm.chat([{'role':'user','content':'test'}]))=={'ok':True}
+    load=next(call for call in llm.session.calls if call[0].endswith('/api/v1/models/load'))
+    assert load==('http://localhost:1234/api/v1/models/load',{'model':'google/gemma-fixture','context_length':65536})
 def test_visual_review_blocks_only_specific_severe_defects():
     assert runner.visual_blockers({'acceptable':False,'issues':['Nella terza mappa le etichette sono sovrapposte.']})
     assert runner.visual_blockers({'acceptable':False,'issues':['La scena 4 è corrotta.']})

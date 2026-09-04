@@ -224,7 +224,7 @@ def protect(text,decrypt=False):
         return result.decode() if decrypt else base64.b64encode(result).decode()
     finally:ctypes.windll.kernel32.LocalFree(dst.data)
 
-SERVER_FIELDS=('provider','base_url','model','timeout','max_tokens','temperature','token_parameter','reasoning_mode','json_mode','vision','request_limit')
+SERVER_FIELDS=('provider','base_url','model','timeout','max_tokens','context_length','temperature','token_parameter','reasoning_mode','json_mode','vision','request_limit')
 
 def profile_id(provider,base_url):
     """Stable opaque ID; neither credentials nor model prompts are part of it."""

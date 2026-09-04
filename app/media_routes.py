@@ -32,7 +32,8 @@ def project_media(pid:str):
     visual=status(pid);targets=media.targets(pid)
     for slot in visual['slots']:
         target={'kind':slot['kind'],'label':slot['label'],'visual_slot_id':slot['id'],'visual_state':slot['state'],'scene_ids':slot['scene_ids'],'source_type':slot.get('source_type',''),
-                'optional':bool(slot.get('optional')),'required':bool(slot.get('required')),'enabled':bool(slot.get('enabled')),'pending_option':bool(slot.get('pending_option'))}
+                'optional':bool(slot.get('optional')),'required':bool(slot.get('required')),'enabled':bool(slot.get('enabled')),'pending_option':bool(slot.get('pending_option')),
+                'visual_has_preview':bool(slot.get('has_preview'))}
         target['visual_editable']=p['status'] in ('review','completed')
         current=next((x for x in targets if x['kind']==target['kind'] and media.normalized(x['label'])==media.normalized(target['label'])),None)
         if current:current.update({k:v for k,v in target.items() if k not in ('kind','label')})

@@ -66,9 +66,11 @@ def scene_issues(scene,direction,role=None):
 def coverage(document):
     direction=document.get('visual_direction') or document.get('metadata',{}).get('visual_direction',{})
     scenes=document.get('scenes',[]);problems=[]
+    expected_count=max(len(scenes),int(direction.get('scene_count') or len(scenes)))
     if direction.get('version')==1:
         for i,s in enumerate(scenes):
-            for message in scene_issues(s,direction,shot_role(direction,i,len(scenes))):
+            scene_index=int(s.get('index',i))
+            for message in scene_issues(s,direction,shot_role(direction,scene_index,expected_count)):
                 problems.append(f"Scena {i+1} ({s.get('title','')}): {message}.")
     return {'policy_version':direction.get('version',0),'scenes':len(scenes),
             'map_scenes':sum(s.get('scene_type') in MAP_SCENES for s in scenes),
