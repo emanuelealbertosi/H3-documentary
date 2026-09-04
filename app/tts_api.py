@@ -138,7 +138,10 @@ def higgs_model(config,action,api_key=''):
     value=_object(response,'del modello');expected='ready' if action=='load' else 'unloaded'
     if value.get('ok') is not True or value.get('model_state')!=expected:
         raise ValueError(f'Il server Higgs non ha confermato lo stato {expected}.')
-    return value
+    status=higgs_status(config,api_key)
+    if status.get('model_state')!=expected:
+        raise ValueError(f'Il comando Higgs è terminato, ma lo stato successivo è {status.get("model_state","sconosciuto")} invece di {expected}.')
+    return {**value,**status,'confirmed_by_status':True}
 
 def higgs_upload_voice(config,reference_path,reference_text,voice_id,overwrite=False,api_key=''):
     if config.get('provider')!='higgs':raise ValueError('Le voci persistenti sono disponibili soltanto per Higgs TTS.')
@@ -166,7 +169,7 @@ def higgs_activity(config,api_key='',log=None):
     finally:
         try:
             result=higgs_model(config,'unload',api_key)
-            if log:log('Higgs remoto: modello scaricato; il server resta raggiungibile.' if not result.get('already_unloaded') else 'Higgs remoto: modello già scaricato.')
+            if log:log('Higgs remoto: il server conferma lo stato unloaded; il processo HTTP resta raggiungibile.' if not result.get('already_unloaded') else 'Higgs remoto: il server conferma che il modello era già nello stato unloaded.')
         except Exception as exc:
             if log:log('Higgs remoto: sintesi conclusa, ma lo scaricamento del modello non è riuscito: '+str(exc))
             if not failed:raise

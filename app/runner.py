@@ -31,8 +31,11 @@ STAGES=[("research","Ricerca delle fonti"),("outline","Struttura e geografia"),(
 ("voice","Voce italiana"),("preview","Anteprime e controllo"),("render","Rendering delle scene"),
 ("finalize","Montaggio e audio"),("verify","Verifica del video")]
 
-def active():
-    with LOCK:return any(not f.done() for f in FUTURES.values())
+def active(pid=None):
+    with LOCK:
+        if pid is not None:
+            future=FUTURES.get(pid);return bool(future and not future.done())
+        return any(not f.done() for f in FUTURES.values())
 def enqueue(pid):
     p=store.project(pid);cfg=store.settings(True)
     if not cfg["model"]:raise ValueError("Configura un modello in Amministrazione prima di avviare il progetto.")

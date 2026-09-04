@@ -1,4 +1,4 @@
-import json, sqlite3, secrets, threading, datetime, ctypes, base64, os, hashlib
+import json, sqlite3, secrets, threading, datetime, ctypes, base64, os, hashlib, shutil, time
 from pathlib import Path
 from .paths import DATA, JOBS, DEFAULT_PIPELINE
 from .models import Settings
@@ -39,6 +39,18 @@ def init():
             c.execute("ALTER TABLE projects ADD COLUMN use_documents INTEGER DEFAULT 0")
         if "document_ids" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN document_ids TEXT DEFAULT '[]'")
+        columns={r[1] for r in c.execute("PRAGMA table_info(projects)")}
+        if "family_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN family_id TEXT DEFAULT ''")
+        if "version" not in columns:c.execute("ALTER TABLE projects ADD COLUMN version INTEGER DEFAULT 1")
+        if "parent_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN parent_id TEXT DEFAULT ''")
+        c.execute("UPDATE projects SET family_id=id WHERE family_id IS NULL OR family_id=''")
+        c.execute("UPDATE projects SET version=1 WHERE version IS NULL OR version<1")
+    trash=DATA/'project-trash'
+    if trash.is_dir():
+        trash_root=trash.resolve()
+        for item in trash.iterdir():
+            if item.is_dir() and not item.is_symlink() and item.resolve().parent==trash_root:
+                shutil.rmtree(item,ignore_errors=True)
 def project(pid):
     with connect() as c: row=c.execute("SELECT * FROM projects WHERE id=?",(pid,)).fetchone()
     if not row: raise KeyError(pid)
@@ -49,7 +61,7 @@ def project(pid):
 def projects():
     with connect() as c: ids=[r["id"] for r in c.execute("SELECT id FROM projects ORDER BY created DESC")]
     return [project(i) for i in ids]
-def create(req):
+def create(req,*,family_id='',version=1,parent_id=''):
     pid=secrets.token_hex(8);ts=now()
     cfg=settings();engine=cfg['tts_engine'] if req.tts_engine=='default' else req.tts_engine
     profile=req.tts_profile_id or (cfg.get('tts_profile_id','') if req.tts_engine=='default' and engine=='api' else '')
@@ -66,6 +78,7 @@ def create(req):
         c.execute("UPDATE projects SET use_media=? WHERE id=?",(req.use_media,pid))
         c.execute("UPDATE projects SET use_documents=?,document_ids=? WHERE id=?",(req.use_documents,json.dumps(req.document_ids),pid))
         c.execute("UPDATE projects SET tts_engine=?,tts_reference_id=?,tts_profile_id=?,tts_config=? WHERE id=?",(engine,reference,profile,json.dumps(tts_config,ensure_ascii=False),pid))
+        c.execute("UPDATE projects SET family_id=?,version=?,parent_id=? WHERE id=?",(family_id or pid,max(1,int(version)),parent_id,pid))
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
     allowed={"status","stage","progress","error","result","notes","source_urls","use_media","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config"}
@@ -78,6 +91,72 @@ def event(pid,message,level="info"):
     with connect() as c:c.execute("INSERT INTO events(project_id,at,level,message) VALUES (?,?,?,?)",(pid,now(),level,message))
 def events(pid,after=0):
     with connect() as c:return [dict(r) for r in c.execute("SELECT * FROM events WHERE project_id=? AND id>? ORDER BY id LIMIT 500",(pid,after))]
+
+def clone_completed(pid):
+    """Create a new version from user inputs while retaining the completed project."""
+    from .models import ProjectRequest
+    with LOCK:
+        old=project(pid)
+        if old['status']!='completed':raise ValueError('Solo un progetto completato crea una nuova versione.')
+        family=old.get('family_id') or old['id']
+        with connect() as c:
+            version=int(c.execute('SELECT COALESCE(MAX(version),0)+1 FROM projects WHERE family_id=?',(family,)).fetchone()[0])
+        request=ProjectRequest(topic=old['topic'],minutes=old['minutes'],notes=old['notes'],source_urls=old['source_urls'],start=False,
+            use_media=bool(old.get('use_media')),use_documents=bool(old.get('use_documents')),document_ids=old.get('document_ids',[]),
+            documentary_type=old.get('documentary_type') or 'auto',tts_engine='default')
+        new=create(request,family_id=family,version=version,parent_id=old['id'])
+        event(pid,f'Creata la versione V{version}: {new["id"]}.')
+        event(new['id'],f'Nuova versione V{version} del progetto {old["id"]}.')
+        return new
+
+def restart_project(pid):
+    """Archive the failed attempt and reset the same project to an empty run."""
+    with LOCK:
+        old=project(pid)
+        if old['status']=='completed':raise ValueError('Un progetto completato deve creare una nuova versione.')
+        if old['status'] in ('running','queued','cancelling'):raise ValueError('Interrompi la produzione prima di rigenerarla.')
+        folder=(JOBS/pid).resolve();root=JOBS.resolve()
+        if folder.parent!=root or folder.name!=pid:raise ValueError('Cartella del progetto non valida.')
+        stamp=str(time.time_ns());attempt=folder/'attempts'/stamp;attempt.mkdir(parents=True,exist_ok=False)
+        with connect() as c:old_events=[dict(row) for row in c.execute('SELECT * FROM events WHERE project_id=? ORDER BY id',(pid,))]
+        if old_events:write_json(attempt/'events.json',old_events)
+        moved=[]
+        try:
+            for name in ('checkpoints','workspace','research','model-audit','last-error.txt','project-export.zip'):
+                source=folder/name
+                if source.exists():
+                    target=attempt/name;source.rename(target);moved.append((source,target))
+            with connect() as c:
+                c.execute('DELETE FROM events WHERE project_id=?',(pid,))
+                c.execute("UPDATE projects SET status='draft',stage='Pronto per rigenerare',progress=0,error='',result='{}',updated=? WHERE id=?",(now(),pid))
+        except Exception:
+            for source,target in reversed(moved):
+                if target.exists() and not source.exists():target.rename(source)
+            raise
+        event(pid,'Rigenerazione da zero richiesta. Il tentativo precedente è stato archiviato.')
+        return project(pid)
+
+def delete_project(pid):
+    """Remove one inactive project and its private files from the local studio."""
+    with LOCK:
+        old=project(pid)
+        if old['status'] in ('running','queued','cancelling'):raise ValueError('Interrompi la produzione prima di eliminare il progetto.')
+        folder=(JOBS/pid).resolve();root=JOBS.resolve()
+        if folder.parent!=root or folder.name!=pid:raise ValueError('Cartella del progetto non valida.')
+        trash_root=DATA/'project-trash';trash_root.mkdir(exist_ok=True)
+        staged=trash_root/(pid+'-'+str(time.time_ns()))
+        if folder.exists():folder.rename(staged)
+        try:
+            with connect() as c:
+                c.execute('DELETE FROM events WHERE project_id=?',(pid,))
+                c.execute('DELETE FROM projects WHERE id=?',(pid,))
+        except Exception:
+            if staged.exists() and not folder.exists():staged.rename(folder)
+            raise
+        if staged.exists():
+            try:shutil.rmtree(staged)
+            except OSError:pass
+        return old
 
 class Blob(ctypes.Structure):
     _fields_=[("size",ctypes.c_ulong),("data",ctypes.POINTER(ctypes.c_ubyte))]

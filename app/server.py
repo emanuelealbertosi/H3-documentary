@@ -129,6 +129,30 @@ def start_project(pid:str):
 def cancel_project(pid:str):
     from .runner import cancel
     cancel(pid);return store.project(pid)
+@app.post('/api/projects/{pid}/regenerate')
+def regenerate_project(pid:str):
+    from .runner import active
+    current=store.project(pid)
+    if active(pid) or current['status'] in ('running','queued','cancelling'):
+        raise HTTPException(409,'Interrompi la produzione prima di rigenerarla.')
+    if current['status']=='completed':
+        from .documents import validate_selection
+        validate_selection(current.get('document_ids',[]),bool(current.get('use_documents')))
+        project=store.clone_completed(pid);mode='new_version'
+    else:
+        project=store.restart_project(pid);mode='restart'
+    if store.settings()['model']:
+        from .runner import enqueue
+        enqueue(project['id'])
+    return {'mode':mode,'project':store.project(project['id'])}
+@app.delete('/api/projects/{pid}')
+def delete_project(pid:str):
+    from .runner import active
+    project=store.project(pid)
+    if active(pid) or project['status'] in ('running','queued','cancelling'):
+        raise HTTPException(409,'Interrompi la produzione prima di eliminare il progetto.')
+    store.delete_project(pid)
+    return {'deleted':True,'id':pid}
 @app.put('/api/projects/{pid}/voice')
 def project_voice(pid:str,value:VoiceChoice):
     from .tts import change_project_voice

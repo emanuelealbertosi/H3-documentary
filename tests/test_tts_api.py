@@ -107,13 +107,14 @@ def test_errors_do_not_leak_credentials(monkeypatch):
     assert 'top-secret' not in str(caught.value)
 
 def test_higgs_activity_loads_once_and_always_unloads(monkeypatch,tmp_path):
-    calls=[]
+    calls=[];state={'value':'unloaded'}
     def post(url,**kwargs):
         calls.append((url,kwargs))
-        if url.endswith('/model/load'):return Reply(body={'ok':True,'model_state':'ready','already_loaded':False})
-        if url.endswith('/model/unload'):return Reply(body={'ok':True,'model_state':'unloaded','already_unloaded':False})
+        if url.endswith('/model/load'):state['value']='ready';return Reply(body={'ok':True,'model_state':'ready','already_loaded':False})
+        if url.endswith('/model/unload'):state['value']='unloaded';return Reply(body={'ok':True,'model_state':'unloaded','already_unloaded':False})
         return Reply(wav_bytes())
     monkeypatch.setattr(tts_api.requests,'post',post)
+    monkeypatch.setattr(tts_api.requests,'get',lambda *args,**kwargs:Reply(body={'server':'up','model_state':state['value']}))
     config=dict(provider='higgs',base_url='http://gpu-pc:8095/v1',model='',voice='',response_format='wav',timeout=900,
                 temperature=1.0,top_p=.95,top_k=50,seed=-1,max_new_tokens=2048)
     reference=tmp_path/'reference.wav';reference.write_bytes(wav_bytes())
@@ -126,12 +127,12 @@ def test_higgs_activity_loads_once_and_always_unloads(monkeypatch,tmp_path):
 
 def test_higgs_status_and_persistent_voice_contract(monkeypatch,tmp_path):
     item=saved(timeout=900,response_format='wav');record=tts.upload_reference(wav_bytes(5),'mia.wav','Testo pronunciato')
-    calls=[]
-    monkeypatch.setattr(tts_api.requests,'get',lambda url,**kwargs:Reply(body={'server':'up','model_state':'unloaded'}))
+    calls=[];state={'value':'unloaded'}
+    monkeypatch.setattr(tts_api.requests,'get',lambda url,**kwargs:Reply(body={'server':'up','model_state':state['value']}))
     def post(url,**kwargs):
         calls.append((url,kwargs))
-        if url.endswith('/model/load'):return Reply(body={'ok':True,'model_state':'ready','already_loaded':False})
-        if url.endswith('/model/unload'):return Reply(body={'ok':True,'model_state':'unloaded','already_unloaded':False})
+        if url.endswith('/model/load'):state['value']='ready';return Reply(body={'ok':True,'model_state':'ready','already_loaded':False})
+        if url.endswith('/model/unload'):state['value']='unloaded';return Reply(body={'ok':True,'model_state':'unloaded','already_unloaded':False})
         return Reply(body={'ok':True,'voice_id':'emanuele_it','voice':'emanuele_it.wav'})
     monkeypatch.setattr(tts_api.requests,'post',post)
     client=TestClient(server.app,headers={'X-DocumentariAI':'studio'})
@@ -142,6 +143,12 @@ def test_higgs_status_and_persistent_voice_contract(monkeypatch,tmp_path):
     assert result.status_code==200 and result.json()['voice']=='emanuele_it.wav'
     assert calls[-1][0].endswith('/v1/voices/upload') and calls[-1][1]['data']['reference_text']=='Testo pronunciato'
     assert calls[-1][1]['files']['reference_audio'][0]=='reference.wav'
+
+def test_higgs_model_command_requires_a_matching_follow_up_status(monkeypatch):
+    config=dict(provider='higgs',base_url='http://gpu-pc:8095/v1',timeout=30)
+    monkeypatch.setattr(tts_api.requests,'post',lambda *args,**kwargs:Reply(body={'ok':True,'model_state':'unloaded'}))
+    monkeypatch.setattr(tts_api.requests,'get',lambda *args,**kwargs:Reply(body={'server':'up','model_state':'ready'}))
+    with pytest.raises(ValueError,match='stato successivo'):tts_api.higgs_model(config,'unload')
 
 def test_higgs_reference_longer_than_thirty_seconds_reaches_test_and_voice_routes(monkeypatch,tmp_path):
     item=saved(timeout=900,response_format='wav');record=tts.upload_reference(wav_bytes(31),'campione-lungo.wav','Trascrizione completa')

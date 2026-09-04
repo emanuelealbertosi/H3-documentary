@@ -106,6 +106,40 @@ def test_create_draft_and_preserve_on_revision(client):
     assert r.json()['result']=={}
     assert not(root/"workspace").exists()
     assert list(root.glob("workspace-previous-*/battle.json"))[0].read_text()=="old"
+
+def test_completed_regeneration_creates_numbered_twins_and_keeps_original(client):
+    original=client.post('/api/projects',json={'topic':'Viaggio di prova','minutes':3,'start':False}).json()
+    store.update(original['id'],status='completed',stage='Documentario completato',progress=100,result={'sha256':'old'})
+    old_file=server.JOBS/original['id']/'workspace/output/old.mp4';old_file.parent.mkdir(parents=True);old_file.write_bytes(b'old-film')
+    second=client.post('/api/projects/'+original['id']+'/regenerate')
+    assert second.status_code==200 and second.json()['mode']=='new_version'
+    v2=second.json()['project'];assert v2['id']!=original['id'] and v2['version']==2 and v2['parent_id']==original['id']
+    assert store.project(original['id'])['status']=='completed' and old_file.read_bytes()==b'old-film'
+    third=client.post('/api/projects/'+original['id']+'/regenerate').json()['project']
+    assert third['version']==3 and third['family_id']==v2['family_id']==original['id']
+
+def test_failed_regeneration_restarts_same_project_and_archives_attempt(client):
+    project=client.post('/api/projects',json={'topic':'Progetto da correggere','start':False}).json();pid=project['id']
+    store.update(pid,status='failed',stage='Voce italiana',progress=55,error='errore precedente',result={'partial':True})
+    checkpoint=server.JOBS/pid/'checkpoints/research.done.json';checkpoint.parent.mkdir();checkpoint.write_text('{}')
+    workspace=server.JOBS/pid/'workspace/partial.txt';workspace.parent.mkdir();workspace.write_text('tentativo precedente')
+    store.event(pid,'Vecchio errore','error')
+    response=client.post('/api/projects/'+pid+'/regenerate')
+    assert response.status_code==200 and response.json()['mode']=='restart' and response.json()['project']['id']==pid
+    restarted=store.project(pid);assert restarted['status']=='draft' and restarted['progress']==0 and restarted['result']=={} and not restarted['error']
+    attempt=next((server.JOBS/pid/'attempts').iterdir())
+    assert (attempt/'checkpoints/research.done.json').is_file() and (attempt/'workspace/partial.txt').read_text()=='tentativo precedente'
+    assert [x['message'] for x in store.events(pid)]==['Rigenerazione da zero richiesta. Il tentativo precedente è stato archiviato.']
+
+def test_delete_project_removes_inactive_record_and_files_but_rejects_active(client):
+    removable=client.post('/api/projects',json={'topic':'Progetto eliminabile','start':False}).json();folder=server.JOBS/removable['id']
+    (folder/'temporary.txt').write_text('private')
+    response=client.delete('/api/projects/'+removable['id'])
+    assert response.status_code==200 and response.json()['deleted'] and not folder.exists()
+    assert client.get('/api/projects/'+removable['id']).status_code==404
+    active=client.post('/api/projects',json={'topic':'Progetto in corso','start':False}).json();store.update(active['id'],status='running')
+    assert client.delete('/api/projects/'+active['id']).status_code==409
+    assert client.post('/api/projects/'+active['id']+'/regenerate').status_code==409
 def test_file_routes_reject_traversal(client):
     p=client.post("/api/projects",json={"topic":"Battaglia di prova","start":False}).json()
     assert client.get("/api/projects/"+p["id"]+"/file",params={"path":"../../settings.json"}).status_code==404

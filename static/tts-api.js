@@ -133,7 +133,7 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
   const response=await fetch('/api/tts/profiles/'+p.id+path,{method,headers:{'X-DocumentariAI':'studio'}});if(!response.ok)throw Error(await errorOf(response));return response.json();
  };
  const runHiggs=async(button,path,verb)=>{button.disabled=true;const result=q('#tts-higgs-result');result.textContent=verb+'…';result.className='connection-result';try{
-  const data=await higgsCall(path);const state=data.model_state||'sconosciuto';result.textContent='Server: '+(data.server||'up')+' · modello: '+state+(data.device?' · '+data.device:'');result.className='connection-result good';
+  const data=await higgsCall(path);const state=data.model_state||'sconosciuto';result.textContent='Stato dichiarato dal server Higgs: '+state+(data.device?' · '+data.device:'')+(path==='/model/unload'?' · La VRAM effettiva è gestita dal processo remoto.':'');result.className='connection-result good';
  }catch(error){result.textContent=error.message;result.className='connection-result bad'}finally{button.disabled=false}};
  q('#tts-higgs-status').onclick=e=>runHiggs(e.target,'/status','Controllo lo stato');
  q('#tts-higgs-load').onclick=e=>runHiggs(e.target,'/model/load','Carico il modello');
