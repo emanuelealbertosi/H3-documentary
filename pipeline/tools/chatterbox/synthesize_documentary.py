@@ -40,11 +40,15 @@ def main():
     if pack.get('voice_engine')!='chatterbox':raise ValueError('Il documentario non richiede Chatterbox.')
     out=workspace/'build'/pack['slug']/'voice';out.mkdir(parents=True,exist_ok=True)
     pending=[]
+    cache_items={}
     total=sum(len(scene['lines']) for scene in pack['scenes'])
     for scene in pack['scenes']:
         for index,line in enumerate(scene['lines']):
             spoken=pronounce(line,pack.get('pronunciation',{}));key=synthesis_key(pack,scene['id'],index,spoken,workspace);path=out/f'{key}.wav'
+            cache_items[f'{scene["id"]}:{index}']={'file':path.name,'spoken_sha256':hashlib.sha256(spoken.encode('utf-8')).hexdigest()}
             if not path.exists():pending.append((scene,index,spoken,path))
+    manifest=out/'external-voice-cache.json'
+    manifest.write_text(json.dumps({'version':1,'backend':'chatterbox','items':cache_items},ensure_ascii=False,indent=2),encoding='utf-8')
     if not pending:
         print('Chatterbox: voce già presente nella cache.',flush=True);return
     cached=total-len(pending)

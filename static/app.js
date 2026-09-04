@@ -1,6 +1,6 @@
 import {mediaPage} from './media.js';
 import {documentsPage} from './documents.js';
-import {mountTtsAdmin,ttsSelection,projectTtsSelection,bindReference} from './tts-api.js';
+import {mountTtsAdmin,ttsSelection,projectTtsSelection,bindReference} from './tts-api.js?v=1.6.0';
 let disposeMedia,disposeDocuments;
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let timer,health={},config={},cursor=0,logs=[];

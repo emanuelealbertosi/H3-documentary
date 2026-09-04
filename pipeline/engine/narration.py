@@ -1,5 +1,6 @@
 """Local neural voice, measured cue points, automatic duration fitting."""
 import re, wave, math, hashlib
+from pathlib import Path
 import numpy as np
 from scipy.io import wavfile
 from piper import PiperVoice,SynthesisConfig
@@ -31,11 +32,25 @@ def synthesis_key(pack,scene_id,index,spoken):
 def synthesize(pack,keep_timing=False):
     out=ROOT/'build'/pack['slug']/'voice'; out.mkdir(parents=True,exist_ok=True)
     voice=None; g2p=None; raw=[]; backend=pack.get('voice_engine','piper')
+    external_items={}
+    if backend in ('chatterbox','tts_api'):
+        manifest=out/'external-voice-cache.json'
+        if manifest.exists():
+            cache=read_json(manifest)
+            if cache.get('backend')!=backend:raise ValueError('La cache vocale appartiene a un altro motore. Riprendi la produzione per rigenerarla.')
+            external_items=cache.get('items',{})
     for scene in pack['scenes']:
         for i,line in enumerate(scene['lines']):
             spoken=pronounce(line,pack.get('pronunciation',{}))
             key=synthesis_key(pack,scene['id'],i,spoken)
             path=out/f'{key}.wav'
+            if backend in ('chatterbox','tts_api'):
+                cached=external_items.get(f'{scene["id"]}:{i}',{})
+                if cached.get('spoken_sha256')!=hashlib.sha256(spoken.encode('utf-8')).hexdigest():
+                    raise ValueError(f'Cache voce esterna non valida per {scene["id"]}, frase {i+1}. Riprendi la produzione per rigenerarla.')
+                path=out/Path(cached.get('file','')).name
+                if not path.is_file():
+                    raise ValueError(f'Segmento voce esterna mancante per {scene["id"]}, frase {i+1}. Riprendi la produzione per rigenerarlo.')
             if not path.exists():
                 if backend=='kokoro':
                     if voice is None:
@@ -66,10 +81,11 @@ def synthesize(pack,keep_timing=False):
                         pcm=trim(np.clip(samples*32767,-32767,32767).astype(np.int16),sample_rate)
                         chunks.extend([pcm,np.zeros(round(sample_rate*.09),dtype=np.int16)])
                     wavfile.write(path,sample_rate,np.concatenate(chunks[:-1]))
-                else:
+                elif backend=='piper':
                     if voice is None:voice=PiperVoice.load(str(ROOT/pack['voice']))
                     with wave.open(str(path),'wb') as wav:
                         voice.synthesize_wav(spoken,wav,SynthesisConfig(length_scale=1.0,noise_scale=.45,noise_w_scale=.65))
+                else:raise ValueError('La voce esterna non ha preparato tutti i segmenti richiesti.')
                 sr,y=wavfile.read(path); wavfile.write(path,sr,trim(y,sr))
             sr,y=wavfile.read(path)
             raw.append(dict(scene=scene['id'],index=i,path=path,duration=len(y)/sr,spoken=spoken,text=line))

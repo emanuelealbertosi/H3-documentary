@@ -15,7 +15,7 @@ from .battle_outline import build_battle_outline
 from .battle_visuals import enrich_battle_outline
 from .narration_builder import build_narration
 from .pack_migrations import repair_pack
-from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine,prepare_history_asset_engine
+from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine,prepare_history_asset_engine,prepare_bundled_runtime_engine
 from . import tts
 
 POOL=ThreadPoolExecutor(max_workers=1,thread_name_prefix="documentary")
@@ -177,6 +177,7 @@ def produce(pid,cfg):
             store.write_json(packpath,pack);store.write_json(geopath,geo)
         repair_pack(packpath,work,log)
         pack=store.read_json(packpath);tts.configure_pack(pack,p,work,src);store.write_json(packpath,pack);geo=store.read_json(geopath)
+        if prepare_bundled_runtime_engine(work,src):log('Motore di rendering e voce aggiornato per la ripresa del progetto.')
         rel=str(packpath.relative_to(work));georel=str(geopath.relative_to(work))
         cmd=lambda name,*extra:run(pid,python,work,["documentary.py",name,"--battle",rel,*extra],cancel,log)
         if pack.get('schema_version')==2:

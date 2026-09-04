@@ -71,6 +71,27 @@ def prepare_history_asset_engine(work,source):
         shutil.copy2(src,dst)
     return True
 
+def prepare_bundled_runtime_engine(work,source):
+    """Bring resumable bundled jobs onto compatible voice and visual fixes."""
+    work=Path(work).resolve();source=Path(source).resolve()
+    if source!=(ROOT/'pipeline').resolve():return False
+    if not work.is_relative_to(JOBS.resolve()) or work.name!='workspace':raise ValueError('Cartella del progetto non valida.')
+    relative_names=(
+        Path('engine/narration.py'),Path('engine/atlas.py'),Path('engine/history_visuals.py'),
+        Path('tools/chatterbox/synthesize_documentary.py'),
+    )
+    changed=[]
+    for name in relative_names:
+        src=source/name;dst=work/name
+        if src.is_file() and (not dst.exists() or src.read_bytes()!=dst.read_bytes()):changed.append((src,dst,name))
+    if not changed:return False
+    backup=work/'engine-compat-backups'/('runtime-'+str(time.time_ns()));backup.mkdir(parents=True)
+    for src,dst,name in changed:
+        if dst.exists():
+            saved=backup/name;saved.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(dst,saved)
+        dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
+    return True
+
 
 def reuse_atlas(work,source,geo):
     """Reuse existing Europe rasters by absolute read-only paths when they cover the view."""

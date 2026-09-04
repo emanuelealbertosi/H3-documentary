@@ -27,8 +27,9 @@ export function bindReference(engineId,referenceId,tts){
 
 function number(id,fallback){const value=+q('#'+id).value;return Number.isFinite(value)?value:fallback}
 function formValue(){
+ const provider=q('#tts-api-provider').value;
  return {
-  id:q('#tts-api-profile').value,name:q('#tts-api-name').value.trim(),provider:q('#tts-api-provider').value,
+  id:q('#tts-api-profile').value,name:q('#tts-api-name').value.trim()||providers[provider]?.name||'Server TTS',provider,
   base_url:q('#tts-api-url').value.trim(),model:q('#tts-api-model').value.trim(),voice:q('#tts-api-voice').value.trim(),
   language:q('#tts-api-language').value.trim(),response_format:q('#tts-api-format').value,timeout:number('tts-api-timeout',180),
   temperature:number('tts-api-temperature',1),top_p:number('tts-api-top-p',.95),top_k:number('tts-api-top-k',50),

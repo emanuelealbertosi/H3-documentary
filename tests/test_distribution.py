@@ -46,6 +46,10 @@ def test_examples_and_runtime_modules_are_bundled():
                  'pipeline/documentaries/via-della-seta/documentary.json']:
         assert (ROOT/file).is_file(),file
 
+def test_tts_admin_uses_a_friendly_default_profile_name():
+    source=(ROOT/'static/tts-api.js').read_text(encoding='utf-8')
+    assert "providers[provider]?.name||'Server TTS'" in source
+
 def test_geo_cache_never_modifies_external_pipeline(tmp_path,monkeypatch):
     from app import pipeline
     monkeypatch.setattr(pipeline,'ROOT',tmp_path)
@@ -83,6 +87,20 @@ def test_history_asset_fix_is_applied_only_to_bundled_resumable_workspace(tmp_pa
     assert list((work/'engine-compat-backups').glob('asset-*/acquire.py'))
     external=tmp_path/'external';(external/'engine').mkdir(parents=True)
     assert pipeline.prepare_history_asset_engine(work,external) is False
+
+def test_runtime_fixes_are_applied_generically_to_bundled_jobs(tmp_path,monkeypatch):
+    from app import pipeline
+    root=tmp_path/'app';source=root/'pipeline';jobs=root/'data/jobs';work=jobs/'any-project/workspace'
+    names=['engine/narration.py','engine/atlas.py','engine/history_visuals.py','tools/chatterbox/synthesize_documentary.py']
+    for name in names:
+        (source/name).parent.mkdir(parents=True,exist_ok=True);(source/name).write_text('new '+name)
+        (work/name).parent.mkdir(parents=True,exist_ok=True);(work/name).write_text('old '+name)
+    monkeypatch.setattr(pipeline,'ROOT',root);monkeypatch.setattr(pipeline,'JOBS',jobs)
+    assert pipeline.prepare_bundled_runtime_engine(work,source) is True
+    assert all((work/name).read_text()=='new '+name for name in names)
+    assert list((work/'engine-compat-backups').glob('runtime-*/engine/narration.py'))
+    external=tmp_path/'external';(external/'engine').mkdir(parents=True)
+    assert pipeline.prepare_bundled_runtime_engine(work,external) is False
 
 def test_example_portraits_are_downloadable_without_original_assets():
     for pattern in ['battles/*/battle.json','documentaries/*/documentary.json']:

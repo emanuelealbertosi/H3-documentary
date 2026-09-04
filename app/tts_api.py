@@ -287,10 +287,13 @@ def synthesize_pack(pack,project,work,cancel,log):
     lines=[(scene,i,line) for scene in pack['scenes'] for i,line in enumerate(scene['lines'])]
     out=Path(work)/'build'/pack['slug']/'voice';out.mkdir(parents=True,exist_ok=True)
     pending=[]
+    cache_items={}
     for scene,index,line in lines:
         spoken=line
         for original,replacement in sorted(pack.get('pronunciation',{}).items(),key=lambda item:-len(item[0])):spoken=spoken.replace(original,replacement)
-        pending.append((scene,index,spoken,out/(synthesis_key(pack,scene['id'],index,spoken,work)+'.wav')))
+        target=out/(synthesis_key(pack,scene['id'],index,spoken,work)+'.wav')
+        pending.append((scene,index,spoken,target))
+        cache_items[f'{scene["id"]}:{index}']={'file':target.name,'spoken_sha256':hashlib.sha256(spoken.encode('utf-8')).hexdigest()}
     manager=higgs_activity(config,api_key,log) if any(not target.exists() for _,_,_,target in pending) else nullcontext()
     with manager:
         for done,(scene,index,spoken,target) in enumerate(pending,1):
@@ -300,4 +303,5 @@ def synthesize_pack(pack,project,work,cancel,log):
                 temporary=target.with_suffix('.part.wav')
                 normalize_audio(content,container,temporary);temporary.replace(target)
             log(f'TTS API: segmento {done}/{len(lines)} pronto.')
+    (out/'external-voice-cache.json').write_text(json.dumps({'version':1,'backend':'tts_api','items':cache_items},ensure_ascii=False,indent=2),encoding='utf-8')
     return len(lines)

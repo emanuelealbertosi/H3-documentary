@@ -6,7 +6,7 @@ are supersampled, label placement is authored, and chapters never flash to black
 import math
 from functools import lru_cache
 import numpy as np,cv2
-from PIL import Image,ImageDraw,ImageOps
+from PIL import Image,ImageDraw,ImageOps,ImageEnhance
 from .common import ROOT,read_json,stamp
 from .visuals import font,portrait,wrap
 
@@ -117,6 +117,13 @@ class AtlasVisuals:
             g=feat['geometry'];lines=[g['coordinates']] if g['type']=='LineString' else g['coordinates'] if g['type']=='MultiLineString' else []
             self.rivers.extend(lines)
 
+    def map_background(self,cam):
+        """Cinematic but stable colour grade for the physical atlas."""
+        im=self.atlas.frame(cam).convert('RGB')
+        im=ImageEnhance.Color(im).enhance(1.28)
+        im=ImageEnhance.Contrast(im).enhance(1.09)
+        return ImageEnhance.Brightness(im).enhance(.98).convert('RGBA')
+
     def geography_labels(self,s,cam,opacity):
         key=(s['id'],cam,round(opacity,4))
         if key==self.label_cache.get('key'):return self.label_cache['image'].copy()
@@ -125,9 +132,12 @@ class AtlasVisuals:
         for river in self.rivers:
             pts=[screen(p,cam) for p in river]
             if not any(-100<x<W+100 and -100<y<H+100 for x,y in pts):continue
-            polyline(d,pts,(88,145,173,int(150*opacity)),2 if cam[2]<10 else 1)
+            polyline(d,pts,(20,52,68,int(95*opacity)),4 if cam[2]<10 else 2)
+            polyline(d,pts,(74,170,213,int(185*opacity)),2 if cam[2]<10 else 1)
         for river in s.get('local_rivers',[]):
-            polyline(d,[screen(p,cam) for p in river['points']],(88,145,173,int(195*opacity)),2)
+            pts=[screen(p,cam) for p in river['points']]
+            polyline(d,pts,(20,52,68,int(115*opacity)),6)
+            polyline(d,pts,(75,181,226,int(225*opacity)),3)
         for region in s.get('region_labels',[]):
             xy=screen(region['pos'],cam)
             if 70<xy[0]<W-70 and 170<xy[1]<H-170:label(im,xy,region['text'],region.get('size',33),(*CREAM,220),alpha=opacity,kind='serif')
@@ -139,7 +149,10 @@ class AtlasVisuals:
             op=opacity*edge
             if op<=0:continue
             col=tuple(place.get('color',CREAM))
-            d.ellipse((x*SS-4*SS,y*SS-4*SS,x*SS+4*SS,y*SS+4*SS),fill=(*col,int(255*op)),outline=(*INK,int(255*op)),width=2*SS)
+            # Map pin with a soft halo stays legible on bright relief and dark sea.
+            d.ellipse((x*SS-11*SS,y*SS-11*SS,x*SS+11*SS,y*SS+11*SS),fill=(*INK,int(85*op)))
+            d.ellipse((x*SS-7*SS,y*SS-7*SS,x*SS+7*SS,y*SS+7*SS),fill=(*col,int(245*op)),outline=(*CREAM,int(240*op)),width=2*SS)
+            d.ellipse((x*SS-2*SS,y*SS-2*SS,x*SS+2*SS,y*SS+2*SS),fill=(*INK,int(245*op)))
             label(im,(x+dx,y+dy),place['name'],place.get('size',22),col,op)
         self.label_cache={'key':key,'image':im.copy()}
         return im
@@ -171,7 +184,7 @@ class AtlasVisuals:
         self.huds[s['id']]=im;return im
 
     def frame(self,s,t):
-        cam=camera(s,t);im=self.atlas.frame(cam)
+        cam=camera(s,t);im=self.map_background(cam)
         fade=min(smooth(t/.9),smooth((s['duration']-t)/.9))
         overlay=Image.new('RGBA',(W*SS,H*SS));d=ImageDraw.Draw(overlay)
         for area in s.get('uncertainty_areas',[]):
@@ -183,15 +196,17 @@ class AtlasVisuals:
             if p<=0:continue
             points=[screen(x,cam) for x in route['points']];points=partial(points,p)
             col=self.colors.get(route.get('side','carthage'),GOLD);alpha=route.get('alpha',235)
-            polyline(d,points,(*INK,min(alpha,180)),8,route.get('uncertain',False))
-            polyline(d,points,(*col,alpha),4,route.get('uncertain',False))
+            polyline(d,points,(*INK,min(alpha,205)),12,False)
+            polyline(d,points,(*col,alpha),7,route.get('uncertain',False))
+            if not route.get('uncertain',False):polyline(d,points,(*CREAM,min(alpha,105)),2,False)
             if not route.get('complete') and route.get('marker',True):
                 x,y=points[-1]
                 if -30<x<W+30 and -30<y<H+30:
-                    d.ellipse(((x-15)*SS,(y-15)*SS,(x+15)*SS,(y+15)*SS),fill=(*INK,245),outline=(*col,255),width=3*SS)
-                    # Simple original standard: spear and banner, readable at every zoom.
-                    d.line((x*SS,(y-8)*SS,x*SS,(y+8)*SS),fill=CREAM,width=2*SS)
-                    d.polygon([(x*SS,(y-8)*SS),((x+9)*SS,(y-5)*SS),(x*SS,(y-2)*SS)],fill=col)
+                    d.ellipse(((x-19)*SS,(y-19)*SS,(x+19)*SS,(y+19)*SS),fill=(*INK,110))
+                    d.ellipse(((x-15)*SS,(y-15)*SS,(x+15)*SS,(y+15)*SS),fill=(*col,245),outline=(*CREAM,245),width=2*SS)
+                    # Original compass/banner glyph, readable at every zoom.
+                    d.line((x*SS,(y-9)*SS,x*SS,(y+9)*SS),fill=(*INK,245),width=3*SS)
+                    d.polygon([(x*SS,(y-9)*SS),((x+10)*SS,(y-5)*SS),(x*SS,(y-1)*SS)],fill=CREAM)
         # BEGIN H3 BATTLE ATLAS TACTICS
         # Direction heads and unit counters use the same smooth cue progress as
         # routes. Their positions are deterministic, so no per-frame jitter is
@@ -217,7 +232,8 @@ class AtlasVisuals:
             col=self.colors.get(unit.get('side'),GOLD);count=max(1,min(4,int(unit.get('count',1))))
             for n in range(count):
                 ox=(n-(count-1)/2)*16*SS
-                d.rounded_rectangle((x*SS-22*SS+ox,y*SS-8*SS,x*SS+22*SS+ox,y*SS+8*SS),radius=3*SS,fill=(*col,int(238*fade)),outline=(*CREAM,int(235*fade)),width=SS)
+                d.rounded_rectangle((x*SS-25*SS+ox,y*SS-11*SS,x*SS+25*SS+ox,y*SS+11*SS),radius=7*SS,fill=(*INK,int(110*fade)))
+                d.rounded_rectangle((x*SS-23*SS+ox,y*SS-13*SS,x*SS+23*SS+ox,y*SS+9*SS),radius=7*SS,fill=(*col,int(245*fade)),outline=(*CREAM,int(240*fade)),width=2*SS)
             kind=unit.get('kind','infantry')
             if kind=='cavalry':d.line(((x-10)*SS,(y+5)*SS,(x+10)*SS,(y-5)*SS),fill=(*INK,int(245*fade)),width=2*SS)
             elif kind=='artillery':d.ellipse(((x-5)*SS,(y-5)*SS,(x+5)*SS,(y+5)*SS),fill=(*INK,int(245*fade)))

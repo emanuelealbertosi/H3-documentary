@@ -2,13 +2,13 @@
 import math
 from functools import lru_cache
 import numpy as np,cv2
-from PIL import Image,ImageDraw,ImageOps
+from PIL import Image,ImageDraw,ImageOps,ImageEnhance
 from .common import ROOT
 from .atlas import AtlasVisuals,camera,screen,partial,smooth,progress,label,polyline,W,H,SS,INK,CREAM,GOLD,MUTED
 from .visuals import font,wrap
 from .history_schema import interpolate_year,year_label,historical_value
 
-PALETTE={'migration':(129,208,186),'population_transfer':(129,208,186),'trade':GOLD,'sea_trade':(110,193,225),'cultural_diffusion':(190,169,238),'religious_diffusion':(151,201,153),'technology_diffusion':(123,207,215),'journey':(231,191,137),'exploration':(129,202,195),'connection':MUTED,'influence':(192,165,218),'attack':(227,114,108),'invasion':(227,114,108),'retreat':(220,141,109),'campaign':(227,114,108),'expansion':GOLD}
+PALETTE={'migration':(72,211,180),'population_transfer':(72,211,180),'trade':(247,186,75),'sea_trade':(68,184,231),'cultural_diffusion':(190,132,241),'religious_diffusion':(102,199,123),'technology_diffusion':(64,205,218),'journey':(244,164,96),'exploration':(74,205,193),'connection':(166,202,211),'influence':(204,139,231),'attack':(239,86,91),'invasion':(239,86,91),'retreat':(239,137,80),'campaign':(239,86,91),'expansion':(247,186,75)}
 SEMANTICS={'migration':'Migrazione','population_transfer':'Trasferimento di popolazione','trade':'Scambi terrestri','sea_trade':'Scambi marittimi','cultural_diffusion':'Circolazione delle idee','religious_diffusion':'Diffusione religiosa','technology_diffusion':'Circolazione tecnica','journey':'Spostamento personale','exploration':'Esplorazione','connection':'Collegamento','influence':'Influenza','attack':'Attacco','invasion':'Invasione','retreat':'Ritirata','campaign':'Campagna','expansion':'Espansione'}
 NONMAP={'timeline','person_intro','event_focus','comparison','data_visualization','quote','artwork','document','transition','summary'}
 
@@ -41,13 +41,21 @@ class HistoryVisuals(AtlasVisuals):
         for c,b in enumerate(INK):bg[:,:,c]=b+a
         self.background=Image.fromarray(bg)
 
+    def map_background(self,cam):
+        """Give physical relief a richer documentary grade without changing geography."""
+        im=self.atlas.frame(cam).convert('RGB')
+        im=ImageEnhance.Color(im).enhance(1.32)
+        im=ImageEnhance.Contrast(im).enhance(1.10)
+        im=ImageEnhance.Brightness(im).enhance(.98)
+        return im.convert('RGBA')
+
     def frame(self,s,t):
         q=max(0,min(1,t/s['duration']));a,b=s['historical_range'];year=interpolate_year(a,b,q)
         kind=s['scene_type'];cam=camera(s,t)
         if kind in NONMAP:
             im=self.card(s,t,year)
         else:
-            im=self.atlas.frame(cam).convert('RGBA')
+            im=self.map_background(cam)
             overlay=Image.new('RGBA',(W*SS,H*SS));d=ImageDraw.Draw(overlay)
             self.territories(overlay,d,s,cam,year)
             for m in s.get('movements',[]):self.movement(overlay,d,m,s,t,cam)
@@ -86,6 +94,11 @@ class HistoryVisuals(AtlasVisuals):
             # Linked figures remain readable without replacing the geographic scene.
             slot=min(len(people)-1,int(max(0,min(.999,t/max(1,s['duration'])))*len(people)))
             person=self.people[people[slot]];x,y,w,h=1515,205,320,500
+            # Put the portrait on the opposite side when a focal place would sit below it.
+            if not journey:
+                cam=camera(s,t)
+                focus=[self.data['places'][ident]['pos'] for ident in s.get('location_ids',[]) if ident in self.data['places']]
+                if any(screen(pos,cam)[0]>1440 for pos in focus):x=85
             d.rounded_rectangle((x,y,x+w,y+h),radius=15,fill=(*INK,238),outline=(*GOLD,150),width=2)
             path=person.get('portrait')
             if path and (ROOT/path).exists():
@@ -104,9 +117,19 @@ class HistoryVisuals(AtlasVisuals):
             if t<s['cues'][unit.get('cue',0)]['start']:continue
             pos=partial(unit.get('path',[unit['pos'],unit['pos']]),p)[-1]
             x,y=screen(pos,cam);col=self.colors.get(unit.get('side'),GOLD)
-            d.rectangle(((x-17)*SS,(y-10)*SS,(x+17)*SS,(y+10)*SS),fill=(*col,235),outline=CREAM,width=SS)
-            d.line(((x-14)*SS,(y-7)*SS,(x+14)*SS,(y+7)*SS),fill=INK,width=SS)
-            d.line(((x-14)*SS,(y+7)*SS,(x+14)*SS,(y-7)*SS),fill=INK,width=SS)
+            # Compact illustrated badge: shadow, coloured body and a unit glyph.
+            d.rounded_rectangle(((x-22)*SS,(y-15)*SS,(x+24)*SS,(y+17)*SS),radius=8*SS,fill=(*INK,125))
+            d.rounded_rectangle(((x-24)*SS,(y-17)*SS,(x+22)*SS,(y+15)*SS),radius=8*SS,fill=(*col,245),outline=(*CREAM,235),width=2*SS)
+            kind=unit.get('kind','infantry')
+            if kind=='cavalry':
+                d.arc(((x-12)*SS,(y-11)*SS,(x+6)*SS,(y+7)*SS),190,355,fill=(*INK,245),width=3*SS)
+                d.line(((x-7)*SS,(y+5)*SS,(x+12)*SS,(y-8)*SS),fill=(*INK,245),width=3*SS)
+            elif kind=='artillery':
+                d.ellipse(((x-10)*SS,(y-7)*SS,(x+4)*SS,(y+7)*SS),outline=(*INK,245),width=3*SS)
+                d.line(((x+2)*SS,(y-1)*SS,(x+13)*SS,(y-1)*SS),fill=(*INK,245),width=4*SS)
+            else:
+                d.line(((x-11)*SS,(y-8)*SS,(x+11)*SS,(y+8)*SS),fill=(*INK,245),width=3*SS)
+                d.line(((x-11)*SS,(y+8)*SS,(x+11)*SS,(y-8)*SS),fill=(*INK,245),width=3*SS)
             if unit.get('label'):label(im,(x,y+28),unit['label'],18,CREAM)
         for arrow in s.get('arrows',[]):
             m={**arrow,'semantic':arrow.get('semantic','attack'),'color':self.colors.get(arrow.get('side'),PALETTE['attack'])}
@@ -138,28 +161,63 @@ class HistoryVisuals(AtlasVisuals):
         col=tuple(state.get('color',layer.get('color',GOLD)))
         for poly in state.get('polygons',[]):
             pts=[screen(p,cam) for p in poly]
-            d.polygon([(x*SS,y*SS) for x,y in pts],fill=(*col,int(78*opacity)))
-            polyline(d,pts+[pts[0]],(*col,int(215*opacity)),2,layer.get('schematic',True) or state.get('contested',False))
+            scaled=[(x*SS,y*SS) for x,y in pts]
+            d.polygon(scaled,fill=(*col,int(96*opacity)))
+            # A soft outer edge separates a changing territory from detailed relief.
+            polyline(d,pts+[pts[0]],(*INK,int(115*opacity)),7,False)
+            polyline(d,pts+[pts[0]],(*col,int(245*opacity)),3,layer.get('schematic',True) or state.get('contested',False))
+
+    def semantic_marker(self,d,xy,angle,semantic,col,scale=1):
+        """Draw a distinct endpoint glyph so a route does not always mean attack."""
+        x,y=xy;u=SS*scale;dark=(*INK,235);light=(*CREAM,245)
+        def pt(dx,dy):return ((x+dx*scale)*SS,(y+dy*scale)*SS)
+        def box(r):return (*pt(-r,-r),*pt(r,r))
+        d.ellipse(box(18),fill=(*INK,105))
+        if semantic in ('attack','invasion','campaign','retreat','expansion'):
+            length=27;half=12;tip=pt(0,0)
+            back=pt(-length*math.cos(angle),-length*math.sin(angle))
+            left=pt(-length*math.cos(angle)+half*math.sin(angle),-length*math.sin(angle)-half*math.cos(angle))
+            right=pt(-length*math.cos(angle)-half*math.sin(angle),-length*math.sin(angle)+half*math.cos(angle))
+            d.polygon([tip,left,back,right],fill=(*col,255),outline=dark)
+            d.line((tip,back),fill=light,width=max(1,round(u)))
+        elif semantic=='sea_trade':
+            d.ellipse(box(17),fill=(*col,245),outline=light,width=max(1,round(2*u)))
+            d.polygon([pt(-10,5),pt(11,5),pt(6,11),pt(-6,11)],fill=dark)
+            d.polygon([pt(-1,-11),pt(-1,3),pt(9,3)],fill=light)
+        elif semantic in ('migration','population_transfer'):
+            d.ellipse(box(17),fill=(*col,245),outline=light,width=max(1,round(2*u)))
+            for off in (-7,0,7):
+                ox=off*math.sin(angle);oy=-off*math.cos(angle)
+                a=pt(-7*math.cos(angle)+ox,-7*math.sin(angle)+oy)
+                b=pt(7*math.cos(angle)+ox,7*math.sin(angle)+oy)
+                d.line((a,b),fill=dark,width=max(1,round(2*u)))
+        elif semantic in ('cultural_diffusion','religious_diffusion','technology_diffusion','influence'):
+            d.ellipse(box(16),fill=(*col,238),outline=light,width=max(1,round(2*u)))
+            d.ellipse(box(5),fill=light)
+            for a in range(0,360,45):
+                ca=math.cos(math.radians(a));sa=math.sin(math.radians(a))
+                d.line((pt(8*ca,8*sa),pt(13*ca,13*sa)),fill=dark,width=max(1,round(2*u)))
+        else:
+            # Journey, exploration, trade and neutral connections use a compass pin.
+            d.ellipse(box(17),fill=(*col,245),outline=light,width=max(1,round(2*u)))
+            tip=pt(10*math.cos(angle),10*math.sin(angle))
+            left=pt(-5*math.cos(angle)+5*math.sin(angle),-5*math.sin(angle)-5*math.cos(angle))
+            right=pt(-5*math.cos(angle)-5*math.sin(angle),-5*math.sin(angle)+5*math.cos(angle))
+            d.polygon([tip,left,right],fill=dark)
 
     def movement(self,im,d,m,s,t,cam):
         p=1 if m.get('complete') else progress(s,m,t)
         if p<=0:return
         semantic=m['semantic'];col=tuple(m.get('color',PALETTE[semantic]));points=[screen(x,cam) for x in m['points']]
-        pts=partial(points,p);w=min(12,max(3,m.get('width',5)))
-        polyline(d,pts,(*INK,180),w+4)
-        polyline(d,pts,(*col,235),w,m.get('uncertain',False))
-        # Only explicitly martial semantics use a military arrowhead.
-        if semantic in ('attack','invasion','campaign','retreat'):
-            if len(pts)>1:
-                x,y=pts[-1];ax,ay=pts[-2];theta=math.atan2(y-ay,x-ax)
-                d.polygon([(x*SS,y*SS),((x-22*math.cos(theta)+10*math.sin(theta))*SS,(y-22*math.sin(theta)-10*math.cos(theta))*SS),((x-22*math.cos(theta)-10*math.sin(theta))*SS,(y-22*math.sin(theta)+10*math.cos(theta))*SS)],fill=col)
-        else:
-            # Dots are a directional flow cue, never a claim about population size.
-            for k in range(5):
-                phase=(t*.028+k/5)%1
-                if phase>p:continue
-                x,y=partial(points,phase)[-1];r=5 if semantic in ('migration','population_transfer') else 4
-                d.ellipse(((x-r)*SS,(y-r)*SS,(x+r)*SS,(y+r)*SS),fill=CREAM,outline=col,width=2*SS)
+        pts=partial(points,p);w=min(14,max(5,m.get('width',7)))
+        uncertain=m.get('uncertain',False)
+        # A stable three-layer ribbon reads cleanly over sea and relief alike.
+        polyline(d,pts,(*INK,205),w+8,False)
+        polyline(d,pts,(*col,250),w,uncertain)
+        if not uncertain:polyline(d,pts,(*CREAM,105),max(1,w//3),False)
+        if len(pts)>1:
+            x,y=pts[-1];ax,ay=pts[-2];theta=math.atan2(y-ay,x-ax)
+            self.semantic_marker(d,(x,y),theta,semantic,col)
 
     def network(self,im,d,s,t,cam):
         net=s.get('network',{})
@@ -169,7 +227,10 @@ class HistoryVisuals(AtlasVisuals):
             self.movement(im,d,m,s,t,cam)
         for node in net.get('nodes',[]):
             p=self.data['places'][node['location_id']];x,y=screen(p['pos'],cam);r=12
-            d.ellipse(((x-r)*SS,(y-r)*SS,(x+r)*SS,(y+r)*SS),outline=(*GOLD,220),width=2*SS)
+            col=tuple(node.get('color',GOLD));r=13
+            d.ellipse(((x-r-5)*SS,(y-r-5)*SS,(x+r+5)*SS,(y+r+5)*SS),fill=(*INK,105))
+            d.ellipse(((x-r)*SS,(y-r)*SS,(x+r)*SS,(y+r)*SS),fill=(*col,235),outline=(*CREAM,245),width=2*SS)
+            d.ellipse(((x-4)*SS,(y-4)*SS,(x+4)*SS,(y+4)*SS),fill=(*INK,235))
 
     def header(self,im,s,year):
         d=ImageDraw.Draw(im)
@@ -195,7 +256,10 @@ class HistoryVisuals(AtlasVisuals):
         for i,sem in enumerate(semantic[:3]):
             y=785+i*36
             d.rounded_rectangle((1030,y-3,1550,y+32),radius=5,fill=(*INK,230))
-            d.line((1050,y+12,1100,y+12),fill=PALETTE[sem],width=4)
+            col=PALETTE[sem]
+            d.line((1050,y+12,1094,y+12),fill=(*INK,230),width=10)
+            d.line((1050,y+12,1094,y+12),fill=col,width=6)
+            self.semantic_marker(d,(1097,y+12),0,sem,col,.48)
             d.text((1115,y),SEMANTICS[sem],font=font(19),fill=CREAM)
         notice=s.get('map_note','Collegamenti schematici · nessuna quantità implicita')
         d.text((1858,904),notice[:100],font=font(13),fill=MUTED,anchor='ra')

@@ -80,6 +80,8 @@ def test_api_pack_populates_the_existing_narration_cache(monkeypatch,tmp_path):
     messages=[];tts_api.synthesize_pack(pack,project,work,lambda:None,messages.append)
     tts_api.synthesize_pack(pack,project,work,lambda:None,messages.append)
     assert count['n']==1 and len(list((work/'build/prova/voice').glob('*.wav')))==1
+    manifest=json.loads((work/'build/prova/voice/external-voice-cache.json').read_text(encoding='utf-8'))
+    assert manifest['backend']=='tts_api' and manifest['items']['s1:0']['file'].endswith('.wav')
     assert 'segmento 1/1' in messages[-1]
 
 def test_profile_routes_and_reference_rules(monkeypatch,tmp_path):
