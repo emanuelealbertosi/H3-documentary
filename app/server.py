@@ -11,6 +11,7 @@ from .models import Settings,ProjectRequest,VoiceChoice
 from .llm import LLM,ModelError
 from .library import library
 from .media_routes import router as media_router
+from .document_routes import router as document_router
 
 @asynccontextmanager
 async def lifespan(app):
@@ -20,6 +21,7 @@ async def lifespan(app):
     shutdown()
 app=FastAPI(title="H3-documentary",docs_url=None,redoc_url=None,lifespan=lifespan)
 app.include_router(media_router)
+app.include_router(document_router)
 
 @app.middleware("http")
 async def local_boundary(request:Request,call_next):
@@ -36,7 +38,7 @@ async def local_boundary(request:Request,call_next):
     response.headers["Content-Security-Policy"]="default-src 'self'; img-src 'self' data:; media-src 'self' blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'"
     if request.url.path.startswith("/api/"):
         response.headers["Cache-Control"]="no-store"
-    elif request.url.path.startswith("/static/") or request.url.path in ("/","/admin","/library","/media") or request.url.path.startswith("/projects/"):
+    elif request.url.path.startswith("/static/") or request.url.path in ("/","/admin","/library","/media","/documents") or request.url.path.startswith("/projects/"):
         # This is a local application that is upgraded in place. Revalidate its
         # shell and assets so the browser never keeps an older Admin interface.
         response.headers["Cache-Control"]="no-cache"
@@ -100,6 +102,8 @@ async def tts_reference(request:Request,filename:str='Voce.wav'):
 def list_projects():return store.projects()
 @app.post("/api/projects",status_code=201)
 def new_project(value:ProjectRequest):
+    from .documents import validate_selection
+    validate_selection(value.document_ids,value.use_documents)
     p=store.create(value)
     if value.start and store.settings()["model"]:
         from .runner import enqueue
@@ -127,7 +131,8 @@ async def revise_project(pid:str,request:Request):
     p=store.project(pid)
     if p["status"] in ("running","queued","cancelling","completed"):raise HTTPException(409,"Questo progetto non è modificabile mentre è in corso o completato.")
     data=await request.json()
-    validated=ProjectRequest(topic=p["topic"],minutes=p["minutes"],notes=data.get("notes",p["notes"]),source_urls=data.get("source_urls",p["source_urls"]))
+    validated=ProjectRequest(topic=p["topic"],minutes=p["minutes"],notes=data.get("notes",p["notes"]),source_urls=data.get("source_urls",p["source_urls"]),
+                             use_documents=p.get("use_documents",False),document_ids=p.get("document_ids",[]))
     store.update(pid,notes=validated.notes,source_urls=validated.source_urls)
     # New editorial input invalidates derived checkpoints, preserving all previous versions.
     checkpoint=JOBS/pid/"checkpoints"
@@ -149,10 +154,10 @@ def library_file(slug:str,kind:str):
     if not item or kind not in ("movie","thumbnail") or not item[kind]:raise HTTPException(404,"File non disponibile.")
     return FileResponse(item[kind],media_type="video/mp4" if kind=="movie" else "image/jpeg")
 
-PUBLIC_EXT={".mp4",".jpg",".png",".srt",".md",".json",".txt"}
+PUBLIC_EXT={".mp4",".jpg",".png",".srt",".md",".json",".txt",".pdf",".docx"}
 def output_files(pid):
     store.project(pid);work=JOBS/pid/"workspace";items=[]
-    roots=[work/"output",work/"battles",work/"documentaries",work/"assets/user",JOBS/pid/"checkpoints"]
+    roots=[work/"output",work/"battles",work/"documentaries",work/"assets/user",work/"assets/documents",JOBS/pid/"checkpoints"]
     for root in roots:
         if not root.exists():continue
         for f in sorted(root.rglob("*")):
@@ -199,4 +204,6 @@ app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/library")
 @app.get("/media")
 @app.get("/projects/{pid}/media")
+@app.get("/documents")
+@app.get("/projects/{pid}/documents")
 def shell(pid:str=""):return FileResponse(ROOT/"static/index.html",media_type="text/html")

@@ -14,9 +14,9 @@ def apply_context(document, context):
     if not uses_model_knowledge(document):
         return document
     notice=context['notice']
-    document['source_method']=notice+' Fonti elencate: soltanto pagine effettivamente consultate. La conoscenza del modello non è una fonte bibliografica.'
+    document['source_method']=notice+' Fonti elencate: soltanto documenti e pagine effettivamente consultati. La conoscenza del modello non è una fonte bibliografica.'
     document.setdefault('editorial_notes',[]).append(notice)
-    document.setdefault('metadata',{})['authoring']='Modello configurato; conoscenza interna e pagine disponibili, revisione automatica non indipendente.'
+    document.setdefault('metadata',{})['authoring']='Modello configurato; conoscenza interna e fonti disponibili, revisione automatica non indipendente.'
     def annotate(value):
         if isinstance(value,dict):
             if 'sources' in value or 'source_ids' in value:
@@ -44,15 +44,15 @@ def export_provenance(root, timeline):
     research=timeline['research']
     rows=['# Fonti e metodo', '', '## Verifica delle informazioni', research['notice'],
           'Le conoscenze interne del modello non costituiscono una fonte consultabile. La revisione automatica controlla la coerenza, ma non certifica la verità storica.',
-          '', '## Pagine effettivamente consultate', '']
+          '', '## Fonti effettivamente consultate', '']
     if not timeline['sources']:
-        rows.append('Nessuna pagina esterna consultabile acquisita per questa produzione.')
+        rows.append('Nessuna fonte consultabile acquisita per questa produzione.')
     for source in timeline['sources']:
         rows.extend([f'### {source["id"]} — {source["title"]}', f'[{source["title"]}]({source["url"]})',source['use'],''])
     rows.extend(['## Provenienza per scena', 'La presenza di riferimenti indica pagine pertinenti, non una verifica indipendente di ogni frase.'])
     for scene in timeline['scenes']:
         refs=', '.join(scene.get('sources',[]))
-        state=('Riferimenti esterni: '+refs+'; possibile integrazione dalla conoscenza del modello, da verificare.') if refs else 'Conoscenza interna del modello: contenuti non verificati con fonti esterne.'
+        state=('Riferimenti consultati: '+refs+'; possibile integrazione dalla conoscenza del modello, da verificare.') if refs else 'Conoscenza interna del modello: contenuti non verificati con fonti consultabili.'
         rows.append(f'- {scene["id"]} — {scene["title"]}: {state}')
     rows.extend(['', '## Note editoriali', *['- '+note for note in timeline.get('editorial_notes',[])]])
     (root/'sources.md').write_text('\n\n'.join(rows)+'\n',encoding='utf-8')

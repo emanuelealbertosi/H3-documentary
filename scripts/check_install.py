@@ -2,13 +2,14 @@
 import argparse,hashlib,json,subprocess,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
 
 def signature():
     return hashlib.sha256(b''.join((ROOT/p).read_bytes() for p in ['requirements-lock.txt','pipeline/requirements-lock.txt','scripts/assets-lock.json'])).hexdigest()
 
 def check(quick=False,write=False):
     python=ROOT/'pipeline/.venv/Scripts/python.exe'
-    paths=[python,ROOT/'.venv/Scripts/python.exe',ROOT/'pipeline/documentary.py',ROOT/'pipeline/engine/atlas.py']
+    paths=[python,ROOT/'.venv/Scripts/python.exe',ROOT/'pipeline/documentary.py',ROOT/'pipeline/engine/atlas.py',ROOT/'data/models/rag/ready.json']
     records=json.loads((ROOT/'scripts/assets-lock.json').read_text(encoding='utf-8'))
     paths.extend(ROOT/'pipeline'/r['path'] for r in records)
     if any(not p.is_file() for p in paths):raise RuntimeError('Installazione incompleta: riapri INSTALLA.bat.')
@@ -16,7 +17,9 @@ def check(quick=False,write=False):
         saved=json.loads((ROOT/'data/installation.json').read_text())
         if saved.get('requirements')!=signature():raise RuntimeError('Dipendenze aggiornate: installazione richiesta.')
         return
-    import fastapi,uvicorn,httpx,bs4
+    import fastapi,uvicorn,httpx,bs4,fastembed,pypdf,docx
+    from app.documents import ensure_model
+    ensure_model(False)
     code="""import json,sys,subprocess
 from pathlib import Path
 import av,numpy,scipy,PIL,cv2,imageio_ffmpeg,piper

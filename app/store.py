@@ -31,10 +31,15 @@ def init():
             c.execute("ALTER TABLE projects ADD COLUMN tts_engine TEXT DEFAULT 'kokoro'")
         if "tts_reference_id" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN tts_reference_id TEXT DEFAULT ''")
+        if "use_documents" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
+            c.execute("ALTER TABLE projects ADD COLUMN use_documents INTEGER DEFAULT 0")
+        if "document_ids" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
+            c.execute("ALTER TABLE projects ADD COLUMN document_ids TEXT DEFAULT '[]'")
 def project(pid):
     with connect() as c: row=c.execute("SELECT * FROM projects WHERE id=?",(pid,)).fetchone()
     if not row: raise KeyError(pid)
-    obj=dict(row);obj["source_urls"]=json.loads(obj["source_urls"]);obj["result"]=json.loads(obj["result"]);return obj
+    obj=dict(row);obj["source_urls"]=json.loads(obj["source_urls"]);obj["result"]=json.loads(obj["result"])
+    obj["document_ids"]=json.loads(obj.get("document_ids") or "[]");return obj
 def projects():
     with connect() as c: ids=[r["id"] for r in c.execute("SELECT id FROM projects ORDER BY created DESC")]
     return [project(i) for i in ids]
@@ -47,13 +52,14 @@ def create(req):
           (pid,req.topic,req.minutes,req.notes,json.dumps(req.source_urls),ts,ts))
         c.execute("UPDATE projects SET documentary_type=? WHERE id=?",(req.documentary_type,pid))
         c.execute("UPDATE projects SET use_media=? WHERE id=?",(req.use_media,pid))
+        c.execute("UPDATE projects SET use_documents=?,document_ids=? WHERE id=?",(req.use_documents,json.dumps(req.document_ids),pid))
         c.execute("UPDATE projects SET tts_engine=?,tts_reference_id=? WHERE id=?",(engine,reference,pid))
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
-    allowed={"status","stage","progress","error","result","notes","source_urls","use_media","tts_engine","tts_reference_id"}
+    allowed={"status","stage","progress","error","result","notes","source_urls","use_media","use_documents","document_ids","tts_engine","tts_reference_id"}
     if not fields.keys()<=allowed: raise ValueError("Campi non consentiti")
     fields["updated"]=now()
-    fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls") else v for k,v in fields.items()}
+    fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls","document_ids") else v for k,v in fields.items()}
     with connect() as c:c.execute("UPDATE projects SET "+",".join(k+"=?" for k in fields)+" WHERE id=?",(*fields.values(),pid))
 def event(pid,message,level="info"):
     message=str(message)[-3000:]

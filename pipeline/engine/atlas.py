@@ -224,8 +224,9 @@ class AtlasVisuals:
             else:
                 d.line(((x-8)*SS,(y-5)*SS,(x+8)*SS,(y+5)*SS),fill=(*INK,int(235*fade)),width=SS)
                 d.line(((x-8)*SS,(y+5)*SS,(x+8)*SS,(y-5)*SS),fill=(*INK,int(235*fade)),width=SS)
-            dx,dy=unit.get('label_offset',[0,-30])
-            label(overlay,(x+dx,y+dy),unit.get('label',''),16,CREAM,fade)
+            if unit.get('show_label',True) and unit.get('label'):
+                dx,dy=unit.get('label_offset',[0,-30])
+                label(overlay,(x+dx,y+dy),unit['label'],16,CREAM,fade)
         # END H3 BATTLE ATLAS TACTICS
         labels=self.geography_labels(s,cam,fade);overlay.alpha_composite(labels)
         for item in s.get('callouts',[]):
@@ -252,6 +253,9 @@ class AtlasVisuals:
             self.diagram(im,s,t,fade)
         for item in s.get('commanders',[]):
             age=t-cue_start(s,item['cue'])
+            # BEGIN H3 OPENING LAYOUT
+            if s.get('mode')=='opening':age-=6
+            # END H3 OPENING LAYOUT
             if age<0 or age>13:continue
             c=self.data['commanders'][item['id']];card=Image.new('RGBA',(290,388),(*INK,234))
             photo=ImageOps.fit(Image.open(ROOT/c['portrait']).convert('RGB'),(266,267),method=Image.Resampling.LANCZOS,centering=(.5,0))

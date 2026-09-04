@@ -20,6 +20,10 @@ La licenza MIT del progetto copre il codice originale dell'app e della pipeline.
 | Opere del Metropolitan Museum | https://www.metmuseum.org/policies/image-resources | Immagini Open Access degli esempi, metadati e fonti nei rispettivi pack |
 | Chatterbox Multilingual, opzionale | https://github.com/resemble-ai/chatterbox ; https://huggingface.co/ResembleAI/chatterbox | MIT; commit e revisione pesi fissati negli script; watermark Perth mantenuto |
 | PyTorch / torchaudio, opzionali | https://pytorch.org/ | Licenze delle distribuzioni CPU scaricate |
+| FastEmbed | https://github.com/qdrant/fastembed | Apache-2.0; inferenza ONNX locale su CPU per l'indice dei documenti |
+| paraphrase-multilingual-MiniLM-L12-v2, conversione ONNX Qdrant | https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 ; https://huggingface.co/qdrant/paraphrase-multilingual-MiniLM-L12-v2-onnx-Q | Apache-2.0; revisione ONNX fissata nell'app e scaricata nella cartella privata `data/models/rag/` |
+| pypdf | https://github.com/py-pdf/pypdf | BSD-3-Clause; estrazione locale del testo PDF |
+| python-docx | https://github.com/python-openxml/python-docx | MIT; estrazione locale di paragrafi e tabelle DOCX |
 
 Le versioni Python sono elencate nei due `requirements-lock.txt`; ogni ambiente conserva i metadati e le licenze dei pacchetti installati. Nessun eseguibile, modello pesante o cache privata viene incluso nel repository Git o nello ZIP sorgente: sono ottenuti dall'installatore dai distributori originali.
 

@@ -22,7 +22,12 @@ def main():
     diffs=np.abs(np.diff(means));joins=[]
     for scene in p['scenes'][1:]:
         i=round(scene['start']*p['fps']);joins.append({'scene':scene['id'],'time':scene['start'],'brightness_step':float(diffs[i-1]),'pixel_change':changes[i-1]})
-    report={'frames_measured':len(means),'max_adjacent_mean_brightness_change':float(diffs.max()),'max_adjacent_pixel_change':max(changes),'min_mean_brightness':min(means),'chapter_joins':joins,'status':'passed' if diffs.max()<4 else 'review_required','method':'All encoded video frames decoded to 96x54 grayscale. Detects global flashes and chapter brightness discontinuities; does not certify absence of all local or perceptual aliasing.'}
+    maximum=int(diffs.argmax())+1
+    scene=next((s['id'] for s in p['scenes'] if maximum<round(s['end']*p['fps'])),p['scenes'][-1]['id'])
+    top=sorted(range(1,len(means)),key=lambda i:diffs[i-1],reverse=True)[:8]
+    report={'frames_measured':len(means),'max_adjacent_mean_brightness_change':float(diffs.max()),'max_adjacent_pixel_change':max(changes),'max_change_frame':maximum,'max_change_time':maximum/p['fps'],'max_change_scene':scene,
+      'largest_changes':[{'frame':i,'time':i/p['fps'],'brightness_step':float(diffs[i-1]),'pixel_change':changes[i-1]} for i in top],
+      'min_mean_brightness':min(means),'chapter_joins':joins,'status':'passed' if diffs.max()<4 else 'review_required','method':'All encoded video frames decoded to 96x54 grayscale. Detects global flashes and chapter brightness discontinuities; does not certify absence of all local or perceptual aliasing.'}
     write_json(ROOT/'output'/p['verification_dir']/'motion.json',report)
     print(report['status'],report['frames_measured'],'frames; maximum brightness step',round(report['max_adjacent_mean_brightness_change'],4),flush=True)
     if report['status']!='passed':raise RuntimeError('Inspect detected brightness discontinuities')

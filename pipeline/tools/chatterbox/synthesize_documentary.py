@@ -40,12 +40,15 @@ def main():
     if pack.get('voice_engine')!='chatterbox':raise ValueError('Il documentario non richiede Chatterbox.')
     out=workspace/'build'/pack['slug']/'voice';out.mkdir(parents=True,exist_ok=True)
     pending=[]
+    total=sum(len(scene['lines']) for scene in pack['scenes'])
     for scene in pack['scenes']:
         for index,line in enumerate(scene['lines']):
             spoken=pronounce(line,pack.get('pronunciation',{}));key=synthesis_key(pack,scene['id'],index,spoken,workspace);path=out/f'{key}.wav'
             if not path.exists():pending.append((scene,index,spoken,path))
     if not pending:
         print('Chatterbox: voce già presente nella cache.',flush=True);return
+    cached=total-len(pending)
+    print(f'Chatterbox: {len(pending)} segmenti da generare, {cached} già in cache.',flush=True)
     os.environ.setdefault('HF_HOME',str(args.model.parent.parent/'.cache/huggingface'))
     os.environ.setdefault('PKUSEG_HOME',str(args.model/'pkuseg'));os.environ.setdefault('HF_HUB_OFFLINE','1')
     os.environ.setdefault('HF_HUB_DISABLE_TELEMETRY','1');os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
@@ -65,7 +68,7 @@ def main():
     if reference and (not reference.is_file() or not reference.is_relative_to(workspace)):raise ValueError('Campione vocale del progetto non disponibile.')
     conditioned=False
     torch.manual_seed(42);np.random.seed(42)
-    for scene,index,spoken,path in pending:
+    for pending_index,(scene,index,spoken,path) in enumerate(pending,1):
         parts=split_parts(pack,scene,index,spoken);chunks=[]
         for part_index,part in enumerate(parts):
             with torch.inference_mode():
@@ -82,6 +85,7 @@ def main():
         joined=np.concatenate(chunks);peak=float(np.max(np.abs(joined)))
         if not np.isfinite(joined).all() or len(joined)<model.sr//4:raise ValueError('Chatterbox ha prodotto un segmento audio non valido.')
         joined*=min(1,.94/max(peak,1e-9));sf.write(path,joined,model.sr,subtype='PCM_16')
-        print('Chatterbox voice ready',scene['id'],scene['title'],f'frase {index+1}/{len(scene["lines"])}',flush=True)
+        print('Chatterbox voice ready',scene['id'],scene['title'],f'frase {index+1}/{len(scene["lines"])}',
+              f'· segmento {cached+pending_index}/{total}',flush=True)
 
 if __name__=='__main__':main()

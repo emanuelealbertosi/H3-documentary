@@ -58,6 +58,8 @@ try {
     }
     $h3AppPython = Join-Path $h3Root '.venv/Scripts/python.exe'
     Run-Checked $h3AppPython @('-X','utf8',(Join-Path $h3Root 'scripts/bootstrap_assets.py'))
+    Write-Host 'Preparo la ricerca locale nei documenti (modello multilingue CPU, circa 220 MB)...'
+    Run-Checked $h3AppPython @('-X','utf8',(Join-Path $h3Root 'scripts/bootstrap_rag.py'))
     Run-Checked $h3AppPython @('-X','utf8',(Join-Path $h3Root 'scripts/check_install.py'),'--write-state')
     if ($Chatterbox -or -not $SenzaChatterbox) {
         Write-Host 'Preparo Chatterbox Multilingual V3 (download iniziale di circa 3 GB)...'

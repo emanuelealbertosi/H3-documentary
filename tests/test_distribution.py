@@ -38,6 +38,7 @@ def test_bat_uses_own_directory_and_inbox_powershell():
 
 def test_examples_and_runtime_modules_are_bundled():
     for file in ['app/battle_outline.py','app/narration_builder.py','pipeline/engine/render.py','pipeline/engine/atlas.py','pipeline/engine/narration.py',
+                 'app/documents.py','app/document_routes.py','static/documents.js','docs/DOCUMENTI.md',
                  'pipeline/engine/history_schema.py','pipeline/engine/history_direction.py',
                  'pipeline/engine/history_geography.py','pipeline/tools/acquire_atlas.py',
                  'pipeline/battles/waterloo/battle.json','pipeline/documentaries/rinascimento/documentary.json',
@@ -90,5 +91,7 @@ def test_preserved_engine_baseline():
             data=re.sub(rb'(?m)^ +# BEGIN H3 IMAGE INSETS\n.*?^ +# END H3 IMAGE INSETS\n',b'',data,flags=re.S)
             data=re.sub(rb'(?m)^ +# BEGIN H3 RESEARCH PROVENANCE\n.*?^ +# END H3 RESEARCH PROVENANCE\n',b'',data,flags=re.S)
             data=re.sub(rb'(?m)^ +# BEGIN H3 BATTLE ATLAS TACTICS\n.*?^ +# END H3 BATTLE ATLAS TACTICS\n',b'',data,flags=re.S)
+            data=re.sub(rb'(?m)^ +# BEGIN H3 OPENING LAYOUT\n.*?^ +# END H3 OPENING LAYOUT\n',b'',data,flags=re.S)
             data=re.sub(rb'(?m)^ +# BEGIN H3 TTS CREDIT\n.*?^ +# END H3 TTS CREDIT\n',b'',data,flags=re.S)
+            data=re.sub(rb'(?m)^ +# BEGIN H3 LOCAL DOCUMENT LINKS\n.*?^ +# END H3 LOCAL DOCUMENT LINKS\n',b'',data,flags=re.S)
         assert hashlib.sha256(data).hexdigest()==expected,name

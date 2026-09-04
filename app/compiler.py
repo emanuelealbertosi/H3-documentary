@@ -24,6 +24,14 @@ def static_pos(view,side):
     # Stable opposing offsets inside the camera; these indicate formations, not exact coordinates.
     direction=-1 if side=='a' else 1
     return [view[0]+direction*view[2]*.10,view[1]+direction*view[2]*.035]
+def source_method(sources):
+    local=any(s.get('origin')=='local_document' for s in sources)
+    web=any(s.get('origin')!='local_document' for s in sources)
+    origin=('documenti locali selezionati e pagine web consultate' if local and web else
+            'documenti locali selezionati' if local else
+            'pagine web consultate' if web else 'nessuna fonte esterna consultabile')
+    retrieval=' I passaggi locali sono scelti con ricerca ibrida.' if local else ''
+    return f'Fonti: {origin}; sceneggiatura e revisione mediante modello configurato.{retrieval} La revisione automatica non equivale a una verifica storiografica indipendente.'
 def compile_pack(outline,narration,sources,project,settings):
     o=Outline.model_validate(outline).model_dump()
     places={p["id"]:dict(name=p["name"],pos=p["pos"],size=24) for p in o["places"]}
@@ -81,9 +89,9 @@ def compile_pack(outline,narration,sources,project,settings):
         max_voice_tempo=1.22,places=places,river_names=o["river_names"],commanders=commanders,
         factions=[dict(id="a",label=o["factions"][0],color=[239,185,93],estimate="Consistenze indicate nel racconto",commander=""),dict(id="b",label=o["factions"][1],color=[221,109,101],estimate="Consistenze indicate nel racconto",commander="")],
         route_legend="Movimenti militari · schematici",maps={"campaign":dict(center=overview[:2],scale=[100,100],seed=41,landmarks=[],roads=[],rivers=[],ridges=[],forests=[],zones=[])},
-        sources=[dict(id=s["id"],title=s["title"],url=s["url"],use="Pagina consultata il "+s["retrieved"][:10]+". Riferimenti per il racconto; evidenza testuale conservata nel progetto.") for s in sources],
+        sources=[dict(id=s["id"],title=s["title"],url=s["url"],use=("Documento locale: "+s.get("citation","provenienza indicata dall’utente")+". Passaggi recuperati dall’indice locale; originale conservato nel progetto." if s.get("origin")=="local_document" else "Pagina consultata il "+s["retrieved"][:10]+". Riferimenti per il racconto; evidenza testuale conservata nel progetto.")) for s in sources],
         editorial_notes=o["uncertainties"]+["Itinerari e schieramenti illustrativi; geografia fisica moderna, senza confini politici non verificati."],
-        source_method="Fonti recuperate dal web, sceneggiatura e revisione mediante modello configurato. La revisione automatica non equivale a una verifica storiografica indipendente.",
+        source_method=source_method(sources),
         territorial_note="Nord in alto. Base fisica moderna, percorsi schematici. Nessun confine attuale è presentato come storico.",
         map_notice="Mappe illustrative su base fisica moderna; percorsi e orari incerti sono segnalati.",
         extra_credits=CREDIT+(" OpenStreetMap contributors (ODbL); geocodifica Nominatim. https://www.openstreetmap.org/copyright/" if any('Nominatim' in p.get('note','') for p in o['places']) else ''),assets=[],scenes=scenes)

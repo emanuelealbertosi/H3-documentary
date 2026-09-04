@@ -9,6 +9,7 @@ __pycache__/
 *.env
 .env*
 data/
+/output/
 tests/output/
 pipeline/tests/output/
 pipeline/build/

@@ -154,7 +154,7 @@ def test_resume_failed_research_reaches_delivery_and_preserves_policy(tmp_path,m
     text=(work/'sources.md').read_text(encoding='utf-8')
     assert 'conoscenza' in text and 'non verificati' in text
     assert 'Ogni scena cita le fonti consultate.' not in text
-    if count==0:assert 'Nessuna pagina esterna consultabile' in text and 'https://' not in text
+    if count==0:assert 'Nessuna fonte consultabile' in text and 'https://' not in text
     archive=work/('battles' if kind=='battle' else 'documentaries')/pack['slug']
     assert (archive/'sources.md').read_text(encoding='utf-8')==text
     assert 'VERIFICA DELLE INFORMAZIONI' in (archive/'youtube_description.txt').read_text(encoding='utf-8')

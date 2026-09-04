@@ -68,18 +68,26 @@ def discover_wikipedia(topic):
     return [{"url":"https://en.wikipedia.org/wiki/"+requests.utils.quote(x["title"].replace(" ","_")),"title":x["title"]} for x in data.get("query",{}).get("search",[])]
 
 def assessment(sources, mode="hybrid"):
-    hosts={(urlsplit(s["url"]).hostname or "").lower().removeprefix("www.") for s in sources}
+    local=[s for s in sources if s.get("origin")=="local_document"]
+    remote=[s for s in sources if s.get("origin")!="local_document"]
+    hosts={(urlsplit(s["url"]).hostname or "").lower().removeprefix("www.") for s in remote}
     hosts={"wikipedia.org" if h=="wikipedia.org" or h.endswith(".wikipedia.org") else h for h in hosts}
-    sufficient=len(sources)>=3 and len(hosts)>=2 and bool(hosts-{"wikipedia.org", ""})
+    remote_sufficient=len(remote)>=3 and len(hosts)>=2 and bool(hosts-{"wikipedia.org", ""})
+    local_sufficient=len(local)>=2 or (len(local)>=1 and len(remote)>=1)
+    sufficient=remote_sufficient or local_sufficient
     fallback=not sufficient and mode=="hybrid"
-    return {"mode":mode, "source_count":len(sources), "domains":sorted(hosts),
+    return {"mode":mode, "source_count":len(sources), "local_document_count":len(local), "domains":sorted(hosts),
             "sufficient_sources":sufficient, "fallback_used":fallback,
             "status":"mixed_unverified" if fallback and sources else "model_knowledge_unverified" if fallback else "consulted_sources",
             "notice":("Fonti consultabili insufficienti: il racconto usa anche la conoscenza del modello. "
                        "I contenuti non sono verificati integralmente; la revisione automatica non è una verifica storica indipendente.") if fallback else ""}
 
-def collect(topic,urls,config,folder,cancel,log):
+def collect(topic,urls,config,folder,cancel,log,local_sources=None):
     folder.mkdir(exist_ok=True,parents=True);candidates=[{"url":u,"title":""} for u in urls];errors=[]
+    sources=list(local_sources or [])
+    for source in sources:
+        write_json(folder/(source["id"]+".json"),source)
+        log("Documento locale consultato: "+source["title"])
     for query in [topic+" history museum archive",topic+" fonti storiche musei archivi"]:
         cancel()
         try:candidates+=search(query,config.get("search_url",""))
@@ -87,14 +95,14 @@ def collect(topic,urls,config,folder,cancel,log):
     if len(candidates)<4:
         try:candidates+=discover_wikipedia(topic)
         except Exception as e:errors.append("Catalogo: "+str(e)[:180])
-    seen=set();sources=[];index=0
-    while index<len(candidates) and len(sources)<7 and len(seen)<25:
+    seen=set();index=0;web_count=0
+    while index<len(candidates) and web_count<7 and len(sources)<11 and len(seen)<25:
         cancel();candidate=candidates[index];index+=1;url=candidate["url"].split("#")[0]
         if url in seen:continue
         seen.add(url)
         try:
             page=extract(url)
-            page["id"]="S"+str(len(sources)+1)
+            web_count+=1;page["id"]="S"+str(web_count)
             if "wikipedia.org" in urlsplit(page["url"]).hostname:
                 for link in page["links"]:
                     host=urlsplit(link).hostname or ""
@@ -106,7 +114,7 @@ def collect(topic,urls,config,folder,cancel,log):
         except Exception as e:errors.append(url+": "+str(e)[:140])
     cancel()
     report=assessment(sources,config.get("research_mode","hybrid"))
-    write_json(folder/"acquisition.json",{"errors":errors,"candidates":candidates,"retrieved":len(sources),"research":report})
+    write_json(folder/"acquisition.json",{"errors":errors,"candidates":candidates,"retrieved":len(sources),"local_documents":len(local_sources or []),"research":report})
     if not report["sufficient_sources"] and not report["fallback_used"]:
         raise ValueError("Fonti consultabili insufficienti. Aggiungi link a musei, archivi o testi storici, oppure configura SearXNG; poi riprendi la ricerca.")
     if report["fallback_used"]:log(report["notice"]+" Proseguo con la modalità ibrida.")

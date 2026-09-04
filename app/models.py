@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, ConfigDict, StringConstraints, field_validator, model_validator
 from typing import Literal,Annotated
 from urllib.parse import urlsplit, urlunsplit
-import math
+import math,re
 
 class Settings(BaseModel):
     provider: Literal["openai","lmstudio","vllm","ollama"] = "lmstudio"
@@ -47,9 +47,18 @@ class ProjectRequest(BaseModel):
     source_urls: list[str] = Field(default_factory=list,max_length=12)
     start: bool = True
     use_media: bool = True
+    use_documents: bool = True
+    document_ids: list[str] = Field(default_factory=list, max_length=24)
     documentary_type: Literal["auto","battle","war","territorial_expansion","migration","cultural_movement","religious_expansion","trade_network","exploration","political_history","revolution","economic_history","technology_history","biography","general_history"] = "auto"
     tts_engine: Literal["default","kokoro","chatterbox"] = "default"
     tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+
+    @field_validator("document_ids")
+    @classmethod
+    def document_identifiers(cls, values):
+        if any(not re.fullmatch(r"[a-f0-9]{24}", value) for value in values):
+            raise ValueError("Identificatore documento non valido.")
+        return list(dict.fromkeys(values))
 
 class VoiceChoice(BaseModel):
     tts_engine: Literal["kokoro","chatterbox"]

@@ -79,6 +79,7 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     version=(Path(__file__).resolve().parents[1]/'VERSION').read_text().strip()
     shell=client.get('/admin')
     assert shell.status_code==200 and shell.headers['cache-control']=='no-cache'
+    assert client.get('/documents').headers['cache-control']=='no-cache'
     assert f'/static/app.js?v={version}' in shell.text
     frontend=client.get(f'/static/app.js?v={version}')
     assert frontend.headers['cache-control']=='no-cache'

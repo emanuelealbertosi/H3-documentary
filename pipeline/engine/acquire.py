@@ -26,7 +26,10 @@ def acquire(pack):
         base='https://raw.githubusercontent.com/google/fonts/main/ofl/'+directory+'/'
         save(base+name,'assets/fonts/'+name,'SIL Open Font License 1.1')
         save(base+'OFL.txt','assets/fonts/'+directory+'-OFL.txt','SIL Open Font License 1.1')
-    if not (ROOT/pack['voice']).exists():
+    # Chatterbox is installed and invoked by Studio in its own runtime. Its
+    # model and optional reference recording are therefore not assets that
+    # this generic downloader should try to resolve as a Kokoro ONNX file.
+    if pack.get('voice_engine','kokoro')!='chatterbox' and not (ROOT/pack['voice']).exists():
         spec=pack.get('voice_download')
         if not spec:raise ValueError('Missing local voice and voice_download descriptor.')
         for suffix in ['', '.json']:save(spec['url']+suffix,pack['voice']+suffix,spec['license'])

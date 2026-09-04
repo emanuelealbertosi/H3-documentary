@@ -70,7 +70,19 @@ La versione **1.2.0** aggiunge il controllo del reasoning per ogni connessione: 
 
 La versione **1.2.1** irrobustisce le mappe delle battaglie. La verifica geografica scarta località omonime trovate lontano dal teatro dichiarato, compresi risultati già memorizzati da versioni precedenti. Le viste regionali e tattiche ricevono livelli di rilievo distinti, scelti in base allo zoom finale, con curve di livello già impresse nel raster per mantenere stabili pan e zoom. Il layout considera insieme luoghi, simboli e nomi delle unità; i reparti che convergono sullo stesso punto vengono separati in modo deterministico. Il controllo visivo del modello continua a fermare difetti gravi riferiti a una scena precisa, mentre osservazioni vaghe su contrasto o stile restano avvisi e non bloccano indefinitamente la produzione.
 
+La versione **1.3.0** aggiunge una biblioteca privata di documenti con RAG locale. Puoi incollare testo oppure trascinare PDF, DOCX, TXT e Markdown, descriverne autore e provenienza e scegliere le fonti per ciascun progetto. Un piccolo modello multilingue su CPU seleziona i passaggi pertinenti; una ricerca lessicale mantiene il flusso utilizzabile anche se l'indice semantico non è disponibile. Gli originali scelti vengono congelati nella produzione, citati in `sources.md` e non sono inclusi nel repository o negli ZIP di rilascio.
+
+La versione 1.3.0 comprende anche i miglioramenti Chatterbox e cartografici preparati nella 1.2.2: la preparazione degli asset non cerca più una voce Kokoro quando il progetto usa il motore separato, la sintesi indica segmenti completati e avanzamento, e il controllo visivo esamina sia lo sviluppo sia la conclusione di ogni scena. L'apertura non sovrappone il ritratto al titolo, la scena finale elimina le etichette militari ripetitive e per prove rapide è disponibile la durata di **3 minuti**.
+
 Per le battaglie, un passaggio visuale dedicato richiede al modello soltanto direzione e significato dei movimenti, usando ID di località verificati. Il programma trasforma questi dati in frecce, percorsi e simboli di unità senza chiedere coordinate tattiche inventate. Se il modello omette un movimento evidente viene applicato un fallback conservativo. Le località più usate possono essere ricontrollate tramite OpenStreetMap Nominatim: massimo dodici richieste sequenziali, intervallo superiore a un secondo, User-Agent identificativo e cache permanente nel progetto. Se il servizio non è disponibile, la produzione prosegue dichiarando illustrative le coordinate del modello.
+
+## Documenti e fonti locali
+
+Apri **Documenti e fonti** per trascinare PDF, DOCX, TXT o Markdown, oppure per incollare direttamente un testo. Puoi aggiungere titolo, autore, anno ed edizione o archivio di provenienza. Nella schermata iniziale scegli quali documenti usare; dentro un progetto ancora da avviare puoi modificare la selezione.
+
+All'avvio della produzione gli originali e l'indice vengono copiati nel workspace del progetto. La ricerca ibrida combina corrispondenze lessicali con il modello gratuito `paraphrase-multilingual-MiniLM-L12-v2`, eseguito da FastEmbed sulla CPU. Al modello narrativo arrivano soltanto i passaggi più pertinenti, con indicazione della pagina quando il PDF la offre. Il contenuto dei documenti viene trattato come evidenza e non come istruzioni per il programma.
+
+I PDF composti soltanto da scansioni sono conservati e segnalati come **OCR necessario**; questa versione non inventa testo e non esegue OCR in modo implicito. Il formato Word moderno DOCX è supportato, comprese le tabelle. Per i vecchi `.doc` occorre salvarli in DOCX. Limiti: 50 MB per file, 2,5 milioni di caratteri indicizzabili e 24 documenti per progetto. [Guida completa](docs/DOCUMENTI.md).
 
 ## Immagini personali insieme alle mappe
 
@@ -114,7 +126,7 @@ Gli atlanti e gli asset mancanti degli esempi vengono scaricati quando necessari
 
 ```text
 INSTALLA.bat / AVVIA.bat   installazione e apertura
-app/                     interfaccia HTTP, ricerca, LLM, coda, compilazione
+app/                     interfaccia HTTP, documenti/RAG, ricerca, LLM, coda, compilazione
 static/                  interfaccia e font locali
 pipeline/engine/          motore condiviso, TTS, timeline, renderer, verifiche
 pipeline/battles/         pack storici compatibili

@@ -95,7 +95,17 @@ def export_documents(timeline):
     description=[timeline['title'],'',timeline.get('description','Un documentario storico in italiano attraverso mappe animate e ritratti storici.'),'', 'CAPITOLI']
     description.extend(f'{stamp(s["start"])[3:]} {s["title"]}' for s in timeline['scenes'])
     description+=['',timeline.get('map_notice','Mappe, rilievi e movimenti schematici; orari ed effettivi indicativi.')+' Voce sintetica italiana generata localmente. Musica ed effetti originali procedurali. Ritratti storici da Wikimedia Commons: provenienza e licenze nei crediti.','', 'FONTI PRINCIPALI']
+    # BEGIN H3 LOCAL DOCUMENT LINKS
+    # A private relative file path is useful inside sources.md, but it must not
+    # leak into the public YouTube description. Preserve source order while
+    # counting only links that a viewer can open.
+    all_sources=timeline['sources']
+    timeline['sources']=[src for src in all_sources if str(src.get('url','')).startswith(('http://','https://'))]
+    # END H3 LOCAL DOCUMENT LINKS
     description.extend(src['title']+' — '+src['url'] for src in timeline['sources'][:4 if timeline.get('video_license') else 8])
+    # BEGIN H3 LOCAL DOCUMENT LINKS
+    timeline['sources']=all_sources
+    # END H3 LOCAL DOCUMENT LINKS
     if timeline.get('extra_credits'):description+=['','CARTOGRAFIA E LICENZE',timeline['extra_credits'],*portrait_credits]
     if timeline.get('video_license'):
         description+=['','LICENZA E RITRATTI',timeline['video_license'],*portrait_credits,

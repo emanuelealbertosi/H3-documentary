@@ -8,6 +8,15 @@ from .history_geography import atlas_config
 
 ANALYSIS_FIELDS=['period','geography','protagonists','cities','entities','key_events','chronology','causes','consequences','territorial_changes','movements','networks','routes','flows','alliances','conflicts','cultural_changes','political_changes','quantitative_data','uncertainties']
 
+def source_method(sources):
+    local=any(s.get('origin')=='local_document' for s in sources)
+    web=any(s.get('origin')!='local_document' for s in sources)
+    origin=('documenti locali selezionati e pagine web consultate' if local and web else
+            'documenti locali selezionati' if local else
+            'pagine web consultate' if web else 'nessuna fonte esterna consultabile')
+    retrieval=' I passaggi locali sono scelti con ricerca ibrida.' if local else ''
+    return f'Fonti: {origin}; scrittura e revisione mediante modello configurato.{retrieval} La revisione automatica non equivale a una verifica storiografica indipendente.'
+
 def outline_prompt(topic,minutes,kind,notes='',allow_model_knowledge=False):
     p=PROFILES[kind]
     evidence_rule=('Usa le pagine fornite dove pertinenti e la conoscenza interna per il contesto non coperto. '
@@ -58,8 +67,8 @@ def compile_outline(outline,narration,sources,project,settings):
       historical_period=o['historical_period'],metadata={'analysis':o.get('analysis',{}),'authoring':'Modello configurato dall’utente, locale o remoto, con fonti recuperate e revisione automatica.','visual_direction':direction},visual_direction=direction,
       target_minutes=project['minutes'],fps=settings.get('fps',24),output=f'output/{slug}_documentario_1080p.mp4',verification_dir=slug+'_verification',locations=places,persons=persons,entities=o.get('entities',[]),events=o.get('events',[]),visual_layers=o.get('visual_layers',[]),visual_assets=assets,
       scenes=scenes,overview=overview,atlas='assets/geography/atlas-film/atlas.json',
-      sources=[dict(id=s['id'],title=s['title'],url=s['url'],use='Fonte recuperata; evidenza testuale e data di consultazione nel progetto.') for s in sources],
-      editorial_notes=o.get('uncertainties',[]),source_method='Ricerca automatica su pagine consultate, seguita da scrittura e revisione del modello. La revisione automatica non equivale a una verifica storiografica indipendente.',map_notice='Base fisica moderna. Percorsi e aree schematici se non documentati con maggiore precisione.')
+      sources=[dict(id=s['id'],title=s['title'],url=s['url'],use=('Documento locale: '+s.get('citation','provenienza indicata dall’utente')+'. Passaggi recuperati dall’indice locale; originale conservato nel progetto.' if s.get('origin')=='local_document' else 'Fonte web recuperata; evidenza testuale e data di consultazione nel progetto.')) for s in sources],
+      editorial_notes=o.get('uncertainties',[]),source_method=source_method(sources),map_notice='Base fisica moderna. Percorsi e aree schematici se non documentati con maggiore precisione.')
     words=sum(len(l.split()) for s in scenes for l in s['lines'])
     if not project['minutes']*145<=words<=project['minutes']*195:raise ValueError('Lunghezza della sceneggiatura non adatta alla durata')
     from .research_provenance import apply_context

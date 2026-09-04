@@ -8,7 +8,7 @@ from .llm import ModelError
 from .store import read_json,write_json
 
 
-MOVE_WORDS=re.compile(r"\b(attacc|assalt|avanz|caric|marci|ritirat|ripieg|insegu|fug|converg|arriv|attravers|invad|sfond|circond|spost|incalz|disgreg)",re.I)
+MOVE_WORDS=re.compile(r"\b(attacc|assalt|avanz|caric|marci|campagn|conquist|occup|presa|entrat|ritirat|ripieg|insegu|fug|converg|arriv|attravers|invad|sfond|circond|spost|incalz|disgreg)",re.I)
 RETREAT_WORDS=re.compile(r"\b(ritirat|ripieg|fug|disgreg|arretr)",re.I)
 ALLY_WORDS=re.compile(r"\b(prussian|prussiani|alleat|wellington|bl[uü]cher|coalizion)",re.I)
 

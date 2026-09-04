@@ -43,6 +43,8 @@ def enqueue(pid):
         if p["status"]=="completed":raise ValueError("Il documentario è già completato.")
         from .media import freeze
         freeze(pid,bool(p.get('use_media')))
+        from .documents import freeze as freeze_documents
+        freeze_documents(pid,p.get('document_ids',[]),bool(p.get('use_documents')))
         FLAGS[pid]=threading.Event()
         store.update(pid,status="queued",error="",stage="In coda")
         store.event(pid,"Produzione in coda. Il motore esegue un documentario alla volta.")
@@ -68,6 +70,10 @@ def visual_blockers(review):
     ordinals=r'\b(?:prima|seconda|terza|quarta|quinta|sesta|settima|ottava|nona|decima|scena\s*\d+|mappa\s*\d+|immagine\s*\d+)\b'
     severe=r'sovrappos|fuori\s+campo|tagliat|corrott|illeggibil'
     return [str(issue) for issue in review.get('issues',[]) if re.search(ordinals,str(issue),re.I) and re.search(severe,str(issue),re.I)]
+def visual_review_images(preview_dir):
+    """Review both the developed action and the settled end of every scene."""
+    root=Path(preview_dir)
+    return sorted([*root.glob("*-0.55.jpg"),*root.glob("*-0.85.jpg")])
 def produce(pid,cfg):
     p=store.project(pid);folder=JOBS/pid;cp=folder/"checkpoints";cp.mkdir(exist_ok=True)
     cancel=lambda:check(pid)
@@ -88,7 +94,11 @@ def produce(pid,cfg):
         work,python=isolate(pid,cfg["pipeline_path"])
         src=Path(cfg["pipeline_path"]);slug="film-"+pid;packpath=work/"battles"/slug/"battle.json";geopath=packpath.parent/"geography.json"
         def do_research():
-            sources=collect(p["topic"],p["source_urls"],cfg,folder/"research",cancel,log)
+            from .documents import retrieve
+            local_sources=retrieve(pid,p["topic"]+"\n"+p.get("notes",''))
+            if p.get('use_documents') and p.get('document_ids') and not local_sources:
+                log('Documenti locali selezionati ma senza testo recuperabile; controllo il web e la modalità di ricerca configurata.')
+            sources=collect(p["topic"],p["source_urls"],cfg,folder/"research",cancel,log,local_sources)
             store.write_json(cp/"sources.json",sources)
             context=assessment(sources,cfg.get('research_mode','hybrid'))
             context['model']=cfg['model']
@@ -184,7 +194,13 @@ def produce(pid,cfg):
             if pack.get('voice_engine')=='chatterbox':
                 _,tts_python,model,worker=tts.chatterbox_paths(src)
                 log('Chatterbox Multilingual V3: sintesi locale'+(' con campione vocale one-shot.' if pack.get('voice_reference') else ' con la voce inclusa.'))
-                run(pid,tts_python,work,[str(worker),'--workspace',str(work),'--pack',rel,'--model',str(model),'--threads',str(cfg.get('chatterbox_threads',4))],cancel,log,max_hours=12)
+                def voice_log(message):
+                    log(message)
+                    match=re.search(r'segmento\s+(\d+)/(\d+)',str(message),re.I)
+                    if match:
+                        done,total=map(int,match.groups())
+                        store.update(pid,progress=round((6+done/max(1,total))/len(STAGES)*100,1))
+                run(pid,tts_python,work,[str(worker),'--workspace',str(work),'--pack',rel,'--model',str(model),'--threads',str(cfg.get('chatterbox_threads',4))],cancel,voice_log,max_hours=12)
             cmd("voice")
         stage("voice",voice)
         def preview():
@@ -192,7 +208,7 @@ def produce(pid,cfg):
             else:run(pid,python,work,["tools/history_layout.py",rel],cancel,log)
             cmd("preview")
             if cfg.get("vision") and not pack.get('user_media'):
-                images=sorted((work/"build"/slug/"previews").glob("*-0.55.jpg"))
+                images=visual_review_images(work/"build"/slug/"previews")
                 for first in range(0,len(images),4):
                     cancel();content=[{"type":"text","text":"Controlla la leggibilità di queste mappe. Rispondi JSON: {acceptable:boolean, issues:[string]}. Rileva solo difetti visivi gravi: testi importanti sovrapposti, luoghi focali fuori campo, immagini corrotte. Non giudicare la verità dei fatti dalla sola immagine."}]
                     for f in images[first:first+4]:

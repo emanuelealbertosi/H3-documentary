@@ -3,6 +3,7 @@ import copy,json
 from pathlib import Path
 import pytest
 from app.battle_outline import build_battle_outline
+from app.battle_visuals import _movement_required
 from app.battle_visuals import verify_place_coordinates,enrich_battle_outline
 from app.compiler import compile_pack
 from app.llm import LLM
@@ -124,3 +125,5 @@ def test_battle_visual_pass_uses_semantic_endpoints_and_compiler_draws_tactics(t
     assert pack['commanders']['wellington']['side']=='b'
     assert all(isinstance(spec,dict) and {'bounds','zoom'}<=set(spec) for spec in geography['patches'].values())
     assert max(spec['zoom'] for spec in geography['patches'].values())>=14
+def test_campaign_and_capture_titles_require_map_motion():
+    assert _movement_required({'title':'La campagna di Ulm e la presa di Vienna','event':''})
