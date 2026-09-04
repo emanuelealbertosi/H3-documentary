@@ -41,3 +41,16 @@
 .visual-source{display:grid;grid-template-columns:82px minmax(0,1fr);gap:8px 12px;font-size:10px;line-height:1.5}
 .visual-source dt{font-weight:700;color:#64766c}.visual-source dd{margin:0;overflow-wrap:anywhere;color:#344742}
 @media(max-width:800px){.visual-editor-actions{align-items:stretch;flex-direction:column}.media-target-actions{justify-content:stretch}.media-target-actions button{flex:1}}
+
+.media-link-modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px}
+.media-modal-backdrop{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0;background:rgba(12,31,34,.68);backdrop-filter:blur(3px)}
+.media-link-dialog{position:relative;width:min(760px,calc(100vw - 36px));max-height:calc(100vh - 48px);overflow:auto;padding:28px;border-radius:14px;background:#fbfaf5;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+.media-modal-close{width:38px;height:38px;padding:0;border:1px solid #d6d9ce;border-radius:50%;background:#fff;color:#3f554c;font-size:24px;line-height:1}
+.media-link-drop{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;min-height:132px;margin-top:18px;padding:22px;border:2px dashed #99ac9a;border-radius:12px;background:#eef3e9}
+.media-link-drop.drag-over{border-color:#2f7258;background:#e2eddf}
+.media-link-drop p{margin:4px 0 0;color:#677971;font-size:11px}.media-link-drop #link-upload-status{grid-column:2/-1;color:#456557;font-size:11px}
+.media-modal-library{margin-top:24px}.media-modal-library h3{margin:0 0 12px;font-size:13px}
+.media-modal-library>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.media-modal-library button{display:grid;grid-template-rows:96px auto auto;gap:5px;padding:8px;border:1px solid #d8ddd2;background:#fff;color:#30463e;text-align:left}
+.media-modal-library img{width:100%;height:96px;border-radius:5px;object-fit:cover}.media-modal-library span{overflow:hidden;font-size:11px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}.media-modal-library small{color:#668173;font-size:9px;text-transform:uppercase}
+@media(max-width:700px){.media-link-drop{grid-template-columns:auto 1fr}.media-link-drop .media-file-label{grid-column:1/-1}.media-modal-library>div{grid-template-columns:repeat(2,minmax(0,1fr))}}

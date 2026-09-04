@@ -3,11 +3,13 @@ const kinds={person:'Persona',place:'Luogo',topic:'Argomento',event:'Evento',ent
 const icons={person:'♙',place:'⌖',topic:'◈',event:'◷',entity:'⚑',scene:'▣'};
 export async function mediaPage({api,esc,toast,projectId}) {
   let items=await api('/media'), selected=items.find(x=>x.enabled)?.id, project=null;
-  let selectedSlot='',extra=[], filter='', saving=Promise.resolve(), disposed=false;
+  let selectedSlot='',linkTarget=-1,extra=[], filter='', saving=Promise.resolve(), disposed=false;
+  const requestedSlot=new URLSearchParams(location.search).get('slot')||'';
+  let revealRequestedSlot=!!requestedSlot;
   const columnWidthKey='h3-media-target-width';
   const rememberedWidth=Number(localStorage.getItem(columnWidthKey));
   let targetColumnWidth=Number.isFinite(rememberedWidth)&&rememberedWidth>=320?Math.min(640,rememberedWidth):380;
-  if(projectId)project=await api('/projects/'+projectId+'/media');
+  if(projectId){project=await api('/projects/'+projectId+'/media');if(project.visual?.slots?.some(x=>x.id===requestedSlot))selectedSlot=requestedSlot;}
   const root=document.querySelector('#app');
   const item=()=>items.find(x=>x.id===selected);
   const visualItem=()=>project?.visual?.slots?.find(x=>x.id===selectedSlot);
@@ -27,22 +29,24 @@ export async function mediaPage({api,esc,toast,projectId}) {
     const all=project?[...(project.targets||[]),...extra]:[...extra,...items.flatMap(x=>x.bindings)];
     const seen=new Set();return all.filter(b=>{const key=b.kind+':'+b.label.toLocaleLowerCase();if(seen.has(key))return false;seen.add(key);return true;});
   }
+  const sameBinding=(a,b)=>a.kind===b.kind&&a.label.toLowerCase()===b.label.toLowerCase();
+  const linkedItems=b=>items.filter(x=>x.enabled&&x.bindings.some(binding=>sameBinding(binding,b)));
   async function activateTarget(binding){
     if(projectId&&binding?.visual_slot_id&&binding.visual_editable&&!binding.enabled)await api('/projects/'+projectId+'/visual-slots/'+encodeURIComponent(binding.visual_slot_id),{method:'PUT',body:JSON.stringify({enabled:true})});
   }
   async function bind(mid,b){const m=items.find(x=>x.id===mid);if(!m)return;
-    selected=mid;selectedSlot='';m.enabled=true;
-    if(!m.bindings.some(x=>x.kind===b.kind&&x.label.toLowerCase()===b.label.toLowerCase()))m.bindings.push({kind:b.kind,label:b.label,aliases:b.aliases||[]});
+    selected=mid;selectedSlot='';linkTarget=-1;m.enabled=true;items=[m,...items.filter(x=>x.id!==mid)];
+    if(!m.bindings.some(x=>sameBinding(x,b)))m.bindings.push({kind:b.kind,label:b.label,aliases:b.aliases||[]});
     await persist(m);await activateTarget(b);if(projectId)project=await api('/projects/'+projectId+'/media');draw();toast('Immagine collegata a '+b.label+'.');
   }
-  async function toggleBinding(mid,b){const m=items.find(x=>x.id===mid);if(!m)return;
-    const index=m.bindings.findIndex(x=>x.kind===b.kind&&x.label.toLowerCase()===b.label.toLowerCase());
-    if(index<0)return bind(mid,b);
-    m.bindings.splice(index,1);await persist(m);if(projectId)project=await api('/projects/'+projectId+'/media');draw();toast('Collegamento rimosso da '+b.label+'.');
+  async function unbindTarget(b){
+    const linked=linkedItems(b);if(!linked.length)return;
+    for(const m of linked){m.bindings=m.bindings.filter(x=>!sameBinding(x,b));await persist(m);}
+    linkTarget=-1;if(projectId)project=await api('/projects/'+projectId+'/media');draw();toast('Collegamento rimosso da '+b.label+'.');
   }
   async function upload(files,binding){
     const list=[...files];if(!list.length)return;
-    const status=root.querySelector('#upload-status');
+    const status=root.querySelector(binding?'#link-upload-status':'#upload-status');
     for(let i=0;i<list.length;i++){
       if(status)status.textContent='Caricamento '+(i+1)+' di '+list.length+'…';
       try{
@@ -50,7 +54,7 @@ export async function mediaPage({api,esc,toast,projectId}) {
         const r=await fetch('/api/media?filename='+encodeURIComponent(list[i].name),{method:'POST',headers:{'X-DocumentariAI':'studio','Content-Type':'application/octet-stream'},body:list[i]});
         if(!r.ok){const e=await r.json();throw Error(e.detail||'Caricamento non riuscito.');}
         const m=await r.json();items.unshift(m);selected=m.id;selectedSlot='';
-        if(binding){m.bindings=[{kind:binding.kind,label:binding.label,aliases:binding.aliases||[]}];await persist(m);await activateTarget(binding);}
+        if(binding){m.bindings=[{kind:binding.kind,label:binding.label,aliases:binding.aliases||[]}];await persist(m);await activateTarget(binding);linkTarget=-1;}
       }catch(e){toast(e.message);}
     }
     if(projectId)project=await api('/projects/'+projectId+'/media');if(!disposed)draw();
@@ -68,11 +72,11 @@ export async function mediaPage({api,esc,toast,projectId}) {
     const {w,h}=geometry(m);Object.assign(box.style,{left:m.layout.x*100+'%',top:m.layout.y*100+'%',width:w*100+'%',height:h*100+'%'});
     box.querySelector('img').style.objectFit=m.layout.fit;box.querySelector('span').textContent=m.title;
     const heading=root.querySelector('.media-inspector h2');if(heading)heading.textContent=m.title;
-    root.querySelector('#inset-size-value').textContent=Math.round(w*100)+'%';
+    const sizeLabel=root.querySelector('#inset-size-value');if(sizeLabel)sizeLabel.textContent=Math.round(w*100)+'%';
   }
   function draw(){
     if(disposed)return;
-    const m=item(),v=visualItem(),shown=activeItem(),ts=targets();
+    const m=item(),v=visualItem(),shown=activeItem(),ts=targets(),linkBinding=ts[linkTarget];
     root.innerHTML=`<div class="topline"><span class="eyebrow">IL TUO ARCHIVIO VISIVO</span><a class="text-link" href="${projectId?'/projects/'+projectId:'/'}">${projectId?'← Torna al progetto':'Crea un documentario →'}</a></div>
       <h1>Un’immagine. Il suo posto nella storia.</h1>
       <p class="lead">Collega ritratti, luoghi e materiali ai soggetti del racconto. Compariranno in un riquadro, insieme alle mappe e alle altre scene.</p>
@@ -86,7 +90,7 @@ export async function mediaPage({api,esc,toast,projectId}) {
       </section>
       <div class="media-workspace" style="--media-target-width:${targetColumnWidth}px"><section class="card media-targets"><span class="eyebrow">02 · COLLEGA</span><h2>A chi o a cosa?</h2><p class="tiny muted">Un’immagine può avere più collegamenti. Aggiungi un nome, poi trascinaci sopra l’immagine.</p>
         ${m&&!selectedSlot?`<button class="media-selected-drag" draggable="true" data-mid="${m.id}" aria-label="Trascina immagine selezionata"><img draggable="false" src="/api/media/${m.id}/thumb" alt=""><span><small>IMMAGINE SELEZIONATA</small><b>${esc(m.title)}</b><i>Trascinami su un soggetto ↓</i></span></button>`:v?`<div class="media-selected-drag visual-selected">${v.has_preview?`<img src="/api/projects/${projectId}/visual-slots/${encodeURIComponent(v.id)}/image" alt="">`:`<span class="visual-blank">＋</span>`}<span><small>ELEMENTO DEL PROGETTO</small><b>${esc(v.label)}</b><i>Le modifiche compaiono a destra →</i></span></div>`:''}
-        <div class="media-target-list">${ts.map((b,i)=>{const linked=!!m?.bindings.some(x=>x.kind===b.kind&&x.label.toLowerCase()===b.label.toLowerCase());return `<div class="media-target-row"><button class="media-target ${linked?'linked':''} ${selectedSlot===b.visual_slot_id?'selected-slot':''} ${b.visual_state?'visual-'+b.visual_state:''}" data-target="${i}" aria-label="${b.visual_slot_id?'Apri':'Seleziona'} ${esc(b.label)}">${b.visual_slot_id&&b.visual_has_preview?`<img loading="lazy" src="/api/projects/${projectId}/visual-slots/${encodeURIComponent(b.visual_slot_id)}/image" alt="">`:`<span>${icons[b.kind]||'◈'}</span>`}<div><small>${b.visual_slot_id?(b.optional?'SUGGERITA':'OBBLIGATORIA')+' · ':''}${esc(kinds[b.kind]||b.kind)}${b.visual_state?' · '+({blank:'PLACEHOLDER',missing:'DA COMPLETARE',empty:'SFONDO FACOLTATIVO',disabled:'ESCLUSA',available:'TROVATA',user:'PERSONALIZZATA'}[b.visual_state]||'NEL FILM'):''}</small><strong>${esc(b.label)}</strong>${b.scene_ids?.length?`<em>${b.scene_ids.length} ${b.scene_ids.length===1?'scena':'scene'}</em>`:''}</div></button><div class="media-target-actions">${m?`<button class="media-binding-toggle ${linked?'linked':''}" data-binding-toggle="${i}" title="${linked?'Rimuovi il collegamento':'Collega l’immagine selezionata'}">${linked?'Scollega':'Collega'}</button>`:''}${b.visual_slot_id?`<button class="visual-slot-toggle ${b.enabled?'enabled':''}" data-visual-toggle="${esc(b.visual_slot_id)}" data-visual-enabled="${b.enabled?'true':'false'}" ${b.visual_editable?'':'disabled title="Disponibile al termine della produzione"'}>${b.visual_editable?(b.enabled?'Escludi':b.optional?'Attiva':'Ripristina'):'Dopo il film'}</button>`:''}</div></div>`}).join('')||'<div class="media-empty">Crea il primo collegamento qui sopra.</div>'}</div>
+        <div class="media-target-list">${ts.map((b,i)=>{const attached=linkedItems(b),featured=attached[0];return `<div class="media-target-row"><button class="media-target ${attached.length?'linked':''} ${selectedSlot===b.visual_slot_id?'selected-slot':''} ${b.visual_state?'visual-'+b.visual_state:''}" data-target="${i}" aria-label="${b.visual_slot_id?'Apri':'Seleziona'} ${esc(b.label)}">${featured?`<img loading="lazy" src="/api/media/${featured.id}/thumb" alt="">`:b.visual_slot_id&&b.visual_has_preview?`<img loading="lazy" src="/api/projects/${projectId}/visual-slots/${encodeURIComponent(b.visual_slot_id)}/image" alt="">`:`<span>${icons[b.kind]||'◈'}</span>`}<div><small>${b.visual_slot_id?(b.optional?'SUGGERITA':'OBBLIGATORIA')+' · ':''}${esc(kinds[b.kind]||b.kind)}${b.visual_state?' · '+({blank:'PLACEHOLDER',missing:'DA COMPLETARE',empty:'SFONDO FACOLTATIVO',disabled:'ESCLUSA',available:'TROVATA',user:'PERSONALIZZATA'}[b.visual_state]||'NEL FILM'):''}</small><strong>${esc(b.label)}</strong>${attached.length?`<em>${attached.length} ${attached.length===1?'immagine collegata':'immagini collegate'}</em>`:b.scene_ids?.length?`<em>${b.scene_ids.length} ${b.scene_ids.length===1?'scena':'scene'}</em>`:''}</div></button><div class="media-target-actions"><button class="media-binding-toggle ${attached.length?'linked':''}" data-binding-modal="${i}">${attached.length?'Cambia':'Collega'}</button>${attached.length?`<button data-target-unbind="${i}">Scollega</button>`:''}${b.visual_slot_id?`<button class="visual-slot-toggle ${b.enabled?'enabled':''}" data-visual-toggle="${esc(b.visual_slot_id)}" data-visual-enabled="${b.enabled?'true':'false'}" ${b.visual_editable?'':'disabled title="Disponibile al termine della produzione"'}>${b.visual_editable?(b.enabled?'Escludi':b.optional?'Attiva':'Ripristina'):'Dopo il film'}</button>`:''}</div></div>`}).join('')||'<div class="media-empty">Crea il primo collegamento qui sopra.</div>'}</div>
         <details ${!ts.length?'open':''}><summary>+ Nuovo collegamento</summary><form id="target-form"><label for="target-kind">Tipo di collegamento</label><select id="target-kind">${Object.entries(kinds).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select><label for="target-label">Nome del soggetto</label><input id="target-label" required minlength="2" maxlength="120" placeholder="Es. Annibale, Roma, commercio"><button class="secondary" type="submit">+ Crea collegamento</button></form></details>
         <p class="tiny muted">La comparsa segue i nomi e le varianti presenti nelle frasi narrate. Un collegamento “Scena” segue il titolo della scena.</p>
       </section><button id="media-column-resizer" class="media-column-resizer" type="button" role="separator" aria-orientation="vertical" aria-valuemin="320" aria-valuemax="640" aria-valuenow="${targetColumnWidth}" aria-label="Ridimensiona la colonna dei collegamenti" title="Trascina per allargare o restringere la colonna"><span aria-hidden="true">↔</span></button><section class="media-editor"><div class="media-section-title"><div><span class="eyebrow">03 · COMPONI</span><h2>Il riquadro nel video</h2></div><span id="media-save-state" class="tiny muted" role="status">Salvato sul PC</span></div>
@@ -104,15 +108,22 @@ export async function mediaPage({api,esc,toast,projectId}) {
           <div class="media-bindings">${m.bindings.map((b,i)=>`<div class="media-binding"><div><span>${esc(kinds[b.kind])} · <b>${esc(b.label)}</b></span><button data-unbind="${i}" aria-label="Rimuovi collegamento ${esc(b.label)}">×</button></div><label for="aliases-${i}">Altri nomi o varianti, separati da virgole</label><input id="aliases-${i}" data-alias="${i}" maxlength="1000" value="${esc((b.aliases||[]).join(', '))}" placeholder="Es. Annibale Barca, generale cartaginese"></div>`).join('')||'<p class="media-unlinked">Aggiungi un collegamento per far comparire questa immagine nel racconto.</p>'}</div>
           <details><summary>Provenienza e crediti</summary>${[['credit','Autore / attribuzione'],['source','Provenienza o URL'],['rights','Licenza o diritti dichiarati']].map(([k,l])=>`<div class="field"><label for="image-${k}">${l}</label><input id="image-${k}" maxlength="${k==='source'?500:300}" value="${esc(m[k])}"></div>`).join('')}<p class="tiny muted">Conserviamo l’originale e riportiamo queste informazioni nei crediti del progetto. Non viene assegnata automaticamente una licenza alle tue immagini.</p></details><button class="secondary" id="media-save">Salva riquadro</button>
         </div>`:''}
-      </section></div><p class="footer-note">Le immagini personali rimangono sul PC. Ogni produzione conserva la propria copia; modificare la libreria non cambia i video già creati. Più immagini collegate alla stessa frase si alternano.</p>`;
+      </section></div><p class="footer-note">Le immagini personali rimangono sul PC. Ogni produzione conserva la propria copia; modificare la libreria non cambia i video già creati. Più immagini collegate alla stessa frase si alternano.</p>
+      ${linkBinding?`<div class="media-link-modal" role="dialog" aria-modal="true" aria-labelledby="link-modal-title" tabindex="-1"><button class="media-modal-backdrop" data-link-close aria-label="Chiudi"></button><section class="media-link-dialog"><div class="media-section-title"><div><span class="eyebrow">COLLEGA IMMAGINE</span><h2 id="link-modal-title">${esc(linkBinding.label)}</h2></div><button class="media-modal-close" data-link-close aria-label="Chiudi">×</button></div><div id="link-drop" class="media-link-drop"><span class="media-drop-icon">↥</span><div><strong>Trascina qui un’immagine dal PC</strong><p>JPG, PNG o WebP · fino a 20 MB</p></div><label class="button primary media-file-label" for="link-file">Scegli dal computer</label><input class="visually-hidden" id="link-file" type="file" accept="image/jpeg,image/png,image/webp"><span id="link-upload-status" role="status"></span></div>${items.some(x=>x.enabled)?`<div class="media-modal-library"><h3>Oppure scegli dalla libreria</h3><div>${items.filter(x=>x.enabled).map(x=>`<button data-link-mid="${x.id}"><img src="/api/media/${x.id}/thumb" alt=""><span>${esc(x.title)}</span>${x.bindings.some(binding=>sameBinding(binding,linkBinding))?'<small>Già collegata</small>':'<small>Usa questa</small>'}</button>`).join('')}</div></div>`:''}</section></div>`:''}`;
     root.querySelector('#media-files').onchange=e=>upload(e.target.files);
     const zone=root.querySelector('#media-drop');dropzone(zone,e=>upload(e.dataTransfer.files));zone.onclick=()=>root.querySelector('#media-files').click();zone.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();root.querySelector('#media-files').click();}};
     root.querySelector('#media-search').oninput=e=>{filter=e.target.value;const pos=e.target.selectionStart;draw();const input=root.querySelector('#media-search');input.focus();input.setSelectionRange(pos,pos);};
     root.querySelectorAll('[data-mid]').forEach(el=>{el.onclick=()=>{selected=el.dataset.mid;selectedSlot='';draw();};el.ondragstart=e=>{e.dataTransfer.setData('application/x-h3-media',el.dataset.mid);e.dataTransfer.effectAllowed='copy';};});
     root.querySelectorAll('[data-restore]').forEach(el=>el.onclick=()=>{const m=items.find(x=>x.id===el.dataset.restore);m.enabled=true;selected=m.id;persist(m,true);});
     root.querySelector('#target-form').onsubmit=e=>{e.preventDefault();const b={kind:root.querySelector('#target-kind').value,label:root.querySelector('#target-label').value.trim(),aliases:[]};if(b.label.length<2)return;extra.push(b);draw();toast('Collegamento creato. Trascina un’immagine su '+b.label+'.');};
-    root.querySelectorAll('[data-target]').forEach(el=>{const b=ts[+el.dataset.target];el.onclick=()=>{if(b.visual_slot_id){selectedSlot=b.visual_slot_id;draw();}else toast('Usa Collega per associare l’immagine selezionata.');};dropzone(el,e=>e.dataTransfer.files.length?upload(e.dataTransfer.files,b):bind(e.dataTransfer.getData('application/x-h3-media'),b));});
-    root.querySelectorAll('[data-binding-toggle]').forEach(el=>{const b=ts[+el.dataset.bindingToggle];el.onclick=()=>selected?toggleBinding(selected,b):toast('Seleziona prima un’immagine dalla libreria.');});
+    root.querySelectorAll('[data-target]').forEach(el=>{const b=ts[+el.dataset.target];el.onclick=()=>{linkTarget=-1;if(b.visual_slot_id){selectedSlot=b.visual_slot_id;draw();}else toast('Usa Collega per scegliere o caricare un’immagine.');};dropzone(el,e=>e.dataTransfer.files.length?upload(e.dataTransfer.files,b):bind(e.dataTransfer.getData('application/x-h3-media'),b));});
+    root.querySelectorAll('[data-binding-modal]').forEach(el=>el.onclick=()=>{linkTarget=+el.dataset.bindingModal;draw();});
+    root.querySelectorAll('[data-target-unbind]').forEach(el=>{const b=ts[+el.dataset.targetUnbind];el.onclick=()=>unbindTarget(b);});
+    root.querySelectorAll('[data-link-close]').forEach(el=>el.onclick=()=>{linkTarget=-1;draw();});
+    root.querySelectorAll('[data-link-mid]').forEach(el=>el.onclick=()=>bind(el.dataset.linkMid,linkBinding));
+    const linkFile=root.querySelector('#link-file');if(linkFile)linkFile.onchange=()=>upload(linkFile.files,linkBinding);
+    const linkDrop=root.querySelector('#link-drop');if(linkDrop){dropzone(linkDrop,e=>upload(e.dataTransfer.files,linkBinding));}
+    const modal=root.querySelector('.media-link-modal');if(modal){modal.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();linkTarget=-1;draw();}};modal.focus();}
     root.querySelectorAll('[data-visual-toggle]').forEach(el=>el.onclick=async()=>{el.disabled=true;const enabled=el.dataset.visualEnabled!=='true';try{await api('/projects/'+projectId+'/visual-slots/'+encodeURIComponent(el.dataset.visualToggle),{method:'PUT',body:JSON.stringify({enabled})});project=await api('/projects/'+projectId+'/media');draw();toast(enabled?'Riferimento attivato.':'Riferimento escluso dal film.');}catch(e){toast(e.message);el.disabled=false;}});
     const use=root.querySelector('#project-use-media');if(use)use.onchange=async()=>{try{project=await api('/projects/'+projectId+'/media',{method:'PUT',body:JSON.stringify({enabled:use.checked})});}catch(e){toast(e.message);use.checked=project.enabled;}};
     const refresh=root.querySelector('#visual-refresh');if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='Creo la nuova versione…';try{const data=await api('/projects/'+projectId+'/visual-refresh',{method:'POST'});toast('Nuova versione V'+data.project.version+' creata.');location.href='/projects/'+data.project.id;}catch(e){toast(e.message);refresh.disabled=false;refresh.textContent='Aggiorna solo le scene interessate';}};
@@ -128,6 +139,7 @@ export async function mediaPage({api,esc,toast,projectId}) {
     resizer.onpointercancel=resizer.onpointerup;
     resizer.ondblclick=()=>applyColumnWidth(380,true);
     resizer.onkeydown=e=>{let value=null;if(e.key==='ArrowLeft')value=targetColumnWidth-20;if(e.key==='ArrowRight')value=targetColumnWidth+20;if(e.key==='Home')value=320;if(e.key==='End')value=columnLimit();if(value!==null){e.preventDefault();applyColumnWidth(value,true);}};
+    if(revealRequestedSlot){revealRequestedSlot=false;requestAnimationFrame(()=>root.querySelector('.media-target.selected-slot')?.scrollIntoView({block:'center',behavior:'smooth'}));}
     if(!shown)return;
     position();
     if(m&&!v){
