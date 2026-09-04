@@ -212,6 +212,7 @@ class AtlasVisuals:
             if unit.get('until') is not None and t>cue_start(s,unit['until']):continue
             pos=partial(unit['path'],progress(s,unit,t))[-1] if unit.get('path') else unit['pos']
             x,y=screen(pos,cam)
+            sx,sy=unit.get('screen_offset',[0,0]);x+=sx;y+=sy
             if not 40<x<W-40 or not 175<y<H-175:continue
             col=self.colors.get(unit.get('side'),GOLD);count=max(1,min(4,int(unit.get('count',1))))
             for n in range(count):
@@ -223,7 +224,8 @@ class AtlasVisuals:
             else:
                 d.line(((x-8)*SS,(y-5)*SS,(x+8)*SS,(y+5)*SS),fill=(*INK,int(235*fade)),width=SS)
                 d.line(((x-8)*SS,(y+5)*SS,(x+8)*SS,(y-5)*SS),fill=(*INK,int(235*fade)),width=SS)
-            label(overlay,(x,y-30),unit.get('label',''),16,(*col,255),fade)
+            dx,dy=unit.get('label_offset',[0,-30])
+            label(overlay,(x+dx,y+dy),unit.get('label',''),16,CREAM,fade)
         # END H3 BATTLE ATLAS TACTICS
         labels=self.geography_labels(s,cam,fade);overlay.alpha_composite(labels)
         for item in s.get('callouts',[]):

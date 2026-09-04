@@ -1,5 +1,5 @@
 """Recover geographic and visual direction when a compact model omits battle motion."""
-import copy,math,re,time,unicodedata
+import copy,math,re,time,unicodedata,statistics
 from pathlib import Path
 import requests
 from pydantic import BaseModel,Field,model_validator
@@ -63,17 +63,25 @@ def verify_place_coordinates(outline,checkpoint,log,session=None,pause=time.slee
         for scene in data['scenes']:
             for ident in scene.get('focus',[]):used[ident]=used.get(ident,0)+1
         selected=sorted(data['places'],key=lambda p:(-used.get(p['id'],0),p['id']))[:12]
-        center=[sum(p['pos'][0] for p in data['places'])/len(data['places']),sum(p['pos'][1] for p in data['places'])/len(data['places'])]
+        # A median is deliberately used here: one malformed model coordinate must
+        # not drag the search window away from the battle theatre.
+        center=[statistics.median(p['pos'][0] for p in data['places']),statistics.median(p['pos'][1] for p in data['places'])]
+        max_shift_km=80.0
         own=session or requests.Session();own.headers.update({'User-Agent':'H3-documentary/1.1 (+https://github.com/emanuelealbertosi/H3-documentary)'})
         records=[]
         for number,place in enumerate(selected):
             try:
-                response=own.get('https://nominatim.openstreetmap.org/search',params={'q':place['name'],'format':'jsonv2','limit':5,'accept-language':'it'},timeout=(8,18))
+                response=own.get('https://nominatim.openstreetmap.org/search',params={'q':place['name'],'format':'jsonv2','limit':5,'accept-language':'it',
+                    'viewbox':f'{center[0]-2.5},{center[1]+1.8},{center[0]+2.5},{center[1]-1.8}'},timeout=(8,18))
                 response.raise_for_status();matches=[];needle=_query_name(place['name'])
                 for item in response.json():
                     candidate=[float(item['lon']),float(item['lat'])]
                     if needle and needle not in _normal(item.get('display_name','')):continue
-                    if _distance(center,candidate)>500:continue
+                    # Nominatim often returns a same-named village in another
+                    # country. It is safer to retain the model's explicitly
+                    # uncertain point than to accept a result far outside the
+                    # declared local theatre.
+                    if _distance(center,candidate)>300 or _distance(place['pos'],candidate)>max_shift_km:continue
                     matches.append((round(_distance(place['pos'],candidate),3),candidate,item.get('display_name','')))
                 matches.sort(key=lambda row:row[0])
                 chosen=matches[0] if matches else None
@@ -84,7 +92,10 @@ def verify_place_coordinates(outline,checkpoint,log,session=None,pause=time.slee
                 if isinstance(error,requests.RequestException):break
             if number<len(selected)-1:pause(1.05)
         write_json(path,records)
-    changes={r['id']:r['pos'] for r in records if r.get('pos')}
+    # Revalidate cached responses as well. This repairs projects created by
+    # earlier releases without forcing a second network request.
+    changes={r['id']:r['pos'] for r in records if r.get('pos') and r.get('old') and _distance(r['old'],r['pos'])<=80.0}
+    rejected=sum(1 for r in records if r.get('pos') and r['id'] not in changes)
     old={p['id']:list(p['pos']) for p in data['places']}
     for place in data['places']:
         if place['id'] not in changes:continue
@@ -97,6 +108,7 @@ def verify_place_coordinates(outline,checkpoint,log,session=None,pause=time.slee
             route['points']=[list(replacements.get(tuple(point),tuple(point))) for point in route['points']]
     if changes:log(f'Geografia: {len(changes)} coordinate di località ricontrollate con OpenStreetMap/Nominatim.')
     else:log('Geografia: servizio di verifica non disponibile; conservo le coordinate dichiarate come illustrative.')
+    if rejected:log(f'Geografia: {rejected} risultati omonimi lontani scartati; mantengo le coordinate locali dichiarate.')
     return data
 
 

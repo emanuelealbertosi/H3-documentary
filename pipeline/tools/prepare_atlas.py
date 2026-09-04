@@ -54,10 +54,14 @@ def main():
         base[y:end]=grade(cv2.remap(raw,mx,my,cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE))
     print('European physical atlas',base.shape,flush=True)
     layers=[save_layer('europe',base,west,merc(north),ppd)]
-    manifest=config;z=manifest['terrain_zoom'];tppd=256*2**z/360
+    manifest=config
     land=read_json(GEO/'land.geojson')
     lakes=read_json(GEO/'lakes.geojson')
-    for name,(pw,ps,pe,pn) in manifest['patches'].items():
+    for name,spec in manifest['patches'].items():
+        bounds=spec['bounds'] if isinstance(spec,dict) else spec
+        pw,ps,pe,pn=bounds
+        z=int(spec.get('zoom',manifest['terrain_zoom'])) if isinstance(spec,dict) else manifest['terrain_zoom']
+        tppd=256*2**z/360
         tx0,ty0=tilexy(pw,pn,z);tx1,ty1=tilexy(pe,ps,z)
         height=(ty1-ty0+1)*256;width=(tx1-tx0+1)*256
         elev=np.empty((height,width),np.float32)
@@ -80,6 +84,18 @@ def main():
             elevated=elev[y:end]>15
             strength=np.where(elevated,shade[y:end],1)[:,:,None]
             patch[y:end]=np.clip(colors*strength,0,255).astype(np.uint8)
+        # Baked contours remain perfectly registered during zooms and pans.
+        # They make low-relief battlefields readable without inventing roads or
+        # historical terrain features.
+        span=float(np.nanmax(elev)-np.nanmin(elev))
+        interval=20 if pe-pw>.5 else 10 if pe-pw>.15 else 5
+        if span>500:interval=max(interval,20)
+        quantized=np.floor(elev/interval).astype(np.int32)
+        contour=np.zeros((height,width),np.uint8)
+        contour[:,1:]|=(quantized[:,1:]!=quantized[:,:-1])
+        contour[1:,:]|=(quantized[1:,:]!=quantized[:-1,:])
+        contour=cv2.dilate(contour,np.ones((2,2),np.uint8),iterations=1).astype(bool)
+        patch[contour]=np.clip(patch[contour]*.82+np.array([35,58,43])*.18,0,255).astype(np.uint8)
         # High-resolution vector coasts remove magnified pixels from the global raster.
         lm=Image.new('L',(width,height));ld=ImageDraw.Draw(lm)
         for feature in land['features']:

@@ -87,13 +87,27 @@ def compile_pack(outline,narration,sources,project,settings):
         territorial_note="Nord in alto. Base fisica moderna, percorsi schematici. Nessun confine attuale è presentato come storico.",
         map_notice="Mappe illustrative su base fisica moderna; percorsi e orari incerti sono segnalati.",
         extra_credits=CREDIT+(" OpenStreetMap contributors (ODbL); geocodifica Nominatim. https://www.openstreetmap.org/copyright/" if any('Nominatim' in p.get('note','') for p in o['places']) else ''),assets=[],scenes=scenes)
-    patches={}
+    # Each camera scale gets enough terrain pixels for the final 1080p frame.
+    # A single low zoom for the whole campaign made tactical close-ups look like
+    # enlarged thumbnails. Per-patch zooms preserve both bounded downloads and
+    # crisp local relief.
+    candidates=[]
     for i,view in enumerate(poses):
         if view[2]>16:continue
         b=bounds_for_views([view])
-        if any(b[0]>=old[0] and b[1]>=old[1] and b[2]<=old[2] and b[3]<=old[3] for old in patches.values()):continue
-        if len(patches)<6:patches["detail"+str(i+1)]=b
+        zoom=max(8,min(15,math.ceil(math.log2(360*(1920/view[2]*.75)/256))))
+        candidates.append((zoom,-(b[2]-b[0])*(b[3]-b[1]),i,b))
+    selected=[]
+    for zoom,negative_area,i,b in sorted(candidates):
+        if any(ez>=zoom and eb[0]<=b[0] and eb[1]<=b[1] and eb[2]>=b[2] and eb[3]>=b[3] for ez,_,_,eb in selected):continue
+        selected.append((zoom,negative_area,i,b))
+    if len(selected)>6:
+        context=min(selected,key=lambda row:(row[0],row[1]))
+        details=sorted((row for row in selected if row is not context),key=lambda row:(-row[0],-row[1]))[:5]
+        selected=[context,*details]
+    # Lower-resolution context layers are composited first; close tactical
+    # layers are last and therefore retain their detail.
+    selected=sorted(selected,key=lambda row:(row[0],row[1]))
+    patches={f"detail{i+1}":{"bounds":b,"zoom":zoom} for zoom,_,i,b in selected}
     geo={"bounds":bbox,"patches":patches,"terrain_zoom":8,"output":"assets/geography/atlas-film"}
-    # Bound terrain work and memory on CPU-only production machines.
-    if sum((b[2]-b[0])*(merc(b[3])-merc(b[1])) for b in patches.values())>450:geo["terrain_zoom"]=7
     return pack,geo

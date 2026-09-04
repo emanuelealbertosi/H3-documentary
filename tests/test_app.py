@@ -116,6 +116,10 @@ def test_missing_provider_does_not_start(client):
 def test_json_thinking_and_invalid():
     assert extract_json('<think>reasoning</think>\n```json\n{"ok":true}\n```')=={"ok":True}
     with pytest.raises(ModelError):extract_json("No JSON")
+def test_visual_review_blocks_only_specific_severe_defects():
+    assert runner.visual_blockers({'acceptable':False,'issues':['Nella terza mappa le etichette sono sovrapposte.']})
+    assert runner.visual_blockers({'acceptable':False,'issues':['La scena 4 è corrotta.']})
+    assert runner.visual_blockers({'acceptable':False,'issues':['Bassa definizione generale e contrasto migliorabile.']})==[]
 def test_structured_recovers_values_from_schema_echo():
     llm=LLM(Settings(model='fixture').model_dump())
     llm.chat=lambda *args,**kwargs: json.dumps({'properties':{

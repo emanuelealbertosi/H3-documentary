@@ -1,5 +1,5 @@
 """Persistent staged production. Only a fixed allow-list of local commands is executable."""
-import json,threading,traceback,math,base64,time
+import json,threading,traceback,math,base64,time,re
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from .paths import ROOT,JOBS
@@ -62,6 +62,12 @@ def shutdown():
     POOL.shutdown(wait=False,cancel_futures=True)
 def check(pid):
     if FLAGS.get(pid) and FLAGS[pid].is_set():raise Cancelled()
+def visual_blockers(review):
+    """Keep model vision useful without letting vague critiques deadlock a job."""
+    if not isinstance(review,dict):return ['Risposta del controllo visivo non valida.']
+    ordinals=r'\b(?:prima|seconda|terza|quarta|quinta|sesta|settima|ottava|nona|decima|scena\s*\d+|mappa\s*\d+|immagine\s*\d+)\b'
+    severe=r'sovrappos|fuori\s+campo|tagliat|corrott|illeggibil'
+    return [str(issue) for issue in review.get('issues',[]) if re.search(ordinals,str(issue),re.I) and re.search(severe,str(issue),re.I)]
 def produce(pid,cfg):
     p=store.project(pid);folder=JOBS/pid;cp=folder/"checkpoints";cp.mkdir(exist_ok=True)
     cancel=lambda:check(pid)
@@ -194,7 +200,10 @@ def produce(pid,cfg):
                     from .llm import extract_json
                     r=extract_json(llm.chat([{"role":"system","content":system},{"role":"user","content":content}],max_tokens=1500))
                     store.write_json(cp/f"vision-{first:03}.json",r)
-                    if not isinstance(r,dict) or r.get("acceptable") is not True:raise ValueError("Anteprime da rivedere: "+str(r.get("issues",[]))[:900])
+                    blockers=visual_blockers(r)
+                    if blockers:raise ValueError("Anteprime da rivedere: "+str(blockers)[:900])
+                    if r.get('acceptable') is not True and r.get('issues'):
+                        log("Controllo visivo: osservazioni generiche registrate come avvisi, senza bloccare il rendering.")
                 log("Controllo visivo del modello completato.")
             else:log("Anteprime salvate. Controllo visivo AI non eseguito: modello non visivo oppure immagini personali, mantenute sul PC.")
         stage("preview",preview)

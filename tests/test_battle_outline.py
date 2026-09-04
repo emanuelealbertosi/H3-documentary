@@ -81,6 +81,23 @@ def test_battle_geocoder_repairs_places_and_existing_route_endpoints(tmp_path):
     assert (tmp_path/'battle-geocoding.json').exists()
 
 
+def test_battle_geocoder_rejects_distant_same_named_places_from_cache(tmp_path):
+    value={**copy.deepcopy(CATALOG),'places':[
+        {'id':'waterloo','name':'Waterloo','pos':[4.412,50.68]},
+        {'id':'la_haye','name':'La Haye Sainte','pos':[4.415,50.678]}],
+        'scenes':[{'title':'Campo','date':'1815','focus':['waterloo','la_haye'],'event':'Il campo di battaglia.',
+          'source_ids':[],'routes':[{'side':'a','points':[[4.415,50.678],[4.412,50.68]]}],'commander_ids':[]} for _ in range(3)]}
+    (tmp_path/'battle-geocoding.json').write_text(json.dumps([
+        {'id':'waterloo','old':[4.412,50.68],'pos':[4.4084,50.7033]},
+        {'id':'la_haye','old':[4.415,50.678],'pos':[-0.96537,49.20759]}]),encoding='utf-8')
+    logs=[];result=verify_place_coordinates(value,tmp_path,logs.append)
+    positions={p['id']:p['pos'] for p in result['places']}
+    assert positions['waterloo']==[4.4084,50.7033]
+    assert positions['la_haye']==[4.415,50.678]
+    assert result['scenes'][0]['routes'][0]['points'][0]==[4.415,50.678]
+    assert any('risultati omonimi lontani scartati' in line for line in logs)
+
+
 def test_battle_visual_pass_uses_semantic_endpoints_and_compiler_draws_tactics(tmp_path):
     value={**copy.deepcopy(CATALOG),'scenes':[
         {'title':'Apertura','date':'1815','focus':['waterloo'],'event':'Il campo di battaglia.','source_ids':['S1'],'routes':[],'commander_ids':['napoleone']},
@@ -99,9 +116,11 @@ def test_battle_visual_pass_uses_semantic_endpoints_and_compiler_draws_tactics(t
     assert result['scenes'][1]['routes'][0]['points'][-1]==[4.412,50.68]
     paragraph=' '.join(['Narrazione']+['storica']*49)
     narration=[{'index':i,'lines':[paragraph,paragraph],'fact':'Fatto storico della scena.','kicker':'Movimento sulla mappa'} for i in range(3)]
-    pack,_=compile_pack(result,narration,[{'id':'S1','title':'Fonte','url':'https://example.org','retrieved':'2026-01-01'}],
+    pack,geography=compile_pack(result,narration,[{'id':'S1','title':'Fonte','url':'https://example.org','retrieved':'2026-01-01'}],
         {'id':'fixture','minutes':2},{'fps':30,'research_context':{'fallback_used':False}})
     assert pack['scenes'][1]['camera_end'][2]<.2
     assert pack['scenes'][1]['routes'] and pack['scenes'][1]['arrows']
     assert {u['side'] for u in pack['scenes'][1]['units']}=={'a','b'}
     assert pack['commanders']['wellington']['side']=='b'
+    assert all(isinstance(spec,dict) and {'bounds','zoom'}<=set(spec) for spec in geography['patches'].values())
+    assert max(spec['zoom'] for spec in geography['patches'].values())>=14

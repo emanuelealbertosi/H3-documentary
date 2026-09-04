@@ -48,8 +48,11 @@ def main():
     # Detailed terrain only around the close-up theatre; Europe overview uses Natural Earth.
     patches=config['patches'];terrain_zoom=config.get('terrain_zoom',9)
     jobs=set()
-    for name,(west,south,east,north) in patches.items():
-        z=terrain_zoom;x0,y0=tilexy(west,north,z);x1,y1=tilexy(east,south,z)
+    for name,spec in patches.items():
+        bounds=spec['bounds'] if isinstance(spec,dict) else spec
+        west,south,east,north=bounds
+        z=int(spec.get('zoom',terrain_zoom)) if isinstance(spec,dict) else terrain_zoom
+        x0,y0=tilexy(west,north,z);x1,y1=tilexy(east,south,z)
         for x in range(x0,x1+1):
             for y in range(y0,y1+1):jobs.add((z,x,y))
     def tile(job):

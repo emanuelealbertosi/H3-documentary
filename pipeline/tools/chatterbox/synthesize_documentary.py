@@ -1,5 +1,5 @@
 """Generate the raw narration cache with one Chatterbox model load."""
-import argparse,hashlib,json,os,re,sys
+import argparse,hashlib,json,os,re,warnings
 from pathlib import Path
 
 def fingerprint(data):
@@ -49,8 +49,14 @@ def main():
     os.environ.setdefault('HF_HOME',str(args.model.parent.parent/'.cache/huggingface'))
     os.environ.setdefault('PKUSEG_HOME',str(args.model/'pkuseg'));os.environ.setdefault('HF_HUB_OFFLINE','1')
     os.environ.setdefault('HF_HUB_DISABLE_TELEMETRY','1');os.environ.setdefault('TOKENIZERS_PARALLELISM','false')
+    os.environ.setdefault('TQDM_DISABLE','1')
     os.environ.setdefault('OMP_NUM_THREADS',str(args.threads));os.environ.setdefault('MKL_NUM_THREADS',str(args.threads));os.environ.setdefault('NUMBA_NUM_THREADS',str(args.threads))
-    import numpy as np,soundfile as sf,torch
+    warnings.filterwarnings('ignore',category=FutureWarning)
+    import numpy as np,soundfile as sf,torch,tqdm
+    progress=tqdm.tqdm
+    def quiet_progress(*values,**options):
+        options['disable']=True;return progress(*values,**options)
+    tqdm.tqdm=quiet_progress
     torch.set_num_threads(args.threads);torch.set_num_interop_threads(1)
     from chatterbox.mtl_tts import ChatterboxMultilingualTTS
     print('Chatterbox: caricamento del modello vocale locale…',flush=True)
