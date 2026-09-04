@@ -46,8 +46,10 @@ def test_openai_and_higgs_contracts(monkeypatch,tmp_path):
     assert kind=='wav' and audio.startswith(b'RIFF') and calls[-1][0].endswith('/v1/audio/speech')
     assert calls[-1][1]['json']['input']=='Ciao' and calls[-1][1]['headers']['Authorization']=='Bearer key'
     reference=tmp_path/'reference.wav';reference.write_bytes(wav_bytes())
-    higgs={**openai,'provider':'higgs'};tts_api.synthesize_bytes(higgs,'Testo',reference,'key')
-    assert calls[-1][1]['data']['input']=='Testo' and calls[-1][1]['files']['ref_audio'][0]=='reference.wav'
+    higgs={**openai,'provider':'higgs'};tts_api.synthesize_bytes(higgs,'Testo',reference,'key','Trascrizione esatta')
+    assert calls[-1][0].endswith('/v1/audio/voice-clone')
+    assert calls[-1][1]['data']['input']=='Testo' and calls[-1][1]['data']['reference_text']=='Trascrizione esatta'
+    assert calls[-1][1]['files']['reference_audio'][0]=='reference.wav'
 
 def test_elevenlabs_and_google_contracts(monkeypatch):
     calls=[]
@@ -67,12 +69,12 @@ def test_elevenlabs_and_google_contracts(monkeypatch):
     assert calls[-1][1]['json']['voice']=={'languageCode':'it-IT','name':'it-IT-Standard-A'}
 
 def test_api_pack_populates_the_existing_narration_cache(monkeypatch,tmp_path):
-    item=saved(response_format='wav');work=tmp_path/'work';work.mkdir()
+    item=saved(provider='openai',response_format='wav');work=tmp_path/'work';work.mkdir()
     project={'tts_engine':'api','tts_profile_id':item['id'],'tts_config':tts_api.snapshot(item['id']),'tts_reference_id':''}
     pack={'slug':'prova','voice':'old','scenes':[{'id':'s1','lines':['Una frase abbastanza lunga per la prova.']}],'pronunciation':{'prova':'pròva'}}
     tts.configure_pack(pack,project,work,tmp_path)
     count={'n':0}
-    def fake(config,text,reference_path=None,api_key=''):
+    def fake(config,text,reference_path=None,api_key='',reference_text=''):
         count['n']+=1;assert api_key=='private-tts-key';return wav_bytes(),'wav'
     monkeypatch.setattr(tts_api,'synthesize_bytes',fake)
     messages=[];tts_api.synthesize_pack(pack,project,work,lambda:None,messages.append)
@@ -88,7 +90,7 @@ def test_profile_routes_and_reference_rules(monkeypatch,tmp_path):
     assert any(x['id']=='api:'+profile_id and not x['supports_reference'] for x in status['engines'])
     with pytest.raises(ValueError,match='soltanto'):tts.ensure_available('api','a'*24,tmp_path,profile_id,tts_api.snapshot(profile_id))
     assert 'encrypted_key' not in client.get('/api/tts/profiles').text
-    monkeypatch.setattr(tts_api,'test_voice',lambda value:wav_bytes())
+    monkeypatch.setattr(tts_api,'test_voice',lambda value,**kwargs:wav_bytes())
     preview=client.post('/api/tts/profiles/test',json={**payload,'id':profile_id})
     assert preview.status_code==200 and preview.headers['content-type']=='audio/wav' and preview.content.startswith(b'RIFF')
     store.save_settings(Settings(tts_engine='api',tts_profile_id=profile_id))
@@ -101,3 +103,40 @@ def test_errors_do_not_leak_credentials(monkeypatch):
     with pytest.raises(ValueError,match='HTTP 401') as caught:
         tts_api.synthesize_bytes(dict(provider='openai',base_url='http://host/v1',model='m',voice='',response_format='mp3',timeout=10),'Ciao',api_key='top-secret')
     assert 'top-secret' not in str(caught.value)
+
+def test_higgs_activity_loads_once_and_always_unloads(monkeypatch,tmp_path):
+    calls=[]
+    def post(url,**kwargs):
+        calls.append((url,kwargs))
+        if url.endswith('/model/load'):return Reply(body={'ok':True,'model_state':'ready','already_loaded':False})
+        if url.endswith('/model/unload'):return Reply(body={'ok':True,'model_state':'unloaded','already_unloaded':False})
+        return Reply(wav_bytes())
+    monkeypatch.setattr(tts_api.requests,'post',post)
+    config=dict(provider='higgs',base_url='http://gpu-pc:8095/v1',model='',voice='',response_format='wav',timeout=900,
+                temperature=1.0,top_p=.95,top_k=50,seed=-1,max_new_tokens=2048)
+    reference=tmp_path/'reference.wav';reference.write_bytes(wav_bytes())
+    with pytest.raises(RuntimeError):
+        with tts_api.higgs_activity(config):
+            tts_api.synthesize_bytes(config,'Testo',reference,reference_text='Testo originale')
+            raise RuntimeError('interruzione simulata')
+    assert [url.rsplit('/v1/',1)[-1] for url,_ in calls]==['model/load','audio/voice-clone','model/unload']
+    assert calls[1][1]['timeout']==(10,900)
+
+def test_higgs_status_and_persistent_voice_contract(monkeypatch,tmp_path):
+    item=saved(timeout=900,response_format='wav');record=tts.upload_reference(wav_bytes(5),'mia.wav','Testo pronunciato')
+    calls=[]
+    monkeypatch.setattr(tts_api.requests,'get',lambda url,**kwargs:Reply(body={'server':'up','model_state':'unloaded'}))
+    def post(url,**kwargs):
+        calls.append((url,kwargs))
+        if url.endswith('/model/load'):return Reply(body={'ok':True,'model_state':'ready','already_loaded':False})
+        if url.endswith('/model/unload'):return Reply(body={'ok':True,'model_state':'unloaded','already_unloaded':False})
+        return Reply(body={'ok':True,'voice_id':'emanuele_it','voice':'emanuele_it.wav'})
+    monkeypatch.setattr(tts_api.requests,'post',post)
+    client=TestClient(server.app,headers={'X-DocumentariAI':'studio'})
+    status=client.get('/api/tts/profiles/'+item['id']+'/status');assert status.status_code==200 and status.json()['model_state']=='unloaded'
+    assert client.post('/api/tts/profiles/'+item['id']+'/model/load').json()['model_state']=='ready'
+    assert client.post('/api/tts/profiles/'+item['id']+'/model/unload').json()['model_state']=='unloaded'
+    result=client.post('/api/tts/profiles/'+item['id']+'/voices/upload',json={'reference_id':record['id'],'voice_id':'emanuele_it'})
+    assert result.status_code==200 and result.json()['voice']=='emanuele_it.wav'
+    assert calls[-1][0].endswith('/v1/voices/upload') and calls[-1][1]['data']['reference_text']=='Testo pronunciato'
+    assert calls[-1][1]['files']['reference_audio'][0]=='reference.wav'

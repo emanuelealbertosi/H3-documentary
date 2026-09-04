@@ -20,7 +20,7 @@ def voice(voice_id):
 def voices():
     return sorted((store.read_json(p) for p in voices_root().glob('*/record.json')),key=lambda x:x['created'],reverse=True)
 
-def upload_reference(raw,filename='Voce.wav'):
+def upload_reference(raw,filename='Voce.wav',reference_text=''):
     if not raw or len(raw)>MAX_REFERENCE_BYTES:raise ValueError('Usa un WAV PCM fino a 20 MB.')
     try:
         with wave.open(io.BytesIO(raw),'rb') as wav:
@@ -36,8 +36,10 @@ def upload_reference(raw,filename='Voce.wav'):
     target=folder/'reference.wav'
     if not target.exists():target.write_bytes(raw)
     clean=Path(filename.replace('\\','/')).name[:120] or 'Voce.wav'
+    reference_text=str(reference_text or '').strip()
+    if len(reference_text)>5000:raise ValueError('La trascrizione del campione può contenere al massimo 5.000 caratteri.')
     record=dict(id=voice_id,name=Path(clean).stem[:80] or 'Voce',filename=clean,duration_seconds=round(duration,2),sample_rate=sample_rate,
-                channels=channels,sha256=digest,created=store.now())
+                channels=channels,sha256=digest,reference_text=reference_text,created=store.now())
     store.write_json(folder/'record.json',record);return record
 
 def chatterbox_paths(pipeline_path):
@@ -69,7 +71,10 @@ def ensure_available(engine,reference_id,pipeline_path,profile_id='',config=None
         from .tts_api import profile
         current=config or profile(profile_id)
         if reference_id and current.get('provider')!='higgs':raise ValueError('Il campione one-shot è disponibile soltanto per Chatterbox e Higgs TTS.')
-    if reference_id and engine in ('chatterbox','api'):voice(reference_id)
+    if reference_id and engine in ('chatterbox','api'):
+        record=voice(reference_id)
+        if engine=='api' and current.get('provider')=='higgs' and record.get('duration_seconds',0)>30:
+            raise ValueError('Higgs accetta riferimenti vocali inferiori a 30 secondi. Usa un campione pulito di 5–20 secondi.')
 
 def _copy_reference(reference_id,work):
     if not reference_id:return '',None
@@ -96,12 +101,13 @@ def configure_pack(pack,project,work,pipeline_path):
         if not config:
             from .tts_api import snapshot
             config=snapshot(profile_id)
-        stable={key:config.get(key) for key in ('id','provider','base_url','model','voice','language','response_format')}
+        stable={key:config.get(key) for key in ('id','provider','base_url','model','voice','language','response_format','temperature','top_p','top_k','seed','max_new_tokens')}
         fingerprint=hashlib.sha256(json.dumps(stable,sort_keys=True,ensure_ascii=False).encode()).hexdigest()[:20]
         provider=config['provider'];label=config.get('name') or provider.title()
         credit=f'Sintesi vocale tramite {label} ({provider}); configurazione e provenienza registrate nel progetto. Audio ricevuto dal server e normalizzato localmente.'
         pack.update(voice_engine='tts_api',voice='tts-api:'+fingerprint,voice_speaker=config.get('voice') or 'default',voice_language=config.get('language','it-IT'),
-                    voice_reference=reference_path,voice_api=stable|{'name':label,'timeout':config.get('timeout',180)},voice_credit=credit)
+                    voice_reference=reference_path,voice_reference_text=(record or {}).get('reference_text',''),
+                    voice_api=stable|{'name':label,'timeout':config.get('timeout',180)},voice_credit=credit)
         for key in ('voice_styles','chatterbox_exaggeration','chatterbox_cfg_weight','chatterbox_temperature','chatterbox_repetition_penalty'):pack.pop(key,None)
         return pack
     pack.update(voice_engine='chatterbox',voice='chatterbox-multilingual-v3@5bb1f6e;e=.35;c=.5;t=.7;r=1.2',voice_speaker=speaker,voice_language='it',

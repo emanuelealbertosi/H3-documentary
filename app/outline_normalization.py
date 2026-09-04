@@ -1,7 +1,15 @@
 """Lossless shape repairs. Never fabricate a place or choose a fuzzy geographic match."""
-import copy,unicodedata
+import copy,hashlib,re,unicodedata
 
 COLLECTIONS=('places','persons','commanders','entities','events','visual_layers','visual_assets')
+SPECIAL_ID_CHARS=str.maketrans({'ı':'i','ł':'l','đ':'d','ð':'d','þ':'th','æ':'ae','œ':'oe','ß':'ss'})
+
+def technical_id(value):
+    """Turn a model-written label into a stable machine ID; visible names stay intact."""
+    original=str(value).strip();folded=unicodedata.normalize('NFKD',original.casefold()).translate(SPECIAL_ID_CHARS)
+    ascii_value=''.join(c for c in folded if not unicodedata.combining(c)).encode('ascii','ignore').decode()
+    result=re.sub(r'[^a-z0-9_-]+','-',ascii_value).strip('-_')[:50]
+    return result or 'id-'+hashlib.sha256(original.encode()).hexdigest()[:12]
 
 def collections(value):
     if not isinstance(value,dict):return value
@@ -10,13 +18,18 @@ def collections(value):
         rows=data.get(key)
         if isinstance(rows,dict) and all(isinstance(v,dict) for v in rows.values()):
             data[key]=[{'id':k,**v} for k,v in rows.items()]
+            rows=data[key]
+        if isinstance(rows,list):
+            for row in rows:
+                if isinstance(row,dict) and isinstance(row.get('id'),str):row['id']=technical_id(row['id'])
     for scene in data.get('scenes',[]) if isinstance(data.get('scenes',[]),list) else []:
         rows=scene.get('movements') if isinstance(scene,dict) else None
         if isinstance(rows,dict) and all(isinstance(v,dict) for v in rows.values()):scene['movements']=list(rows.values())
     return data
 
 def normalized(value):
-    return ''.join(c for c in unicodedata.normalize('NFKD',str(value)).casefold() if not unicodedata.combining(c)).strip()
+    text=unicodedata.normalize('NFKD',str(value)).casefold().translate(SPECIAL_ID_CHARS)
+    return ''.join(c for c in text if not unicodedata.combining(c)).strip()
 
 def named_references(data,places,field):
     data=copy.deepcopy(data);ids={p['id'] for p in places};aliases={}

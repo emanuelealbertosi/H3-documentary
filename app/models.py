@@ -75,8 +75,13 @@ class TTSProfile(BaseModel):
     model: str = Field("",max_length=160)
     voice: str = Field("",max_length=180)
     language: str = Field("it-IT",min_length=2,max_length=30)
-    response_format: Literal["mp3","wav"] = "mp3"
-    timeout: int = Field(180,ge=10,le=600)
+    response_format: Literal["mp3","wav","flac","ogg"] = "mp3"
+    timeout: int = Field(180,ge=10,le=1800)
+    temperature: float = Field(1.0,ge=0.0,le=2.0)
+    top_p: float = Field(0.95,ge=0.0,le=1.0)
+    top_k: int = Field(50,ge=0,le=1000)
+    seed: int = Field(-1,ge=-1,le=2147483647)
+    max_new_tokens: int = Field(2048,ge=64,le=32768)
     api_key: str | None = Field(None,max_length=24000)
     clear_api_key: bool = False
 
@@ -88,9 +93,17 @@ class TTSProfile(BaseModel):
         if p.scheme not in ("http","https") or not p.hostname or p.username or p.password or p.query or p.fragment:
             raise ValueError("Usa un indirizzo HTTP/HTTPS senza credenziali o parametri nella URL.")
         path=p.path.rstrip("/")
-        for suffix in ("/audio/speech","/text:synthesize"):
+        for suffix in ("/audio/speech","/audio/voice-clone","/text:synthesize","/status","/model/load","/model/unload"):
             if path.endswith(suffix):path=path[:-len(suffix)]
         return urlunsplit((p.scheme,p.netloc,path,"",""))
+
+class HiggsVoiceUpload(BaseModel):
+    reference_id: str = Field(pattern=r"^[a-f0-9]{24}$")
+    voice_id: str = Field(min_length=1,max_length=80,pattern=r"^[A-Za-z0-9_-]+$")
+    overwrite: bool = False
+
+class TTSTestRequest(TTSProfile):
+    reference_id: str = Field("",pattern=r"^$|^[a-f0-9]{24}$")
 
 class GeoPoint(BaseModel):
     model_config = ConfigDict(extra="forbid")

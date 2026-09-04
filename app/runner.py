@@ -15,7 +15,7 @@ from .battle_outline import build_battle_outline
 from .battle_visuals import enrich_battle_outline
 from .narration_builder import build_narration
 from .pack_migrations import repair_pack
-from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine
+from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine,prepare_history_asset_engine
 from . import tts
 
 POOL=ThreadPoolExecutor(max_workers=1,thread_name_prefix="documentary")
@@ -189,6 +189,7 @@ def produce(pid,cfg):
                 cache_geographic_inputs(work,src)
                 run(pid,python,work,["tools/prepare_atlas.py","--config",georel],cancel,log,max_hours=3)
         stage("geography",geography)
+        if kind!='battle' and prepare_history_asset_engine(work,src):log('Motore immagini aggiornato: ricerca licenziata e fallback grafico disponibili per la ripresa.')
         stage("assets",lambda:cmd("assets"))
         def voice():
             if pack.get('voice_engine')=='chatterbox':

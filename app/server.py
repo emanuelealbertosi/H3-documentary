@@ -97,13 +97,13 @@ def tts_status():
     return tts.status(store.settings())
 
 @app.post('/api/tts/references',status_code=201)
-async def tts_reference(request:Request,filename:str='Voce.wav'):
+async def tts_reference(request:Request,filename:str='Voce.wav',reference_text:str=''):
     from . import tts
     raw=bytearray()
     async for chunk in request.stream():
         raw.extend(chunk)
         if len(raw)>tts.MAX_REFERENCE_BYTES:raise HTTPException(413,'Usa un WAV PCM fino a 20 MB.')
-    return tts.upload_reference(bytes(raw),filename)
+    return tts.upload_reference(bytes(raw),filename,reference_text)
 
 @app.get("/api/projects")
 def list_projects():return store.projects()

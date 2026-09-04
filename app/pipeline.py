@@ -54,6 +54,23 @@ def prepare_hybrid_engine(work,source,checkpoints):
     if engine.exists():shutil.copytree(engine,backup)
     shutil.copytree(source/'engine',engine,dirs_exist_ok=True,ignore=shutil.ignore_patterns('__pycache__'))
 
+def prepare_history_asset_engine(work,source):
+    """Apply the licensed-image fallback to resumable bundled workspaces."""
+    work=Path(work).resolve();source=Path(source).resolve()
+    if source!=(ROOT/'pipeline').resolve():return False
+    if not work.is_relative_to(JOBS.resolve()) or work.name!='workspace':raise ValueError('Cartella del progetto non valida.')
+    names=('acquire.py','history_assets.py');changed=[]
+    for name in names:
+        src=source/'engine'/name;dst=work/'engine'/name
+        if not dst.exists() or src.read_bytes()!=dst.read_bytes():changed.append((src,dst))
+    if not changed:return False
+    backup=work/'engine-compat-backups'/('asset-'+str(time.time_ns()));backup.mkdir(parents=True)
+    for src,dst in changed:
+        if dst.exists():shutil.copy2(dst,backup/dst.name)
+        dst.parent.mkdir(parents=True,exist_ok=True)
+        shutil.copy2(src,dst)
+    return True
+
 
 def reuse_atlas(work,source,geo):
     """Reuse existing Europe rasters by absolute read-only paths when they cover the view."""

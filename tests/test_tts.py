@@ -18,7 +18,8 @@ def fake_chatterbox(root):
         path.parent.mkdir(parents=True,exist_ok=True);path.write_text('{}')
 
 def test_reference_is_validated_and_stored_immutably(tmp_path):
-    record=tts.upload_reference(sample(),'narratore.wav')
+    record=tts.upload_reference(sample(),'narratore.wav','Questa è la trascrizione esatta.')
+    assert record['reference_text']=='Questa è la trascrizione esatta.'
     assert record['duration_seconds']==10 and record['name']=='narratore'
     assert tts.voice(record['id'])['sha256']==record['sha256']
     with pytest.raises(ValueError,match='WAV'):tts.upload_reference(b'not audio','bad.mp3')

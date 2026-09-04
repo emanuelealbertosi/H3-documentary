@@ -5,6 +5,7 @@ workspaces receive only an immutable public snapshot of the selected profile.
 """
 from __future__ import annotations
 import base64,hashlib,json,os,re,secrets,subprocess,tempfile,time,wave
+from contextlib import contextmanager,nullcontext
 from pathlib import Path
 from urllib.parse import quote
 import requests
@@ -13,7 +14,8 @@ from .models import TTSProfile
 
 MAX_AUDIO_BYTES=25*1024*1024
 PROFILE_FILE='tts-api.json'
-PUBLIC_FIELDS=('id','name','provider','base_url','model','voice','language','response_format','timeout')
+PUBLIC_FIELDS=('id','name','provider','base_url','model','voice','language','response_format','timeout',
+               'temperature','top_p','top_k','seed','max_new_tokens')
 
 def _path():return store.DATA/PROFILE_FILE
 
@@ -24,7 +26,10 @@ def _raw():
     return value if isinstance(value,dict) and isinstance(value.get('profiles'),dict) else {'profiles':{}}
 
 def _public(row):
-    value={key:row.get(key,'') for key in PUBLIC_FIELDS}
+    defaults={'timeout':180,'temperature':1.0,'top_p':.95,'top_k':50,'seed':-1,'max_new_tokens':2048}
+    value={key:row.get(key,defaults.get(key,'')) for key in PUBLIC_FIELDS}
+    for key,default in defaults.items():
+        if value.get(key) in ('',None):value[key]=default
     value['timeout']=int(value['timeout'] or 180)
     value['has_api_key']=bool(row.get('encrypted_key') or os.environ.get('DOCUMENTARIAI_TTS_API_KEY'))
     value['updated']=row.get('updated','')
@@ -93,7 +98,7 @@ def _post(url,*,headers=None,json_body=None,data=None,files=None,timeout=180):
         try:
             for item in (files or {}).values():
                 if isinstance(item,tuple) and len(item)>1 and hasattr(item[1],'seek'):item[1].seek(0)
-            response=requests.post(url,headers=headers,json=json_body,data=data,files=files,timeout=timeout)
+            response=requests.post(url,headers=headers,json=json_body,data=data,files=files,timeout=(10,timeout))
         except requests.RequestException as exc:
             last=exc
             if attempt<2:time.sleep(.7*(attempt+1));continue
@@ -103,6 +108,68 @@ def _post(url,*,headers=None,json_body=None,data=None,files=None,timeout=180):
         if not response.ok:_error(response)
         return response
     raise ValueError('Server TTS non raggiungibile: '+str(last))
+
+def _get(url,*,headers=None,timeout=30):
+    try:response=requests.get(url,headers=headers,timeout=(10,timeout))
+    except requests.RequestException as exc:raise ValueError('Server TTS non raggiungibile: '+str(exc)) from exc
+    if not response.ok:_error(response)
+    return response
+
+def _headers(api_key='',accept='application/json'):
+    value={'Accept':accept}
+    if api_key:value['Authorization']='Bearer '+api_key
+    return value
+
+def _object(response,label):
+    try:value=response.json()
+    except Exception as exc:raise ValueError(f'Il server Higgs ha restituito una risposta {label} non valida.') from exc
+    if not isinstance(value,dict):raise ValueError(f'Il server Higgs ha restituito una risposta {label} non valida.')
+    return value
+
+def higgs_status(config,api_key=''):
+    if config.get('provider')!='higgs':raise ValueError('Il controllo del modello è disponibile soltanto per Higgs TTS.')
+    response=_get(_endpoint(config['base_url'],'/status'),headers=_headers(api_key),timeout=min(int(config.get('timeout',900)),60))
+    return _object(response,'di stato')
+
+def higgs_model(config,action,api_key=''):
+    if action not in ('load','unload'):raise ValueError('Operazione Higgs non valida.')
+    if config.get('provider')!='higgs':raise ValueError('Il controllo del modello è disponibile soltanto per Higgs TTS.')
+    response=_post(_endpoint(config['base_url'],'/model/'+action),headers=_headers(api_key),timeout=int(config.get('timeout',900)))
+    value=_object(response,'del modello');expected='ready' if action=='load' else 'unloaded'
+    if value.get('ok') is not True or value.get('model_state')!=expected:
+        raise ValueError(f'Il server Higgs non ha confermato lo stato {expected}.')
+    return value
+
+def higgs_upload_voice(config,reference_path,reference_text,voice_id,overwrite=False,api_key=''):
+    if config.get('provider')!='higgs':raise ValueError('Le voci persistenti sono disponibili soltanto per Higgs TTS.')
+    fields={'voice_id':voice_id,'reference_text':reference_text or '','overwrite':str(bool(overwrite)).lower()}
+    with open(reference_path,'rb') as source:
+        response=_post(_endpoint(config['base_url'],'/voices/upload'),headers=_headers(api_key),data=fields,
+                       files={'reference_audio':(Path(reference_path).name,source,'audio/wav')},timeout=int(config.get('timeout',900)))
+    value=_object(response,'di registrazione della voce')
+    if not value.get('voice'):raise ValueError('Il server Higgs non ha restituito il nome della voce registrata.')
+    return value
+
+@contextmanager
+def higgs_activity(config,api_key='',log=None):
+    """Keep the API process alive while H3 owns one complete synthesis activity."""
+    if config.get('provider')!='higgs':
+        yield
+        return
+    result=higgs_model(config,'load',api_key)
+    if log:log('Higgs remoto: modello caricato e pronto.' if not result.get('already_loaded') else 'Higgs remoto: modello già pronto.')
+    failed=False
+    try:yield
+    except BaseException:
+        failed=True
+        raise
+    finally:
+        try:
+            result=higgs_model(config,'unload',api_key)
+            if log:log('Higgs remoto: modello scaricato; il server resta raggiungibile.' if not result.get('already_unloaded') else 'Higgs remoto: modello già scaricato.')
+        except Exception as exc:
+            if log:log('Higgs remoto: sintesi conclusa, ma lo scaricamento del modello non è riuscito: '+str(exc))
+            if not failed:raise
 
 def _google_token(secret):
     if secret and not secret.lstrip().startswith('{'):return secret
@@ -118,20 +185,32 @@ def _google_token(secret):
     except Exception as exc:
         raise ValueError('Google TTS richiede un token OAuth, un JSON service account oppure Application Default Credentials configurate.') from exc
 
-def synthesize_bytes(config,text,reference_path=None,api_key=''):
+def _higgs_fields(config,text,reference_text=''):
+    def option(name,default):
+        value=config.get(name,default);return default if value in ('',None) else value
+    fields={'input':text,'response_format':config.get('response_format') or 'wav',
+            'temperature':str(option('temperature',1.0)),'top_p':str(option('top_p',.95)),
+            'top_k':str(option('top_k',50)),'seed':str(option('seed',-1)),
+            'max_new_tokens':str(option('max_new_tokens',2048))}
+    if reference_text:fields['reference_text']=reference_text
+    return fields
+
+def synthesize_bytes(config,text,reference_path=None,api_key='',reference_text=''):
     """Return provider audio bytes and their expected container."""
     provider=config['provider'];base=config['base_url'];timeout=int(config.get('timeout',180));model=config.get('model','');voice=config.get('voice','')
     if not text.strip():raise ValueError('Il testo da sintetizzare è vuoto.')
     if provider in ('openai','higgs'):
-        url=_endpoint(base,'/audio/speech');headers={'Accept':'audio/mpeg'}
-        if api_key:headers['Authorization']='Bearer '+api_key
+        headers=_headers(api_key,'audio/*')
         if provider=='higgs' and reference_path:
-            fields={'model':model or 'higgs-tts-3','input':text}
-            if voice:fields['voice']=voice
+            url=_endpoint(base,'/audio/voice-clone');fields=_higgs_fields(config,text,reference_text)
             with open(reference_path,'rb') as source:
-                response=_post(url,headers=headers,data=fields,files={'ref_audio':(Path(reference_path).name,source,'audio/wav')},timeout=timeout)
+                response=_post(url,headers=headers,data=fields,files={'reference_audio':(Path(reference_path).name,source,'audio/wav')},timeout=timeout)
         else:
-            body={'model':model or ('higgs-tts-3' if provider=='higgs' else 'tts-1'),'input':text,'response_format':config.get('response_format','mp3')}
+            url=_endpoint(base,'/audio/speech')
+            if provider=='higgs':
+                body={key:(float(value) if key in ('temperature','top_p') else int(value) if key in ('top_k','seed','max_new_tokens') else value)
+                      for key,value in _higgs_fields(config,text).items()}
+            else:body={'model':model or 'tts-1','input':text,'response_format':config.get('response_format','mp3')}
             if voice:body['voice']=voice
             response=_post(url,headers=headers,json_body=body,timeout=timeout)
         return _limited(response.content),config.get('response_format','mp3')
@@ -163,7 +242,8 @@ def _valid_wav(path):
 def normalize_audio(content,container,target):
     target=Path(target);target.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='h3-tts-') as temporary:
-        source=Path(temporary)/('response.'+('wav' if container=='wav' else 'mp3'));source.write_bytes(content)
+        extension=container if container in ('wav','mp3','flac','ogg') else 'bin'
+        source=Path(temporary)/('response.'+extension);source.write_bytes(content)
         if container=='wav' and _valid_wav(source):
             source.replace(target);return target
         import imageio_ffmpeg
@@ -174,16 +254,19 @@ def normalize_audio(content,container,target):
         target.unlink(missing_ok=True);raise ValueError('Il server TTS ha restituito un WAV vuoto o non valido.')
     return target
 
-def test_voice(value:TTSProfile,text='Questa è una prova della voce italiana per il documentario.'):
-    data=connection(value);content,container=synthesize_bytes(data,text,api_key=data.get('api_key') or '')
+def test_voice(value:TTSProfile,text='Questa è una prova della voce italiana per il documentario.',reference_path=None,reference_text=''):
+    data=connection(value);api_key=data.get('api_key') or ''
     handle,name=tempfile.mkstemp(prefix='h3-tts-test-',suffix='.wav');os.close(handle);temporary=Path(name)
-    try:return normalize_audio(content,container,temporary).read_bytes()
+    try:
+        with higgs_activity(data,api_key):content,container=synthesize_bytes(data,text,reference_path,api_key,reference_text)
+        return normalize_audio(content,container,temporary).read_bytes()
     finally:temporary.unlink(missing_ok=True)
 
 def _fingerprint(value):return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
 def synthesis_key(pack,scene_id,index,spoken,work):
     values=[spoken,pack['voice'],pack.get('voice_engine','piper'),pack.get('voice_speaker'),1.0,.45,.65]
+    if pack.get('voice_reference_text'):values.append(pack['voice_reference_text'])
     marker=f'{scene_id}:{index}'
     if marker in pack.get('voice_custom_chunks',{}):values.extend(['custom-chunks-v2',pack['voice_custom_chunks'][marker]])
     elif marker in pack.get('voice_clause_chunks',[]):values.append('clause-chunks-v1')
@@ -203,13 +286,18 @@ def synthesize_pack(pack,project,work,cancel,log):
     reference=Path(work)/pack['voice_reference'] if pack.get('voice_reference') else None
     lines=[(scene,i,line) for scene in pack['scenes'] for i,line in enumerate(scene['lines'])]
     out=Path(work)/'build'/pack['slug']/'voice';out.mkdir(parents=True,exist_ok=True)
-    for done,(scene,index,line) in enumerate(lines,1):
-        cancel();spoken=line
+    pending=[]
+    for scene,index,line in lines:
+        spoken=line
         for original,replacement in sorted(pack.get('pronunciation',{}).items(),key=lambda item:-len(item[0])):spoken=spoken.replace(original,replacement)
-        target=out/(synthesis_key(pack,scene['id'],index,spoken,work)+'.wav')
-        if not target.exists():
-            content,container=synthesize_bytes(config,spoken,reference,api_key)
-            temporary=target.with_suffix('.part.wav')
-            normalize_audio(content,container,temporary);temporary.replace(target)
-        log(f'TTS API: segmento {done}/{len(lines)} pronto.')
+        pending.append((scene,index,spoken,out/(synthesis_key(pack,scene['id'],index,spoken,work)+'.wav')))
+    manager=higgs_activity(config,api_key,log) if any(not target.exists() for _,_,_,target in pending) else nullcontext()
+    with manager:
+        for done,(scene,index,spoken,target) in enumerate(pending,1):
+            cancel()
+            if not target.exists():
+                content,container=synthesize_bytes(config,spoken,reference,api_key,pack.get('voice_reference_text',''))
+                temporary=target.with_suffix('.part.wav')
+                normalize_audio(content,container,temporary);temporary.replace(target)
+            log(f'TTS API: segmento {done}/{len(lines)} pronto.')
     return len(lines)

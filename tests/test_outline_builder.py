@@ -5,7 +5,7 @@ import pytest,requests
 from app.models import Settings
 from app.general import HistoryOutline,history_tools
 from app.outline_builder import build_history_outline,HistoryCatalog,merge_rows
-from app.outline_normalization import collections,movement_endpoints
+from app.outline_normalization import collections,movement_endpoints,technical_id
 from app.research import assessment
 from app.llm import LLM,ModelError,TruncatedResponse,extract_json
 
@@ -146,6 +146,17 @@ def test_normalization_preserves_uncertainty_without_fuzzy_place_invention():
     outline['scenes'][0]['focus']=['Orgoglio']
     with pytest.raises(ValueError,match='Orgoglio'):HistoryOutline.model_validate(outline)
     assert len(outline['places'])==1
+
+
+def test_catalog_machine_ids_are_normalized_without_changing_historical_names():
+    catalog=HistoryCatalog.model_validate({'places':[{'id':'hisarlık','name':'Hisarlık (Troia)','pos':[26.239,39.956]}],
+                                           'persons':[{'id':'Nausicàa','name':'Nausicaa'}],
+                                           'entities':[{'id':'Regno di Ítaca','name':'Regno di Itaca'}]})
+    assert catalog.places[0].id=='hisarlik' and catalog.places[0].name=='Hisarlık (Troia)'
+    assert catalog.persons[0].id=='nausicaa' and catalog.entities[0].id=='regno-di-itaca'
+    assert technical_id('Ιθάκη').startswith('id-')
+    with pytest.raises(ValueError,match='duplicati'):
+        HistoryCatalog.model_validate({'places':[{'id':'Città','name':'Uno','pos':[10,40]},{'id':'citta','name':'Due','pos':[11,40]}]})
 
 
 def test_truncated_outer_json_does_not_become_a_nested_object():

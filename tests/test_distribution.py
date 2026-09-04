@@ -70,6 +70,20 @@ def test_broad_cached_patch_is_not_reused_for_close_tactical_map(tmp_path):
     geo={'bounds':[4,4,6,6],'patches':{'close':[4.9,4.9,5.1,5.1]},'output':'assets/geography/new'}
     assert pipeline.reuse_atlas(work,source,geo) is False
 
+def test_history_asset_fix_is_applied_only_to_bundled_resumable_workspace(tmp_path,monkeypatch):
+    from app import pipeline
+    root=tmp_path/'app';source=root/'pipeline';jobs=root/'data/jobs';work=jobs/'abc/workspace'
+    for base in (source/'engine',work/'engine'):base.mkdir(parents=True)
+    for name in ('acquire.py','history_assets.py'):
+        (source/'engine'/name).write_text('new '+name)
+        (work/'engine'/name).write_text('old '+name)
+    monkeypatch.setattr(pipeline,'ROOT',root);monkeypatch.setattr(pipeline,'JOBS',jobs)
+    assert pipeline.prepare_history_asset_engine(work,source) is True
+    assert (work/'engine/acquire.py').read_text()=='new acquire.py'
+    assert list((work/'engine-compat-backups').glob('asset-*/acquire.py'))
+    external=tmp_path/'external';(external/'engine').mkdir(parents=True)
+    assert pipeline.prepare_history_asset_engine(work,external) is False
+
 def test_example_portraits_are_downloadable_without_original_assets():
     for pattern in ['battles/*/battle.json','documentaries/*/documentary.json']:
         for path in (ROOT/'pipeline').glob(pattern):
