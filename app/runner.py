@@ -38,6 +38,9 @@ def active(pid=None):
         return any(not f.done() for f in FUTURES.values())
 def enqueue(pid):
     p=store.project(pid);cfg=store.settings(True)
+    approval=JOBS/pid/'checkpoints/visual-review.approved.json'
+    if p['status']=='review' and p.get('review_visuals') and not approval.is_file():
+        raise ValueError('Completa o approva la revisione delle immagini prima di riprendere la produzione.')
     if not cfg["model"]:raise ValueError("Configura un modello in Amministrazione prima di avviare il progetto.")
     verify_pipeline(cfg["pipeline_path"])
     tts.ensure_available(p.get('tts_engine') or 'kokoro',p.get('tts_reference_id') or '',cfg['pipeline_path'],p.get('tts_profile_id') or '',p.get('tts_config') or None)
@@ -220,6 +223,23 @@ def produce(pid,cfg):
             (cp/'assets.done.json').unlink();log('Nuovi slot visuali rilevati: completo soltanto la ricerca delle immagini.')
         stage("assets",assets)
         pack=store.read_json(packpath)
+        approval=cp/'visual-review.approved.json'
+        if p.get('review_visuals') and not approval.is_file():
+            draft=cp/'visual-review-preview.done.json'
+            if not draft.is_file():
+                log('Creo le anteprime provvisorie prima della voce per la revisione di immagini e sfondi.')
+                # The first call creates a disposable estimated timeline. Layout
+                # then receives the same data shape used after measured speech.
+                cmd('preview')
+                if kind=='battle':run(pid,python,work,[str(ROOT/'app/layout_worker.py'),str(packpath)],cancel,log)
+                else:run(pid,python,work,['tools/history_layout.py',rel],cancel,log)
+                cmd('preview')
+                store.write_json(draft,{'completed':store.now(),'timing':'estimated'})
+            state=visual_slots.status(pid)
+            elapsed=store.pause_processing(pid)
+            store.update(pid,status='review',stage='Revisione immagini e sfondi',progress=round(6/len(STAGES)*100,1),error='',processing_seconds=elapsed)
+            log(f'Pausa visuale: {state["blank_count"]} immagini da completare e {state.get("empty_background_count",0)} sfondi facoltativi. Apri Immagini e riquadri; quando sei soddisfatto premi Continua produzione.')
+            return
         def voice():
             if pack.get('voice_engine')=='chatterbox':
                 _,tts_python,model,worker=tts.chatterbox_paths(src)
@@ -282,6 +302,25 @@ def produce(pid,cfg):
         (folder/"last-error.txt").write_text(traceback.format_exc().replace(cfg.get("api_key") or "NEVER_SECRET","[chiave rimossa]"),encoding="utf-8")
 
 
+def approve_visual_review(pid):
+    """Apply review-time replacements and resume at voice without re-authoring."""
+    p=store.project(pid)
+    if p['status']!='review' or not p.get('review_visuals'):
+        raise ValueError('Questo progetto non è in attesa della revisione visuale.')
+    with LOCK:
+        if active(pid):raise ValueError('Questo progetto è ancora in esecuzione.')
+        packpath=visual_slots.project_pack(pid);work=packpath.parents[2]
+        pack=store.read_json(packpath)
+        visual_slots.apply_options(pack,visual_slots.options(pid))
+        changed=visual_slots.materialize(pack,work,media.catalog(),replacements_only=True)
+        store.write_json(packpath,pack)
+        marker=JOBS/pid/'checkpoints/visual-review.approved.json'
+        store.write_json(marker,{'approved':store.now(),'changed_scenes':changed})
+        store.event(pid,'Revisione visuale approvata. Riprendo dalla voce; ricerca, testo, mappe e asset restano invariati.')
+    enqueue(pid)
+    return store.project(pid)
+
+
 def enqueue_visual_refresh(pid):
     """Create a V2/V3 and update only clips touched by changed images."""
     original=store.project(pid)
@@ -289,7 +328,7 @@ def enqueue_visual_refresh(pid):
     with LOCK:
         if active():raise ValueError('Attendi che la produzione in corso termini.')
         state=visual_slots.status(pid)
-        if not state['replacement_count']:raise ValueError('Collega prima almeno una nuova immagine a un elemento del film.')
+        if not state['change_count']:raise ValueError('Collega, attiva o escludi prima almeno un elemento visuale del film.')
         target=store.clone_completed(pid)
         visual_slots.clone_workspace(pid,target['id'])
         store.update(target['id'],result=original.get('result',{}))
@@ -311,6 +350,7 @@ def refresh_visuals(pid,cfg):
             src=source/rel;dst=work/rel
             if src.is_file():dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
         packpath=visual_slots.project_pack(pid);pack=store.read_json(packpath)
+        visual_slots.apply_options(pack,visual_slots.options(pid))
         changed=visual_slots.materialize(pack,work,media.catalog(),replacements_only=True)
         if not changed:raise ValueError('Le immagini collegate sono già quelle usate dal film.')
         store.write_json(packpath,pack);visual_slots.sync_timeline(pack,work)

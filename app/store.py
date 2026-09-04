@@ -39,6 +39,7 @@ def init():
         if "document_ids" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN document_ids TEXT DEFAULT '[]'")
         columns={r[1] for r in c.execute("PRAGMA table_info(projects)")}
+        if "review_visuals" not in columns:c.execute("ALTER TABLE projects ADD COLUMN review_visuals INTEGER DEFAULT 0")
         if "family_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN family_id TEXT DEFAULT ''")
         if "version" not in columns:c.execute("ALTER TABLE projects ADD COLUMN version INTEGER DEFAULT 1")
         if "parent_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN parent_id TEXT DEFAULT ''")
@@ -96,12 +97,13 @@ def create(req,*,family_id='',version=1,parent_id=''):
           (pid,req.topic,req.minutes,req.notes,json.dumps(req.source_urls),ts,ts))
         c.execute("UPDATE projects SET documentary_type=? WHERE id=?",(req.documentary_type,pid))
         c.execute("UPDATE projects SET use_media=? WHERE id=?",(req.use_media,pid))
+        c.execute("UPDATE projects SET review_visuals=? WHERE id=?",(req.review_visuals,pid))
         c.execute("UPDATE projects SET use_documents=?,document_ids=? WHERE id=?",(req.use_documents,json.dumps(req.document_ids),pid))
         c.execute("UPDATE projects SET tts_engine=?,tts_reference_id=?,tts_profile_id=?,tts_config=? WHERE id=?",(engine,reference,profile,json.dumps(tts_config,ensure_ascii=False),pid))
         c.execute("UPDATE projects SET family_id=?,version=?,parent_id=? WHERE id=?",(family_id or pid,max(1,int(version)),parent_id,pid))
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
-    allowed={"status","stage","progress","error","result","notes","source_urls","use_media","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config","processing_started","processing_seconds"}
+    allowed={"status","stage","progress","error","result","notes","source_urls","use_media","review_visuals","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config","processing_started","processing_seconds"}
     if not fields.keys()<=allowed: raise ValueError("Campi non consentiti")
     fields["updated"]=now()
     fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls","document_ids","tts_config") else v for k,v in fields.items()}
@@ -149,7 +151,7 @@ def clone_completed(pid):
         with connect() as c:
             version=int(c.execute('SELECT COALESCE(MAX(version),0)+1 FROM projects WHERE family_id=?',(family,)).fetchone()[0])
         request=ProjectRequest(topic=old['topic'],minutes=old['minutes'],notes=old['notes'],source_urls=old['source_urls'],start=False,
-            use_media=bool(old.get('use_media')),use_documents=bool(old.get('use_documents')),document_ids=old.get('document_ids',[]),
+            use_media=bool(old.get('use_media')),review_visuals=bool(old.get('review_visuals')),use_documents=bool(old.get('use_documents')),document_ids=old.get('document_ids',[]),
             documentary_type=old.get('documentary_type') or 'auto',tts_engine='default')
         new=create(request,family_id=family,version=version,parent_id=old['id'])
         update(new['id'],tts_engine=old.get('tts_engine','kokoro'),tts_reference_id=old.get('tts_reference_id',''),

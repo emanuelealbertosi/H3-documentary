@@ -110,6 +110,16 @@ def test_create_draft_and_preserve_on_revision(client):
     assert not(root/"workspace").exists()
     assert list(root.glob("workspace-previous-*/battle.json"))[0].read_text()=="old"
 
+def test_visual_review_is_opt_in_persistent_and_cannot_be_skipped(client):
+    project=client.post('/api/projects',json={'topic':'Revisione visuale di prova','start':False,'review_visuals':True}).json()
+    assert project['review_visuals']==1
+    store.update(project['id'],status='review',stage='Revisione immagini e sfondi')
+    response=client.post('/api/projects/'+project['id']+'/start')
+    assert response.status_code==400 and 'revisione delle immagini' in response.text
+    store.update(project['id'],status='completed')
+    clone=store.clone_completed(project['id'])
+    assert clone['review_visuals']==1
+
 def test_completed_regeneration_creates_numbered_twins_and_keeps_original(client):
     original=client.post('/api/projects',json={'topic':'Viaggio di prova','minutes':3,'start':False}).json()
     store.update(original['id'],status='completed',stage='Documentario completato',progress=100,result={'sha256':'old'})

@@ -33,6 +33,7 @@ class HistoryVisuals(AtlasVisuals):
         self.events={e['id']:e for e in data.get('events',[])}
         self.people={p['id']:p for p in data.get('persons',[])}
         self.assets={p['id']:p for p in data.get('visual_assets',[])}
+        self.disabled_assets=set(data.get('disabled_visual_asset_ids',[]))
         self.layers={p['id']:p for p in data.get('visual_layers',[])}
         self.static_cards={}
         yy,xx=np.mgrid[:H,:W]
@@ -306,8 +307,9 @@ class HistoryVisuals(AtlasVisuals):
         if key not in self.static_cards:
             im=self.background.copy().convert('RGBA');d=ImageDraw.Draw(im)
             kind=s['scene_type']
-            if kind in ('artwork','document') and s.get('asset_ids'):
-                a=self.assets[s['asset_ids'][0]];path=ROOT/a['path']
+            asset_ids=[ident for ident in s.get('asset_ids',[]) if ident not in self.disabled_assets]
+            if kind in ('artwork','document') and asset_ids:
+                a=self.assets[asset_ids[0]];path=ROOT/a['path']
                 picture=ImageOps.contain(Image.open(path).convert('RGB'),(1080,710),Image.Resampling.LANCZOS)
                 im.paste(picture,(60+(1080-picture.width)//2,177+(710-picture.height)//2))
                 d.text((1200,207),'OPERA' if kind=='artwork' else 'DOCUMENTO',font=font(18),fill=GOLD)
@@ -348,7 +350,7 @@ class HistoryVisuals(AtlasVisuals):
                     x=120+i*575;d.line((x,679,x+480,679),fill=GOLD,width=2);textblock(d,(x,716),c,490,27,MUTED,maxlines=5)
             self.static_cards[key]=im
         im=self.static_cards[key].copy()
-        if s['scene_type'] in ('artwork','document') and s.get('asset_ids'):
+        if s['scene_type'] in ('artwork','document') and any(ident not in self.disabled_assets for ident in s.get('asset_ids',[])):
             # A gentle camera push on the artwork alone; typography stays registered.
             region=self.static_cards[key].crop((60,177,1140,887))
             zoom=1+.025*smooth(t/s['duration']);w,h=region.size

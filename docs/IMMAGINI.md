@@ -1,6 +1,6 @@
 # Immagini e riquadri
 
-Disponibili dalla versione 1.1.0. Dalla versione 1.8.0 la libreria gestisce anche l’inventario completo delle immagini effettivamente usate in ciascun film.
+Disponibili dalla versione 1.1.0. Dalla versione 1.8.0 la libreria gestisce anche l’inventario completo delle immagini effettivamente usate in ciascun film. La versione 1.9.0 permette di controllarlo prima di generare voce e video.
 
 ## Inventario automatico e sostituzione parziale
 
@@ -9,6 +9,23 @@ Quando la struttura del racconto è pronta, l’app crea uno slot per ogni perso
 La pagina del progetto mostra tutti gli slot con quattro stati: **Trovata automaticamente**, **Scheda neutra**, **Da completare** e **Personalizzata**. Ogni stato è sostituibile. Apri **Gestisci e sostituisci**, trascina una nuova immagine sul soggetto e premi **Aggiorna solo le scene interessate**. Un progetto completato genera automaticamente V2, V3 o la versione successiva; il vecchio film resta intatto. Il motore riusa ricerca, sceneggiatura, TTS, timeline, mappe e clip non coinvolte, renderizza soltanto le scene che contengono l’immagine cambiata, quindi esegue nuovamente montaggio e verifica tecnica.
 
 Per un luogo la fotografia compare soltanto quando il suo nome è pronunciato. Un personaggio può comparire anche nella scena che lo introduce esplicitamente. Le sostituzioni dei ritratti e delle opere aggiornano anche le scene dedicate a quell’asset, non soltanto il riquadro sovrapposto.
+
+## Revisione prima del rendering
+
+Nel modulo del nuovo documentario seleziona **Fermati per la revisione visuale**. L’app esegue fonti, struttura, testo, revisione storica, mappe e acquisizione degli asset. Subito dopo crea tre fotogrammi provvisori per scena e porta il progetto nello stato **Revisione necessaria**, prima di caricare o chiamare il TTS.
+
+La pagina del progetto e **Immagini e riquadri** mostrano separatamente:
+
+- immagini trovate automaticamente;
+- schede neutre o immagini mancanti da completare;
+- immagini già personalizzate;
+- sfondi facoltativi delle scene senza mappa.
+
+I riferimenti sono inoltre divisi in **obbligatori** e **suggeriti**. Ritratti, luoghi e materiali richiesti dalla regia partono attivi; se non hanno un file utilizzabile, il motore crea una scheda neutra originale. Puoi premere **Escludi** per non renderizzare quel riferimento. I suggerimenti, a partire dagli sfondi delle scene senza mappa, partono disattivati: **Attiva suggerimento** li include usando l’immagine collegata oppure un placeholder. **Ripristina** riattiva un obbligatorio escluso.
+
+Gli sfondi vuoti conservano la composizione scura predefinita e non sono errori. Collegando un’immagine a uno slot **Sfondo**, questa viene adattata all’area centrale della scena e scurita dietro titoli, date, timeline e grafici per mantenerli leggibili. La posizione del normale riquadro non viene usata per lo sfondo.
+
+Dopo le modifiche premi **Continua produzione** dalla pagina del progetto o dall’archivio visuale. Associazioni, esclusioni e attivazioni vengono copiate nel pack, poi la pipeline riparte da TTS, timeline definitiva, anteprime definitive, rendering, montaggio e verifica. Ricerca, sceneggiatura, mappe e download degli asset mantengono i checkpoint già completati. Puoi continuare anche lasciando placeholder oppure suggerimenti disattivati.
 
 ## Uso nell’app
 

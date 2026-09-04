@@ -1,6 +1,6 @@
 """Additive compositor for user images, shared by legacy, atlas and history frames."""
 import hashlib
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageEnhance, ImageOps
 from .common import ROOT
 
 def asset_path(item):
@@ -82,9 +82,27 @@ class InsetVisuals:
         x=round(box[0]+(box[2]-box[0]-body.width)/2);y=round(box[1]+(box[3]-box[1]-body.height)/2)
         image.paste(body,(x,y));return image
 
+    def backdrop(self,image,scene):
+        """Blend an optional user image into a non-map card without hiding text."""
+        ident=scene.get('background_asset_id');item=self.items.get(ident)
+        if not item:return image
+        with Image.open(asset_path(item)) as original:
+            photo=ImageOps.fit(original.convert('RGB'),(1820,765),Image.Resampling.LANCZOS)
+        photo=ImageEnhance.Color(photo).enhance(.82)
+        photo=ImageEnhance.Contrast(photo).enhance(.92)
+        photo=ImageEnhance.Brightness(photo).enhance(.47)
+        body=image.crop((50,170,1870,935)).convert('RGB')
+        mixed=Image.blend(photo,body,.60)
+        # Restore headings, dates, graph labels and other bright authored marks.
+        mask=body.convert('L').point(lambda value:max(0,min(255,(value-55)*4)))
+        mixed.paste(body,(0,0),mask)
+        result=image.copy();result.paste(mixed,(50,170));return result
+
     def frame(self,scene,t):
         image=self.base.frame(scene,t)
-        if self.data.get('visual_style')=='history':image=self.make_room(image,scene)
+        if self.data.get('visual_style')=='history':
+            image=self.backdrop(image,scene)
+            image=self.make_room(image,scene)
         for item in scene.get('image_insets',[]):
             start,end=interval(scene,item)
             if not start<=t<end:continue
@@ -98,8 +116,9 @@ class InsetVisuals:
         return image
 
 def credits(timeline):
-    lines=['## Immagini nei riquadri','Le immagini automatiche conservano provenienza e licenza della fonte. Le sostituzioni caricate conservano le indicazioni dichiarate dall’utente. I file usati dal montaggio sono in assets/user.']
+    lines=['## Immagini e sfondi','Le immagini automatiche conservano provenienza e licenza della fonte. Le sostituzioni e gli sfondi caricati conservano le indicazioni dichiarate dall’utente. I file usati dal montaggio sono in assets/user.']
     for item in timeline.get('user_media',[]):
         origin='Ricerca automatica con controllo licenza' if item.get('origin')=='automatic' else 'Immagine caricata e collegata dall’utente'
-        lines += [f"### {item['title']}",f"{origin}. File: {item['filename']}. Autore / attribuzione: {item.get('credit') or 'non indicata'}. Provenienza: {item.get('source') or 'caricamento locale'}. Diritti: {item.get('rights') or 'da specificare; nessuna licenza presunta'}. Ridimensionamento e composizione in riquadro. SHA-256: {item['sha256']}."]
+        composition='Ridimensionamento e composizione come sfondo di scena.' if str(item.get('id','')).startswith('visual-background-') else 'Ridimensionamento e composizione in riquadro.'
+        lines += [f"### {item['title']}",f"{origin}. File: {item['filename']}. Autore / attribuzione: {item.get('credit') or 'non indicata'}. Provenienza: {item.get('source') or 'caricamento locale'}. Diritti: {item.get('rights') or 'da specificare; nessuna licenza presunta'}. {composition} SHA-256: {item['sha256']}."]
     return lines

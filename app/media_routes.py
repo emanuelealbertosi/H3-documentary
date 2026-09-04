@@ -31,7 +31,9 @@ def project_media(pid:str):
     from .visual_slots import status
     visual=status(pid);targets=media.targets(pid)
     for slot in visual['slots']:
-        target={'kind':slot['kind'],'label':slot['label'],'visual_slot_id':slot['id'],'visual_state':slot['state'],'scene_ids':slot['scene_ids']}
+        target={'kind':slot['kind'],'label':slot['label'],'visual_slot_id':slot['id'],'visual_state':slot['state'],'scene_ids':slot['scene_ids'],'source_type':slot.get('source_type',''),
+                'optional':bool(slot.get('optional')),'required':bool(slot.get('required')),'enabled':bool(slot.get('enabled')),'pending_option':bool(slot.get('pending_option'))}
+        target['visual_editable']=p['status'] in ('review','completed')
         current=next((x for x in targets if x['kind']==target['kind'] and media.normalized(x['label'])==media.normalized(target['label'])),None)
         if current:current.update({k:v for k,v in target.items() if k not in ('kind','label')})
         else:targets.append(target)
@@ -58,8 +60,20 @@ def visual_slot_image(pid:str,slot_id:str):
     except KeyError:raise HTTPException(404,'Immagine non disponibile.')
     return FileResponse(path)
 
+@router.put('/api/projects/{pid}/visual-slots/{slot_id}')
+def visual_slot_edit(pid:str,slot_id:str,value:dict):
+    if type(value.get('enabled')) is not bool:raise HTTPException(422,'Indica se mostrare questo riferimento nel film.')
+    from .visual_slots import set_enabled
+    try:return set_enabled(pid,slot_id,value['enabled'])
+    except KeyError:raise HTTPException(404,'Riferimento visuale non disponibile.')
+
 @router.post('/api/projects/{pid}/visual-refresh',status_code=202)
 def visual_refresh(pid:str):
     from .runner import enqueue_visual_refresh
     project=enqueue_visual_refresh(pid)
     return {'mode':'new_version','project':project}
+
+@router.post('/api/projects/{pid}/visual-approve',status_code=202)
+def visual_approve(pid:str):
+    from .runner import approve_visual_review
+    return {'mode':'resume','project':approve_visual_review(pid)}
