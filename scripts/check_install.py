@@ -17,7 +17,7 @@ def check(quick=False,write=False):
         saved=json.loads((ROOT/'data/installation.json').read_text())
         if saved.get('requirements')!=signature():raise RuntimeError('Dipendenze aggiornate: installazione richiesta.')
         return
-    import fastapi,uvicorn,httpx,bs4,fastembed,pypdf,docx
+    import fastapi,uvicorn,httpx,bs4,fastembed,pypdf,docx,imageio_ffmpeg,google.auth
     from app.documents import ensure_model
     ensure_model(False)
     code="""import json,sys,subprocess

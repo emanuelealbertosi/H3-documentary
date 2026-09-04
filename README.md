@@ -19,7 +19,7 @@ Se usi porte diverse, `START.bat -Port 8776` avvia su quella porta e `STOP.bat -
 
 **Piattaforma verificata:** Windows x64 Intel/AMD, esecuzione CPU. Consigliati 16 GB di RAM e almeno 15–20 GB liberi per lavorare con video e mappe. L'ambiente di base occupa alcuni GB; ogni produzione richiede spazio aggiuntivo. GPU NVIDIA, account a pagamento e abbonamenti non sono necessari.
 
-Internet serve per l'installazione, la ricerca e gli asset geografici/iconografici mancanti. TTS, animazioni, montaggio e verifiche sono locali. Il server LLM può trovarsi su un altro PC: è l'unico modello che devi procurare e configurare separatamente. La velocità e la qualità della ricerca/scrittura dipendono anche da quel modello.
+Internet serve per l'installazione, la ricerca e gli asset geografici/iconografici mancanti. Animazioni, montaggio e verifiche sono locali. Il server LLM e, facoltativamente, un server TTS possono trovarsi su un altro PC. La velocità e la qualità della ricerca/scrittura dipendono anche dal modello collegato.
 
 ## Collegare il modello
 
@@ -100,7 +100,9 @@ La prova da terminale resta disponibile:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\pipeline\tools\chatterbox\prova.ps1 -Reference "C:\percorso\voce.wav"
 ```
 
-Questa versione produce documentari in italiano con una traccia audio e sottotitoli italiani. Server TTS esterni, doppiaggio multilingua e tracce audio multiple restano estensioni da integrare; non sono presentati come funzioni già pronte.
+Puoi anche salvare più **server TTS esterni** come fai con i server LLM. Sono inclusi adapter per endpoint OpenAI compatibili, Higgs TTS, ElevenLabs e Google Cloud TTS. Higgs può ricevere il campione WAV one-shot; ElevenLabs usa un voice ID e Google il nome della voce. Le risposte vengono convertite in WAV locale e passano nella stessa timeline misurata, con cache e ripresa automatica. Credenziali e token sono cifrati con Windows DPAPI e non entrano nei progetti. [Configurazione e privacy](docs/TTS_API.md).
+
+Questa versione produce documentari in italiano con una traccia audio e sottotitoli italiani. Doppiaggio multilingua e tracce audio multiple restano estensioni successive.
 
 ## Riga di comando
 

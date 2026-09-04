@@ -12,6 +12,7 @@ from .llm import LLM,ModelError
 from .library import library
 from .media_routes import router as media_router
 from .document_routes import router as document_router
+from .tts_routes import router as tts_router
 
 @asynccontextmanager
 async def lifespan(app):
@@ -22,6 +23,7 @@ async def lifespan(app):
 app=FastAPI(title="H3-documentary",docs_url=None,redoc_url=None,lifespan=lifespan)
 app.include_router(media_router)
 app.include_router(document_router)
+app.include_router(tts_router)
 
 @app.middleware("http")
 async def local_boundary(request:Request,call_next):
@@ -65,6 +67,11 @@ def get_settings():return store.settings()
 def put_settings(value:Settings):
     from .runner import active
     if active():raise HTTPException(409,"Attendi o interrompi la produzione prima di cambiare le impostazioni.")
+    if value.tts_engine=='api':
+        from .tts_api import profile
+        if not value.tts_profile_id:raise ValueError('Seleziona un server TTS salvato.')
+        try:profile(value.tts_profile_id)
+        except KeyError:raise ValueError('Il server TTS selezionato non esiste più.')
     return store.save_settings(value)
 
 def connection(value):

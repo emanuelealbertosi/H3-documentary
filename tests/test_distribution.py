@@ -39,6 +39,7 @@ def test_bat_uses_own_directory_and_inbox_powershell():
 def test_examples_and_runtime_modules_are_bundled():
     for file in ['app/battle_outline.py','app/narration_builder.py','pipeline/engine/render.py','pipeline/engine/atlas.py','pipeline/engine/narration.py',
                  'app/documents.py','app/document_routes.py','static/documents.js','docs/DOCUMENTI.md',
+                 'app/tts_api.py','app/tts_routes.py','static/tts-api.js','docs/TTS_API.md',
                  'pipeline/engine/history_schema.py','pipeline/engine/history_direction.py',
                  'pipeline/engine/history_geography.py','pipeline/tools/acquire_atlas.py',
                  'pipeline/battles/waterloo/battle.json','pipeline/documentaries/rinascimento/documentary.json',

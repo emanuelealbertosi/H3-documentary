@@ -38,9 +38,9 @@
     "visuals.py": "1e2e24a67033963a5d235d7f9848be29c1b55895c1b9005e9255cd25bb4c0a3a",
     "__init__.py": "e30f968d8d2aa6dec40db521982c34e2a33f768ebf9b863339e85d5b820e8918"
   },
-  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval. Original hashes are retained above. Legacy battle rendering/TTS modules stay identical; the battle author is checkpointed outside the renderer.",
+  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval; 1.4.0: API-TTS asset bypass. Original hashes are retained above. Legacy battle rendering/TTS modules stay identical; the battle author is checkpointed outside the renderer.",
   "hybrid_extensions_sha256": {
-    "acquire.py": "51758a3fe8a45278fd4b808da6ff8861dba3f5019726ad1e6543c1e4baf17e07",
+    "acquire.py": "1afcfb9ab2c83057b02e264c6a6de03dd9ffe3f9ad041e99bf248af6db6b9598",
     "history_authoring.py": "79aaa304e29398d7288c920686336ef0fd2c9f56d4abe526b717e54034337183",
     "history_schema.py": "f357438db3e9296e8ff2829048582c0cacbc0dde3010f07a1ed714cbfea769a3",
     "history_profiles.py": "7e479dfcfd02b2ef9024909f367c1bfda38bdcee6488e9387a5cadbf69fd2aeb",

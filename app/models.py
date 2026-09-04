@@ -23,7 +23,8 @@ class Settings(BaseModel):
     search_url: str = ""
     research_mode: Literal["hybrid", "strict"] = "hybrid"
     instructions: str = Field("", max_length=12000)
-    tts_engine: Literal["kokoro","chatterbox"] = "kokoro"
+    tts_engine: Literal["kokoro","chatterbox","api"] = "kokoro"
+    tts_profile_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
     tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
     chatterbox_threads: int = Field(4, ge=1, le=8)
 
@@ -50,7 +51,8 @@ class ProjectRequest(BaseModel):
     use_documents: bool = True
     document_ids: list[str] = Field(default_factory=list, max_length=24)
     documentary_type: Literal["auto","battle","war","territorial_expansion","migration","cultural_movement","religious_expansion","trade_network","exploration","political_history","revolution","economic_history","technology_history","biography","general_history"] = "auto"
-    tts_engine: Literal["default","kokoro","chatterbox"] = "default"
+    tts_engine: Literal["default","kokoro","chatterbox","api"] = "default"
+    tts_profile_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
     tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
 
     @field_validator("document_ids")
@@ -61,8 +63,34 @@ class ProjectRequest(BaseModel):
         return list(dict.fromkeys(values))
 
 class VoiceChoice(BaseModel):
-    tts_engine: Literal["kokoro","chatterbox"]
+    tts_engine: Literal["kokoro","chatterbox","api"]
+    tts_profile_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
     tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+
+class TTSProfile(BaseModel):
+    id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+    name: str = Field(min_length=2,max_length=80)
+    provider: Literal["openai","higgs","elevenlabs","google"] = "openai"
+    base_url: str
+    model: str = Field("",max_length=160)
+    voice: str = Field("",max_length=180)
+    language: str = Field("it-IT",min_length=2,max_length=30)
+    response_format: Literal["mp3","wav"] = "mp3"
+    timeout: int = Field(180,ge=10,le=600)
+    api_key: str | None = Field(None,max_length=24000)
+    clear_api_key: bool = False
+
+    @field_validator("base_url")
+    @classmethod
+    def tts_endpoint(cls,value):
+        value=value.strip().rstrip("/")
+        p=urlsplit(value)
+        if p.scheme not in ("http","https") or not p.hostname or p.username or p.password or p.query or p.fragment:
+            raise ValueError("Usa un indirizzo HTTP/HTTPS senza credenziali o parametri nella URL.")
+        path=p.path.rstrip("/")
+        for suffix in ("/audio/speech","/text:synthesize"):
+            if path.endswith(suffix):path=path[:-len(suffix)]
+        return urlunsplit((p.scheme,p.netloc,path,"",""))
 
 class GeoPoint(BaseModel):
     model_config = ConfigDict(extra="forbid")

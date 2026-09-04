@@ -24,6 +24,7 @@ La licenza MIT del progetto copre il codice originale dell'app e della pipeline.
 | paraphrase-multilingual-MiniLM-L12-v2, conversione ONNX Qdrant | https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 ; https://huggingface.co/qdrant/paraphrase-multilingual-MiniLM-L12-v2-onnx-Q | Apache-2.0; revisione ONNX fissata nell'app e scaricata nella cartella privata `data/models/rag/` |
 | pypdf | https://github.com/py-pdf/pypdf | BSD-3-Clause; estrazione locale del testo PDF |
 | python-docx | https://github.com/python-openxml/python-docx | MIT; estrazione locale di paragrafi e tabelle DOCX |
+| google-auth | https://github.com/googleapis/google-auth-library-python | Apache-2.0; autenticazione OAuth facoltativa per Google Cloud TTS |
 
 Le versioni Python sono elencate nei due `requirements-lock.txt`; ogni ambiente conserva i metadati e le licenze dei pacchetti installati. Nessun eseguibile, modello pesante o cache privata viene incluso nel repository Git o nello ZIP sorgente: sono ottenuti dall'installatore dai distributori originali.
 

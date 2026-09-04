@@ -37,7 +37,7 @@ def enqueue(pid):
     p=store.project(pid);cfg=store.settings(True)
     if not cfg["model"]:raise ValueError("Configura un modello in Amministrazione prima di avviare il progetto.")
     verify_pipeline(cfg["pipeline_path"])
-    tts.ensure_available(p.get('tts_engine') or 'kokoro',p.get('tts_reference_id') or '',cfg['pipeline_path'])
+    tts.ensure_available(p.get('tts_engine') or 'kokoro',p.get('tts_reference_id') or '',cfg['pipeline_path'],p.get('tts_profile_id') or '',p.get('tts_config') or None)
     with LOCK:
         if pid in FUTURES and not FUTURES[pid].done():raise ValueError("Questo progetto è già in coda o in esecuzione.")
         if p["status"]=="completed":raise ValueError("Il documentario è già completato.")
@@ -201,6 +201,16 @@ def produce(pid,cfg):
                         done,total=map(int,match.groups())
                         store.update(pid,progress=round((6+done/max(1,total))/len(STAGES)*100,1))
                 run(pid,tts_python,work,[str(worker),'--workspace',str(work),'--pack',rel,'--model',str(model),'--threads',str(cfg.get('chatterbox_threads',4))],cancel,voice_log,max_hours=12)
+            elif pack.get('voice_engine')=='tts_api':
+                from .tts_api import synthesize_pack
+                log('Server TTS: preparo la voce '+(('con il campione one-shot.' if pack.get('voice_reference') else 'con la voce configurata.')))
+                def api_voice_log(message):
+                    log(message)
+                    match=re.search(r'segmento\s+(\d+)/(\d+)',str(message),re.I)
+                    if match:
+                        done,total=map(int,match.groups())
+                        store.update(pid,progress=round((6+done/max(1,total))/len(STAGES)*100,1))
+                synthesize_pack(pack,p,work,cancel,api_voice_log)
             cmd("voice")
         stage("voice",voice)
         def preview():
