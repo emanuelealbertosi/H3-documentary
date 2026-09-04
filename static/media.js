@@ -34,10 +34,13 @@ export async function mediaPage({api,esc,toast,projectId}) {
   async function activateTarget(binding){
     if(projectId&&binding?.visual_slot_id&&binding.visual_editable&&!binding.enabled)await api('/projects/'+projectId+'/visual-slots/'+encodeURIComponent(binding.visual_slot_id),{method:'PUT',body:JSON.stringify({enabled:true})});
   }
+  async function enableProjectMedia(){
+    if(projectId&&project?.editable&&!project.enabled)project=await api('/projects/'+projectId+'/media',{method:'PUT',body:JSON.stringify({enabled:true})});
+  }
   async function bind(mid,b){const m=items.find(x=>x.id===mid);if(!m)return;
     selected=mid;selectedSlot='';linkTarget=-1;m.enabled=true;items=[m,...items.filter(x=>x.id!==mid)];
     if(!m.bindings.some(x=>sameBinding(x,b)))m.bindings.push({kind:b.kind,label:b.label,aliases:b.aliases||[]});
-    await persist(m);await activateTarget(b);if(projectId)project=await api('/projects/'+projectId+'/media');draw();toast('Immagine collegata a '+b.label+'.');
+    await persist(m);await enableProjectMedia();await activateTarget(b);if(projectId)project=await api('/projects/'+projectId+'/media');draw();toast('Immagine collegata a '+b.label+'.');
   }
   async function unbindTarget(b){
     const linked=linkedItems(b);if(!linked.length)return;
@@ -54,7 +57,7 @@ export async function mediaPage({api,esc,toast,projectId}) {
         const r=await fetch('/api/media?filename='+encodeURIComponent(list[i].name),{method:'POST',headers:{'X-DocumentariAI':'studio','Content-Type':'application/octet-stream'},body:list[i]});
         if(!r.ok){const e=await r.json();throw Error(e.detail||'Caricamento non riuscito.');}
         const m=await r.json();items.unshift(m);selected=m.id;selectedSlot='';
-        if(binding){m.bindings=[{kind:binding.kind,label:binding.label,aliases:binding.aliases||[]}];await persist(m);await activateTarget(binding);linkTarget=-1;}
+        if(binding){m.bindings=[{kind:binding.kind,label:binding.label,aliases:binding.aliases||[]}];await persist(m);await enableProjectMedia();await activateTarget(binding);linkTarget=-1;}
       }catch(e){toast(e.message);}
     }
     if(projectId)project=await api('/projects/'+projectId+'/media');if(!disposed)draw();
@@ -80,7 +83,7 @@ export async function mediaPage({api,esc,toast,projectId}) {
     root.innerHTML=`<div class="topline"><span class="eyebrow">IL TUO ARCHIVIO VISIVO</span><a class="text-link" href="${projectId?'/projects/'+projectId:'/'}">${projectId?'← Torna al progetto':'Crea un documentario →'}</a></div>
       <h1>Un’immagine. Il suo posto nella storia.</h1>
       <p class="lead">Collega ritratti, luoghi e materiali ai soggetti del racconto. Compariranno in un riquadro, insieme alle mappe e alle altre scene.</p>
-      ${project?`<section class="media-project-note"><label class="check"><input id="project-use-media" type="checkbox" ${project.enabled?'checked':''} ${project.frozen?'disabled':''}> Usa le immagini associate in questo progetto</label><p class="tiny muted">${project.visual?.awaiting_review?'La produzione è ferma prima della voce e del rendering. Collega ciò che vuoi usare, poi continua: ricerca, testo e mappe non verranno rifatti.':project.visual?.completed?'Puoi sostituire qualsiasi immagine del film. L’aggiornamento crea una nuova versione e renderizza soltanto le scene interessate.':project.frozen?'Le immagini di questa produzione sono fissate; gli slot restano disponibili per un aggiornamento dopo il completamento.':'Le associazioni sono riutilizzabili anche negli altri documentari. Salvale prima di avviare la produzione.'}</p></section>`:''}
+      ${project?`<section class="media-project-note"><b>Le immagini che colleghi vengono usate automaticamente.</b><p class="tiny muted">${project.visual?.awaiting_review?'La produzione è ferma prima della voce e del rendering. Collega ciò che vuoi usare, poi continua: ricerca, testo e mappe non verranno rifatti.':project.visual?.completed?'Puoi sostituire qualsiasi immagine del film. L’aggiornamento crea una nuova versione e renderizza soltanto le scene interessate.':project.frozen?'Le immagini della produzione in corso sono già fissate; le nuove sostituzioni saranno disponibili per la versione successiva.':'Collega le immagini desiderate: non serve attivare un’opzione separata.'}</p></section>`:''}
       ${project?.visual?.ready?`<section class="visual-refresh-bar"><div><b>${project.visual.required_count} obbligatori · ${project.visual.suggested_count} suggeriti</b><span>${project.visual.available_count} trovati · ${project.visual.blank_count} placeholder · ${project.visual.disabled_count} esclusi · ${project.visual.change_count} modifiche pronte</span></div>${project.visual.awaiting_review?`<button id="visual-approve" class="primary">Continua produzione</button>`:project.visual.completed?`<button id="visual-refresh" class="primary" ${project.visual.change_count?'':'disabled'}>Aggiorna solo le scene interessate</button>`:''}</section>`:''}
       <section class="card media-library"><div class="media-section-title"><div><span class="eyebrow">01 · CARICA</span><h2>Le tue immagini <span class="media-count">${items.filter(x=>x.enabled).length}</span></h2></div><label class="button secondary media-file-label" for="media-files">+ Aggiungi immagini</label><input class="visually-hidden" id="media-files" type="file" accept="image/jpeg,image/png,image/webp" multiple></div>
         <div id="media-drop" class="media-drop" tabindex="0" role="button" aria-label="Carica immagini trascinandole o scegliendo un file"><span class="media-drop-icon">↥</span><div><strong>Trascina qui le immagini</strong><p>JPG, PNG o WebP · fino a 20 MB · puoi anche trascinarle direttamente su un collegamento</p></div><span id="upload-status" role="status"></span></div>
@@ -125,7 +128,6 @@ export async function mediaPage({api,esc,toast,projectId}) {
     const linkDrop=root.querySelector('#link-drop');if(linkDrop){dropzone(linkDrop,e=>upload(e.dataTransfer.files,linkBinding));}
     const modal=root.querySelector('.media-link-modal');if(modal){modal.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();linkTarget=-1;draw();}};modal.focus();}
     root.querySelectorAll('[data-visual-toggle]').forEach(el=>el.onclick=async()=>{el.disabled=true;const enabled=el.dataset.visualEnabled!=='true';try{await api('/projects/'+projectId+'/visual-slots/'+encodeURIComponent(el.dataset.visualToggle),{method:'PUT',body:JSON.stringify({enabled})});project=await api('/projects/'+projectId+'/media');draw();toast(enabled?'Riferimento attivato.':'Riferimento escluso dal film.');}catch(e){toast(e.message);el.disabled=false;}});
-    const use=root.querySelector('#project-use-media');if(use)use.onchange=async()=>{try{project=await api('/projects/'+projectId+'/media',{method:'PUT',body:JSON.stringify({enabled:use.checked})});}catch(e){toast(e.message);use.checked=project.enabled;}};
     const refresh=root.querySelector('#visual-refresh');if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='Creo la nuova versione…';try{const data=await api('/projects/'+projectId+'/visual-refresh',{method:'POST'});toast('Nuova versione V'+data.project.version+' creata.');location.href='/projects/'+data.project.id;}catch(e){toast(e.message);refresh.disabled=false;refresh.textContent='Aggiorna solo le scene interessate';}};
     const approve=root.querySelector('#visual-approve');if(approve)approve.onclick=async()=>{approve.disabled=true;approve.textContent='Ripresa in corso…';try{await api('/projects/'+projectId+'/visual-approve',{method:'POST'});toast('Revisione approvata. La produzione riparte dalla voce.');location.href='/projects/'+projectId;}catch(e){toast(e.message);approve.disabled=false;approve.textContent='Continua produzione';}};
     const visualReplace=root.querySelector('#visual-replace');if(visualReplace)visualReplace.onchange=()=>upload(visualReplace.files,{kind:v.kind,label:v.label,aliases:[],visual_slot_id:v.id,visual_editable:project.visual.editable,enabled:v.enabled});

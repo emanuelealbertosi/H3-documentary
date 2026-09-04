@@ -34,7 +34,7 @@ Dopo le modifiche premi **Continua produzione** dalla pagina del progetto o dall
 3. Trascina l’immagine sul collegamento. Puoi trascinare la scheda nella libreria oppure la miniatura “Immagine selezionata” vicina ai soggetti. In alternativa fai clic sul collegamento dopo aver selezionato l’immagine.
 4. Sposta il riquadro nell’anteprima e scegli dimensione, angolo e immagine intera o ritaglio. I tasti freccia spostano il riquadro di piccoli passi. Modifiche e associazioni si salvano automaticamente; **Salva riquadro** permette di riprovare un salvataggio.
 5. Inserisci titolo, varianti del nome, provenienza, autore e diritti. Per esempio, collega “Annibale” e aggiungi “Annibale Barca” o “generale cartaginese” fra le varianti.
-6. Crea un documentario lasciando selezionato **Inserisci le mie immagini associate**. Puoi disattivarlo per una produzione. Nei progetti ancora da avviare, il collegamento **Immagini e riquadri** permette di scegliere se usare la libreria.
+6. Crea il documentario. Le immagini che hai collegato vengono considerate automaticamente; durante la revisione visuale puoi aggiungerle, cambiarle, scollegarle o escluderle senza una seconda spunta generale.
 
 Le immagini possono avere più collegamenti e uno stesso soggetto può avere più immagini. Queste si alternano durante la frase pertinente. **Archivia** è reversibile e mantiene gli originali; **Ripristina** rende nuovamente utilizzabile l’immagine.
 
@@ -62,7 +62,7 @@ Le associazioni sono un sistema di composizione locale. Questa estensione non ag
 
 `app/media.py` gestisce validazione, associazione e copia degli asset; `app/media_routes.py` espone API locali protette. `static/media.js` e `static/media.css` implementano l’editor.
 
-`pipeline/engine/image_insets.py` aggiunge un compositore sopra il renderer esistente. Tre agganci delimitati in `visuals.py`, `render.py`, `export.py` collegano rispettivamente compositing, invalidazione della cache e crediti. Il test della baseline 1.0.0 verifica che, rimuovendo esclusivamente questi agganci, i file originali coincidano con le impronte già registrate. I progetti migrati hanno `use_media=0`; i nuovi progetti possono attivarlo. Senza corrispondenze il pack resta identico.
+`pipeline/engine/image_insets.py` aggiunge un compositore sopra il renderer esistente. Tre agganci delimitati in `visuals.py`, `render.py`, `export.py` collegano rispettivamente compositing, invalidazione della cache e crediti. Il test della baseline 1.0.0 verifica che, rimuovendo esclusivamente questi agganci, i file originali coincidano con le impronte già registrate. Il campo interno `use_media` rimane per leggere i progetti delle versioni precedenti; i nuovi progetti lo abilitano automaticamente. Senza corrispondenze il pack resta identico.
 
 I pack mantengono tutte le chiavi esistenti e aggiungono solo `user_media` alla radice e `image_insets` nelle scene. Ogni riquadro identifica asset, cue della narrazione, ordine di alternanza, titolo, posizione normalizzata, dimensione e impronta dell’immagine. I file devono trovarsi sotto `assets/user/`; percorsi esterni e impronte alterate vengono rifiutati. Per motori esterni configurati nell’app serve anche questa estensione; il motore incluso la contiene già.
 

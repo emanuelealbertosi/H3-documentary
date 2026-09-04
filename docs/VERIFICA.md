@@ -1,5 +1,7 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.9.4: rimossa dall’interfaccia la spunta generale **Inserisci le mie immagini associate**. I nuovi progetti abilitano automaticamente le immagini e ogni collegamento creato in un vecchio progetto ancora modificabile riattiva in modo trasparente il campo compatibile. Il formato persistente e i progetti precedenti restano leggibili. **160 test automatici superati.**
+
 Aggiornamento 1.9.3: **Collega** usa una finestra modale con trascinamento, selezione da Esplora file e scelta dalla libreria. La miniatura appena associata appare immediatamente sulla scheda del soggetto; **Cambia** e **Scollega** operano sul collegamento visibile. Le miniature della pagina progetto includono l’identificatore dello slot nell’indirizzo e la galleria apre l’editor sullo stesso elemento, portandolo al centro dell’elenco. **160 test automatici superati.**
 
 Aggiornamento 1.9.2: la selezione degli asset visuali è separata dal collegamento delle immagini personali. L’elenco di progetto usa esclusivamente i suoi soggetti; **Collega/Scollega**, **Escludi/Ripristina**, sostituzione ed eliminazione sono azioni distinte. Gli asset automatici aprono il proprio editor con anteprima, provenienza e inquadratura persistente. Le modifiche di layout vengono registrate per progetto e marcano soltanto le scene interessate; le immagini eliminate dalla libreria non rimuovono le copie già congelate nelle produzioni. **160 test automatici superati.**
