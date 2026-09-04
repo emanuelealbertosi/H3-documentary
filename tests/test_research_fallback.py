@@ -66,7 +66,7 @@ def plan(kind,source_ids):
         for s,t in zip(outline['scenes'],['map_overview','comparison','timeline']):
             s.update(historical_range=[1400,1500],scene_type=t,person_ids=[],event_ids=[],asset_ids=[],territory_ids=[],movements=[])
         outline['scenes'][1]['comparison']=[{'title':'Prima','text':'Primo momento'},{'title':'Dopo','text':'Secondo momento'}]
-    narration=[dict(index=i,lines=[('Questa prova controlla il percorso dei dati nello studio locale. '*6).strip()]*2,
+    narration=[dict(index=i,lines=[' '.join([f'contenuto{i}a']*54),' '.join([f'contenuto{i}b']*54)],
                     fact='Prova tecnica dichiarata del generatore.',kicker='Controllo delle informazioni') for i in range(3)]
     return outline,narration
 

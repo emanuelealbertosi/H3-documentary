@@ -2,11 +2,11 @@ from app.models import NarrationBatch
 from app.narration_builder import build_narration
 
 
-def paragraph(label,count=42):return ' '.join([label]+['parola']*(count-1))
+def paragraph(label,count=42,filler='parola'):return ' '.join([label]+[filler]*(count-1))
 
 
 def scene(index,count=42):
-    return {'index':index,'lines':[paragraph('Primo',count),paragraph('Secondo',count)],'fact':'Cartello storico verificabile.','kicker':'Passaggio della battaglia'}
+    return {'index':index,'lines':[paragraph('Primo',count,f'parola{index}'),paragraph('Secondo',count,f'dettaglio{index}')],'fact':'Cartello storico verificabile.','kicker':'Passaggio della battaglia'}
 
 
 def outline():

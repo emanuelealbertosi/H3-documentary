@@ -29,6 +29,20 @@ def synthesis_key(pack,scene_id,index,spoken):
         values.append({key:{**asset,'sha256':hashlib.sha256((ROOT/asset['path']).read_bytes()).hexdigest()} for key,asset in fragments.items()})
     return fingerprint(values)[:18]
 
+def select_voice_tempo(pack,backend,natural,gaps):
+    """Fit narration to the requested duration without penalising slow external voices."""
+    target=float(pack['target_minutes'])*60
+    available=max(1.,target-gaps)
+    required=natural/available
+    configured=pack.get('max_voice_tempo')
+    soft_limit=float(configured) if isinstance(configured,(int,float)) and configured>0 else 1.22
+    hard_limit=soft_limit
+    if backend in ('chatterbox','tts_api'):
+        adaptive=pack.get('external_max_voice_tempo',1.15)
+        adaptive=float(adaptive) if isinstance(adaptive,(int,float)) and adaptive>0 else 1.15
+        hard_limit=adaptive
+    return max(.90,min(hard_limit,required))
+
 def synthesize(pack,keep_timing=False):
     out=ROOT/'build'/pack['slug']/'voice'; out.mkdir(parents=True,exist_ok=True)
     voice=None; g2p=None; raw=[]; backend=pack.get('voice_engine','piper')
@@ -136,7 +150,7 @@ def synthesize(pack,keep_timing=False):
         return previous
     gaps=len(pack['scenes'])*1.5+len(raw)*.18
     target=pack['target_minutes']*60
-    tempo=max(.90,min(pack.get('max_voice_tempo',1.22),natural/(target-gaps)))
+    tempo=select_voice_tempo(pack,backend,natural,gaps)
     print(f'Natural voice {natural:.1f}s. Tempo factor {tempo:.3f}.',flush=True)
     timeline={k:v for k,v in pack.items() if k!='scenes'}
     timeline['scenes']=[]; cursor=0.; fps=pack['fps']
@@ -166,6 +180,8 @@ def synthesize(pack,keep_timing=False):
     timeline['duration']=cursor; timeline['voice_tempo']=tempo
     minimum=pack.get('min_minutes',pack['target_minutes']*.88)*60
     maximum=pack.get('max_minutes',pack['target_minutes']*1.12)*60
+    if backend in ('chatterbox','tts_api'):
+        maximum=max(maximum,pack['target_minutes']*1.5*60)
     if not minimum<=cursor<=maximum:
         raise ValueError(f'Duration {cursor:.1f}s outside requested {minimum/60:.1f}–{maximum/60:.1f} minutes. Adjust the narration or target duration.')
     if timeline.get('documentary_schema_version')==2:

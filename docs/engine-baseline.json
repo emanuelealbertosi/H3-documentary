@@ -38,15 +38,15 @@
     "visuals.py": "1e2e24a67033963a5d235d7f9848be29c1b55895c1b9005e9255cd25bb4c0a3a",
     "__init__.py": "e30f968d8d2aa6dec40db521982c34e2a33f768ebf9b863339e85d5b820e8918"
   },
-  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval; 1.4.0: API-TTS asset bypass; 1.6.0: modern deterministic cartography and explicit external-TTS cache manifest; 1.6.1: persistent TTS profile selection and compact map-led journey overlays. Original hashes are retained above for audit; compatible extensions are fingerprinted here.",
+  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval; 1.4.0: API-TTS asset bypass; 1.6.0: modern deterministic cartography and explicit external-TTS cache manifest; 1.6.1: persistent TTS profile selection and compact map-led journey overlays; 1.7.1: voice-aware script length and natural external-TTS tempo ceiling. Original hashes are retained above for audit; compatible extensions are fingerprinted here.",
   "hybrid_extensions_sha256": {
     "acquire.py": "9dc0f6d7424924290be76fcc95ffcbd23405e2b1ed8c596f9f6c3159e0cc263d",
-    "history_authoring.py": "79aaa304e29398d7288c920686336ef0fd2c9f56d4abe526b717e54034337183",
+    "history_authoring.py": "b37cd1a193e7e137d4dee49ccb61fba39d77eff6f85911c0f0806f105e7f51b2",
     "history_schema.py": "f357438db3e9296e8ff2829048582c0cacbc0dde3010f07a1ed714cbfea769a3",
     "history_profiles.py": "7e479dfcfd02b2ef9024909f367c1bfda38bdcee6488e9387a5cadbf69fd2aeb",
     "history_visuals.py": "26e8e050cd6e399a83b3dd36ca0d968c328987b3c3e8dace6e4d6df7a1ec78ef",
     "history_assets.py": "4f6582479a21adf20d2ae463db01b7e90fe0eea9fd5aae69d0c2fd89facec58c",
     "atlas.py": "2066ace1795c4ddf56bd8d000c8ecefe4e0c2bd9b45cd1b53229e651a8aaffcd",
-    "narration.py": "4dea3867a7776ca6a21c257f06e202dd6a7a79f754c1c69eacf84ad926911610"
+    "narration.py": "2087ee474f57bf1391e175109aee259bb7399b049808fe7b8f691e5d2564f784"
   }
 }

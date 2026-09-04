@@ -41,9 +41,15 @@ def test_old_database_migration(tmp_path,monkeypatch):
     with sqlite3.connect(tmp_path/'studio.db') as c:
         c.execute("CREATE TABLE projects(id TEXT PRIMARY KEY,topic TEXT,minutes INTEGER,notes TEXT,source_urls TEXT,status TEXT,stage TEXT,progress REAL DEFAULT 0,created TEXT,updated TEXT,error TEXT DEFAULT '',result TEXT DEFAULT '{}')")
         c.execute("INSERT INTO projects(id,topic,minutes,notes,source_urls,status,stage,created,updated) VALUES ('old','Waterloo',10,'','[]','draft','','','')")
+        c.execute("INSERT INTO projects(id,topic,minutes,notes,source_urls,status,stage,created,updated) VALUES ('finished','Roma',5,'','[]','completed','Documentario completato','2026-01-01T10:00:00+00:00','2026-01-01T10:02:00+00:00')")
+        c.execute("CREATE TABLE events(id INTEGER PRIMARY KEY AUTOINCREMENT,project_id TEXT,at TEXT,level TEXT,message TEXT)")
+        c.execute("INSERT INTO events(project_id,at,level,message) VALUES ('finished','2026-01-01T10:00:00+00:00','info','Avvio'),('finished','2026-01-01T10:02:00+00:00','info','Fine')")
     store.init()
     assert store.project('old')['documentary_type']=='battle'
     assert store.project('old')['use_media']==0
+    assert store.project('old')['processing_started']==''
+    assert store.project('old')['processing_seconds']==0
+    assert 119.9<store.project('finished')['processing_seconds']<120.1
     new=store.create(ProjectRequest(topic='Rinascimento',start=False))
     assert new['documentary_type']=='auto'
 

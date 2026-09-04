@@ -1,4 +1,4 @@
-import array,base64,io,json,math,wave
+import array,base64,io,json,math,struct,wave
 from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
@@ -83,6 +83,16 @@ def test_api_pack_populates_the_existing_narration_cache(monkeypatch,tmp_path):
     manifest=json.loads((work/'build/prova/voice/external-voice-cache.json').read_text(encoding='utf-8'))
     assert manifest['backend']=='tts_api' and manifest['items']['s1:0']['file'].endswith('.wav')
     assert 'segmento 1/1' in messages[-1]
+
+def test_streaming_wav_header_is_canonicalized(tmp_path):
+    raw=bytearray(wav_bytes())
+    raw[4:8]=struct.pack('<I',0x7fffffff)
+    raw[40:44]=struct.pack('<I',0x7fffffff)
+    source=tmp_path/'streaming.wav';source.write_bytes(raw)
+    assert not tts_api._valid_wav(source)
+    target=tmp_path/'canonical.wav'
+    tts_api.normalize_audio(bytes(raw),'wav',target)
+    assert tts_api._valid_wav(target)
 
 def test_profile_routes_and_reference_rules(monkeypatch,tmp_path):
     client=TestClient(server.app,headers={'X-DocumentariAI':'studio'})

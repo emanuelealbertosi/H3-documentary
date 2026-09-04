@@ -24,7 +24,6 @@ def init():
         project_id TEXT, at TEXT, level TEXT, message TEXT);""")
         if "documentary_type" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN documentary_type TEXT DEFAULT 'battle'")
-        c.execute("UPDATE projects SET status='interrupted',error='L’app si è chiusa durante la produzione. Puoi riprendere dai passaggi salvati.' WHERE status IN ('running','queued','cancelling')")
         if "use_media" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN use_media INTEGER DEFAULT 0")
         if "tts_engine" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
@@ -43,8 +42,29 @@ def init():
         if "family_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN family_id TEXT DEFAULT ''")
         if "version" not in columns:c.execute("ALTER TABLE projects ADD COLUMN version INTEGER DEFAULT 1")
         if "parent_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN parent_id TEXT DEFAULT ''")
+        if "processing_started" not in columns:c.execute("ALTER TABLE projects ADD COLUMN processing_started TEXT DEFAULT ''")
+        if "processing_seconds" not in columns:c.execute("ALTER TABLE projects ADD COLUMN processing_seconds REAL DEFAULT 0")
         c.execute("UPDATE projects SET family_id=id WHERE family_id IS NULL OR family_id=''")
         c.execute("UPDATE projects SET version=1 WHERE version IS NULL OR version<1")
+        # Releases before 1.7.1 did not retain production timing. Recover a useful
+        # total from the project diary so existing completed films gain the same UI.
+        c.execute("""UPDATE projects SET processing_started=(
+          SELECT MIN(at) FROM events WHERE project_id=projects.id
+        ) WHERE (processing_started IS NULL OR processing_started='')
+          AND status NOT IN ('draft') AND EXISTS(SELECT 1 FROM events WHERE project_id=projects.id)""")
+        c.execute("""UPDATE projects SET processing_seconds=MAX(0,
+          (julianday(COALESCE((SELECT MAX(at) FROM events WHERE project_id=projects.id),updated))
+           -julianday(processing_started))*86400),processing_started=''
+          WHERE status IN ('completed','failed','cancelled','interrupted','review')
+            AND processing_started IS NOT NULL AND processing_started!=''
+            AND COALESCE(processing_seconds,0)=0""")
+        # If the app closed during a live production, retain the elapsed segment
+        # before changing its state to interrupted.
+        c.execute("""UPDATE projects SET processing_seconds=COALESCE(processing_seconds,0)+MAX(0,
+          (julianday(?) - julianday(processing_started))*86400),processing_started=''
+          WHERE status IN ('running','queued','cancelling')
+            AND processing_started IS NOT NULL AND processing_started!=''""",(now(),))
+        c.execute("UPDATE projects SET status='interrupted',error='L’app si è chiusa durante la produzione. Puoi riprendere dai passaggi salvati.' WHERE status IN ('running','queued','cancelling')")
     trash=DATA/'project-trash'
     if trash.is_dir():
         trash_root=trash.resolve()
@@ -81,11 +101,38 @@ def create(req,*,family_id='',version=1,parent_id=''):
         c.execute("UPDATE projects SET family_id=?,version=?,parent_id=? WHERE id=?",(family_id or pid,max(1,int(version)),parent_id,pid))
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
-    allowed={"status","stage","progress","error","result","notes","source_urls","use_media","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config"}
+    allowed={"status","stage","progress","error","result","notes","source_urls","use_media","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config","processing_started","processing_seconds"}
     if not fields.keys()<=allowed: raise ValueError("Campi non consentiti")
     fields["updated"]=now()
     fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls","document_ids","tts_config") else v for k,v in fields.items()}
     with connect() as c:c.execute("UPDATE projects SET "+",".join(k+"=?" for k in fields)+" WHERE id=?",(*fields.values(),pid))
+
+def begin_processing(pid,at=None):
+    """Start one active production segment without losing earlier resume time."""
+    stamp=at or now()
+    with connect() as c:
+        row=c.execute("SELECT processing_started FROM projects WHERE id=?",(pid,)).fetchone()
+        if not row:raise KeyError(pid)
+        if not row["processing_started"]:
+            c.execute("UPDATE projects SET processing_started=?,updated=? WHERE id=?",(stamp,stamp,pid))
+    return stamp
+
+def pause_processing(pid,at=None):
+    """Close the active segment and return accumulated processing seconds."""
+    stamp=at or now()
+    with connect() as c:
+        row=c.execute("SELECT processing_started,processing_seconds FROM projects WHERE id=?",(pid,)).fetchone()
+        if not row:raise KeyError(pid)
+        total=float(row["processing_seconds"] or 0)
+        if row["processing_started"]:
+            try:
+                started=datetime.datetime.fromisoformat(row["processing_started"])
+                finished=datetime.datetime.fromisoformat(stamp)
+                total+=max(0.0,(finished-started).total_seconds())
+            except (TypeError,ValueError):
+                pass
+        c.execute("UPDATE projects SET processing_started='',processing_seconds=?,updated=? WHERE id=?",(total,stamp,pid))
+    return total
 def event(pid,message,level="info"):
     message=str(message)[-3000:]
     with connect() as c:c.execute("INSERT INTO events(project_id,at,level,message) VALUES (?,?,?,?)",(pid,now(),level,message))
@@ -128,7 +175,7 @@ def restart_project(pid):
                     target=attempt/name;source.rename(target);moved.append((source,target))
             with connect() as c:
                 c.execute('DELETE FROM events WHERE project_id=?',(pid,))
-                c.execute("UPDATE projects SET status='draft',stage='Pronto per rigenerare',progress=0,error='',result='{}',updated=? WHERE id=?",(now(),pid))
+                c.execute("UPDATE projects SET status='draft',stage='Pronto per rigenerare',progress=0,error='',result='{}',processing_started='',processing_seconds=0,updated=? WHERE id=?",(now(),pid))
         except Exception:
             for source,target in reversed(moved):
                 if target.exists() and not source.exists():target.rename(source)

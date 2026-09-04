@@ -13,7 +13,7 @@ from .general import history_tools,HistoryOutline
 from .outline_builder import build_history_outline
 from .battle_outline import build_battle_outline
 from .battle_visuals import enrich_battle_outline
-from .narration_builder import build_narration
+from .narration_builder import build_narration,narration_wpm
 from .pack_migrations import repair_pack
 from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine,prepare_history_asset_engine,prepare_bundled_runtime_engine
 from . import tts
@@ -49,6 +49,7 @@ def enqueue(pid):
         from .documents import freeze as freeze_documents
         freeze_documents(pid,p.get('document_ids',[]),bool(p.get('use_documents')))
         FLAGS[pid]=threading.Event()
+        store.begin_processing(pid)
         store.update(pid,status="queued",error="",stage="In coda")
         store.event(pid,"Produzione in coda. Il motore esegue un documentario alla volta.")
         FUTURES[pid]=POOL.submit(produce,pid,cfg)
@@ -57,7 +58,7 @@ def cancel(pid):
     with LOCK:
         if pid in FLAGS:FLAGS[pid].set()
         fut=FUTURES.get(pid)
-        if fut and fut.cancel():store.update(pid,status="cancelled",stage="Interrotto");return
+        if fut and fut.cancel():store.pause_processing(pid);store.update(pid,status="cancelled",stage="Interrotto");return
     if p["status"] in ("running","queued","cancelling"):
         store.update(pid,status="cancelling",stage="Interruzione in corso");stop_process(pid)
     else:store.update(pid,status="cancelled",stage="Interrotto")
@@ -79,6 +80,7 @@ def visual_review_images(preview_dir):
     return sorted([*root.glob("*-0.55.jpg"),*root.glob("*-0.85.jpg")])
 def produce(pid,cfg):
     p=store.project(pid);folder=JOBS/pid;cp=folder/"checkpoints";cp.mkdir(exist_ok=True)
+    p['narration_wpm']=narration_wpm(p)
     cancel=lambda:check(pid)
     def log(message):store.event(pid,str(message))
     def audit(item):
@@ -130,6 +132,12 @@ def produce(pid,cfg):
                 prompt+='\nLe fonti possono essere assenti: usa source_ids=[] per scene basate sulla conoscenza interna, senza inventare riferimenti.'
             if kind=='battle':obj=build_battle_outline(llm,system,p, sources,research,cp,log,cancel)
             else:obj=build_history_outline(llm,system,p,kind,sources,research,cp,history_prompt,log,cancel)
+            if kind!='battle' and p.get('use_documents'):
+                from .source_coordinates import ground_coordinates
+                obj,coordinate_changes=ground_coordinates(obj,work)
+                if coordinate_changes:
+                    labels=', '.join(change['name'] for change in coordinate_changes)
+                    log('Geografia documentale: coordinate ricontrollate nel testo completo per '+labels+'.')
             if kind!="battle" and p.get("documentary_type","auto")!="auto":obj["documentary_type"]=kind
             if not max(3,count-3)<=len(obj["scenes"])<=count+4:raise ValueError("Il numero di scene prodotto dal modello non è adatto alla durata. Riprendi con un modello capace di risposte più lunghe.")
             validate_references(obj,sources,research)
@@ -245,12 +253,13 @@ def produce(pid,cfg):
             run(pid,python,work,["tools/check_history_final.py" if kind!="battle" else "tools/check_atlas_final.py",slug],cancel,log)
         stage("verify",verify)
         report=store.read_json(work/"output"/pack["verification_dir"]/"report.json")
-        store.update(pid,status="completed",stage="Documentario completato",progress=100,error="",result={"duration":report["video_duration"],"bytes":report["bytes"],"sha256":report["sha256"],"llm_calls":llm.calls,"visual_ai_review":bool(cfg["vision"] and not pack.get('user_media')),"research":pack.get('research',research)})
+        elapsed=store.pause_processing(pid)
+        store.update(pid,status="completed",stage="Documentario completato",progress=100,error="",result={"duration":report["video_duration"],"bytes":report["bytes"],"sha256":report["sha256"],"llm_calls":llm.calls,"visual_ai_review":bool(cfg["vision"] and not pack.get('user_media')),"research":pack.get('research',research)},processing_seconds=elapsed)
         log("Video pronto: MP4, sottotitoli, fonti, sceneggiatura, timeline, crediti e rapporto di verifica.")
     except Cancelled:
-        store.update(pid,status="cancelled",stage="Interrotto",error="Puoi riprendere dai passaggi già completati.");log("Produzione interrotta. Materiali conservati.")
+        store.pause_processing(pid);store.update(pid,status="cancelled",stage="Interrotto",error="Puoi riprendere dai passaggi già completati.");log("Produzione interrotta. Materiali conservati.")
     except Exception as e:
         message=str(e)
         if cfg.get("api_key"):message=message.replace(cfg["api_key"],"[chiave rimossa]")
-        store.update(pid,status="failed",error=message[:2500]);store.event(pid,message,"error")
+        store.pause_processing(pid);store.update(pid,status="failed",error=message[:2500]);store.event(pid,message,"error")
         (folder/"last-error.txt").write_text(traceback.format_exc().replace(cfg.get("api_key") or "NEVER_SECRET","[chiave rimossa]"),encoding="utf-8")

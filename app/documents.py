@@ -360,15 +360,22 @@ def retrieve(pid: str, query: str, limit: int = 12):
     lexical_max = max(lexical) or 1.0
     for i, item in enumerate(candidates):
         item["score"] = .45 * lexical[i] / lexical_max + .55 * dense[i] / 2
-    chosen = []
-    per_document = Counter()
-    for item in sorted(candidates, key=lambda x: x["score"], reverse=True):
-        if per_document[item["doc"]["id"]] >= 4:
-            continue
-        chosen.append(item)
-        per_document[item["doc"]["id"]] += 1
-        if len(chosen) >= limit:
-            break
+    # A single dossier of moderate size is often already the user's curated
+    # research. Semantic top-k alone can over-select one famous episode and
+    # silently omit the rest of a chronology, so preserve the full dossier.
+    total_characters=sum(len(item["text"]) for item in candidates)
+    if len(docs)==1 and total_characters<=60000:
+        chosen=list(candidates)
+    else:
+        chosen = []
+        per_document = Counter()
+        for item in sorted(candidates, key=lambda x: x["score"], reverse=True):
+            if per_document[item["doc"]["id"]] >= 8:
+                continue
+            chosen.append(item)
+            per_document[item["doc"]["id"]] += 1
+            if len(chosen) >= limit:
+                break
     grouped = defaultdict(list)
     for item in chosen:
         grouped[item["doc"]["id"]].append(item)

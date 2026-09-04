@@ -75,8 +75,8 @@ def compile_pack(outline,narration,sources,project,settings):
         # Authored fixed label offsets avoid per-frame collision placement.
         scene["label_offsets"]={name:[0,30+(j%2)*12] for j,name in enumerate(s["focus"])}
         scenes.append(scene);prev=view
-    words=sum(len(line.split()) for n in narration for line in n["lines"])
-    if not project["minutes"]*145<=words<=project["minutes"]*195:
+    words=sum(len(line.split()) for n in narration for line in n["lines"]);wpm=project.get('narration_wpm',170)
+    if not project["minutes"]*wpm*.82<=words<=project["minutes"]*wpm*1.18:
         raise ValueError(f"Sceneggiatura di {words} parole: fuori dall'intervallo per {project['minutes']} minuti.")
     pack=dict(schema_version=1,slug=slug,title=o["title"],short_title=o["short_title"],
         subtitle=o["title"][:50],description=o["description"],display_date=o["display_date"],

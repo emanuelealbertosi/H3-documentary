@@ -239,7 +239,14 @@ def synthesize_bytes(config,text,reference_path=None,api_key='',reference_text='
 def _valid_wav(path):
     try:
         with wave.open(str(path),'rb') as audio:
-            return audio.getnchannels()==1 and audio.getsampwidth()==2 and audio.getframerate()==24000 and audio.getnframes()>6000
+            channels=audio.getnchannels();sample_width=audio.getsampwidth();frames=audio.getnframes()
+            # Some streaming TTS servers terminate a WAV correctly but leave the
+            # RIFF/data length at 0x7fffffff.  wave/scipy can read the payload, yet
+            # every later read emits a premature-EOF warning.  Treat that header
+            # as non-canonical so normalize_audio rewrites it through FFmpeg.
+            declared_payload=frames*channels*sample_width
+            complete=declared_payload<=max(0,Path(path).stat().st_size-44)+4096
+            return channels==1 and sample_width==2 and audio.getframerate()==24000 and frames>6000 and complete
     except (wave.Error,EOFError,OSError):return False
 
 def normalize_audio(content,container,target):
@@ -297,6 +304,12 @@ def synthesize_pack(pack,project,work,cancel,log):
         target=out/(synthesis_key(pack,scene['id'],index,spoken,work)+'.wav')
         pending.append((scene,index,spoken,target))
         cache_items[f'{scene["id"]}:{index}']={'file':target.name,'spoken_sha256':hashlib.sha256(spoken.encode('utf-8')).hexdigest()}
+    # Repair reusable files produced by streaming servers before deciding that
+    # the cache is complete.  This is local and does not call the TTS server.
+    for _,_,_,target in pending:
+        if target.exists() and not _valid_wav(target):
+            temporary=target.with_suffix('.normalized.wav')
+            normalize_audio(target.read_bytes(),'wav',temporary);temporary.replace(target)
     manager=higgs_activity(config,api_key,log) if any(not target.exists() for _,_,_,target in pending) else nullcontext()
     with manager:
         for done,(scene,index,spoken,target) in enumerate(pending,1):

@@ -173,7 +173,7 @@ class Outline(BaseModel):
                 if missing:raise ValueError(f"Scena {i+1} ({s.title}), {field}: {sorted(missing)} non sono ID validi. ID ammessi: {sorted(allowed)}. focus contiene luoghi, non temi o eventi; commander_ids contiene ID di comandanti. Correggi i riferimenti senza inventare coordinate.")
         return self
 
-NarrationText=Annotated[str,StringConstraints(strip_whitespace=True,min_length=180,max_length=1200)]
+NarrationText=Annotated[str,StringConstraints(strip_whitespace=True,min_length=120,max_length=1200)]
 
 class NarrationScene(BaseModel):
     index: int

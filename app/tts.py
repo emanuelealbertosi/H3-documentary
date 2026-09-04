@@ -93,6 +93,7 @@ def configure_pack(pack,project,work,pipeline_path):
             pack.update(voice_engine='kokoro',voice='assets/voice/kokoro/kokoro-v1.0.onnx',voice_styles='assets/voice/kokoro/voices-v1.0.bin',
                         voice_speaker='if_sara',voice_credit='Kokoro 82M, voce italiana if_sara. Sintesi locale; pesi Apache-2.0.')
             pack.pop('voice_reference',None);pack.pop('voice_language',None);pack.pop('voice_api',None)
+        pack.pop('external_max_voice_tempo',None)
         return pack
     reference_path,record=_copy_reference(reference_id,work);speaker='clone-'+record['sha256'][:16] if record else 'included'
     if engine=='api':
@@ -105,13 +106,13 @@ def configure_pack(pack,project,work,pipeline_path):
         credit=f'Sintesi vocale tramite {label} ({provider}); configurazione e provenienza registrate nel progetto. Audio ricevuto dal server e normalizzato localmente.'
         pack.update(voice_engine='tts_api',voice='tts-api:'+fingerprint,voice_speaker=config.get('voice') or 'default',voice_language=config.get('language','it-IT'),
                     voice_reference=reference_path,voice_reference_text=(record or {}).get('reference_text',''),
-                    voice_api=stable|{'name':label,'timeout':config.get('timeout',180)},voice_credit=credit)
+                    voice_api=stable|{'name':label,'timeout':config.get('timeout',180)},voice_credit=credit,external_max_voice_tempo=1.15)
         for key in ('voice_styles','chatterbox_exaggeration','chatterbox_cfg_weight','chatterbox_temperature','chatterbox_repetition_penalty'):pack.pop(key,None)
         return pack
     pack.update(voice_engine='chatterbox',voice='chatterbox-multilingual-v3@5bb1f6e;e=.35;c=.5;t=.7;r=1.2',voice_speaker=speaker,voice_language='it',
                 voice_reference=reference_path,chatterbox_exaggeration=.35,chatterbox_cfg_weight=.5,chatterbox_temperature=.7,
                 chatterbox_repetition_penalty=1.2,
-                voice_credit='Chatterbox Multilingual V3, sintesi locale. Codice e pesi MIT; watermark audio del modello.')
+                voice_credit='Chatterbox Multilingual V3, sintesi locale. Codice e pesi MIT; watermark audio del modello.',external_max_voice_tempo=1.15)
     pack.pop('voice_api',None)
     return pack
 

@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import documents, server, store
+from app.research import evidence
 from app.models import ProjectRequest
 
 
@@ -50,6 +51,22 @@ def test_text_upload_index_snapshot_and_hybrid_retrieval(tmp_path):
     assert len(sources) == 1 and "Waterloo" in sources[0]["text"] and sources[0]["url"].startswith("assets/documents/")
     snapshot = store.JOBS / project["id"] / "workspace" / sources[0]["url"]
     assert snapshot.is_file() and snapshot.read_bytes() == long_text().encode()
+
+
+def test_single_moderate_dossier_keeps_its_complete_chronology():
+    sections=['## Tappa '+str(i)+'\n'+(('episodio%02d percorso cronologico dettagliato. '%i)*50) for i in range(18)]
+    record=documents.paste(documents.PastedDocument(title='Itinerario completo',text='\n\n'.join(sections)))
+    project=store.create(ProjectRequest(topic='Intero itinerario',start=False,document_ids=[record['id']],use_documents=True))
+    documents.freeze(project['id'],project['document_ids'])
+    supplied=evidence(documents.retrieve(project['id'],'itinerario'))
+    assert 'episodio00' in supplied and 'episodio17' in supplied
+
+
+def test_repeated_editorial_material_is_detected():
+    from app.editorial_quality import near_duplicates
+    rows=[{'text':'La flotta approda in Sicilia e incontra Polifemo nella grande grotta davanti al mare.'},
+          {'text':'La flotta approda in Sicilia e incontra Polifemo nella grande grotta davanti al mare, poi fugge.'}]
+    assert near_duplicates(rows,lambda row:row['text'])
 
 
 def test_document_api_paste_metadata_and_project_selection(client):

@@ -120,4 +120,9 @@ def collect(topic,urls,config,folder,cancel,log,local_sources=None):
     if report["fallback_used"]:log(report["notice"]+" Proseguo con la modalità ibrida.")
     return sources
 
-def evidence(sources):return "\n\n".join("["+s["id"]+"] "+s["title"]+"\n"+s["url"]+"\n"+s["text"][:12000] for s in sources)
+def evidence(sources):
+    local=[s for s in sources if s.get("origin")=="local_document"]
+    # One moderate uploaded dossier can act as a complete editorial backbone.
+    # Multiple documents and web pages retain the smaller per-source budget.
+    local_limit=60000 if len(local)==1 else 12000
+    return "\n\n".join("["+s["id"]+"] "+s["title"]+"\n"+s["url"]+"\n"+s["text"][:local_limit if s.get("origin")=="local_document" else 12000] for s in sources)

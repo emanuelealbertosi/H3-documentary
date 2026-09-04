@@ -69,8 +69,8 @@ def compile_outline(outline,narration,sources,project,settings):
       scenes=scenes,overview=overview,atlas='assets/geography/atlas-film/atlas.json',
       sources=[dict(id=s['id'],title=s['title'],url=s['url'],use=('Documento locale: '+s.get('citation','provenienza indicata dall’utente')+'. Passaggi recuperati dall’indice locale; originale conservato nel progetto.' if s.get('origin')=='local_document' else 'Fonte web recuperata; evidenza testuale e data di consultazione nel progetto.')) for s in sources],
       editorial_notes=o.get('uncertainties',[]),source_method=source_method(sources),map_notice='Base fisica moderna. Percorsi e aree schematici se non documentati con maggiore precisione.')
-    words=sum(len(l.split()) for s in scenes for l in s['lines'])
-    if not project['minutes']*145<=words<=project['minutes']*195:raise ValueError('Lunghezza della sceneggiatura non adatta alla durata')
+    words=sum(len(l.split()) for s in scenes for l in s['lines']);wpm=project.get('narration_wpm',170)
+    if not project['minutes']*wpm*.82<=words<=project['minutes']*wpm*1.18:raise ValueError('Lunghezza della sceneggiatura non adatta alla durata')
     from .research_provenance import apply_context
     apply_context(d,settings.get('research_context'))
     d=normalize_document(d)

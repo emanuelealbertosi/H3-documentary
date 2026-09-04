@@ -173,7 +173,7 @@ async def revise_project(pid:str,request:Request):
     if workspace.exists():
         assert workspace.resolve().is_relative_to(JOBS.resolve())
         workspace.rename(JOBS/pid/("workspace-previous-"+revision))
-    store.update(pid,status="draft",progress=0,stage="Pronto per ripartire",error="",result={})
+    store.update(pid,status="draft",progress=0,stage="Pronto per ripartire",error="",result={},processing_started="",processing_seconds=0)
     return store.project(pid)
 
 @app.get("/api/library")

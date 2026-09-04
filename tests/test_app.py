@@ -85,6 +85,8 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     assert frontend.headers['cache-control']=='no-cache'
     assert frontend.text.index("select('reasoning_mode','Reasoning del modello'") < frontend.text.index("'<details><summary>Parametri del modello")
     assert 'Voce e cloning one-shot' in frontend.text
+    assert 'sidebar-toggle' in shell.text and 'h3-sidebar-collapsed' in frontend.text
+    assert 'Tempo di elaborazione:' in frontend.text
     assert any(x['id']=='chatterbox' and 'Chatterbox Multilingual V3' in x['name'] for x in client.get('/api/tts').json()['engines'])
 
 def test_voice_reference_upload_and_project_selection(client):
@@ -118,15 +120,25 @@ def test_completed_regeneration_creates_numbered_twins_and_keeps_original(client
     third=client.post('/api/projects/'+original['id']+'/regenerate').json()['project']
     assert third['version']==3 and third['family_id']==v2['family_id']==original['id']
 
+def test_processing_time_accumulates_across_resumes(client):
+    project=client.post('/api/projects',json={'topic':'Cronometro di prova','start':False}).json();pid=project['id']
+    store.begin_processing(pid,'2026-09-04T10:00:00+00:00')
+    assert store.pause_processing(pid,'2026-09-04T10:00:30+00:00')==30
+    store.begin_processing(pid,'2026-09-04T10:01:00+00:00')
+    assert store.pause_processing(pid,'2026-09-04T10:01:25+00:00')==55
+    saved=store.project(pid)
+    assert saved['processing_started']=='' and saved['processing_seconds']==55
+
 def test_failed_regeneration_restarts_same_project_and_archives_attempt(client):
     project=client.post('/api/projects',json={'topic':'Progetto da correggere','start':False}).json();pid=project['id']
-    store.update(pid,status='failed',stage='Voce italiana',progress=55,error='errore precedente',result={'partial':True})
+    store.update(pid,status='failed',stage='Voce italiana',progress=55,error='errore precedente',result={'partial':True},processing_seconds=123)
     checkpoint=server.JOBS/pid/'checkpoints/research.done.json';checkpoint.parent.mkdir();checkpoint.write_text('{}')
     workspace=server.JOBS/pid/'workspace/partial.txt';workspace.parent.mkdir();workspace.write_text('tentativo precedente')
     store.event(pid,'Vecchio errore','error')
     response=client.post('/api/projects/'+pid+'/regenerate')
     assert response.status_code==200 and response.json()['mode']=='restart' and response.json()['project']['id']==pid
     restarted=store.project(pid);assert restarted['status']=='draft' and restarted['progress']==0 and restarted['result']=={} and not restarted['error']
+    assert restarted['processing_started']=='' and restarted['processing_seconds']==0
     attempt=next((server.JOBS/pid/'attempts').iterdir())
     assert (attempt/'checkpoints/research.done.json').is_file() and (attempt/'workspace/partial.txt').read_text()=='tentativo precedente'
     assert [x['message'] for x in store.events(pid)]==['Rigenerazione da zero richiesta. Il tentativo precedente è stato archiviato.']

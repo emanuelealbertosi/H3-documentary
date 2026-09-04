@@ -4,6 +4,20 @@ from pathlib import Path
 CORE=Path(__file__).resolve().parents[1]/'pipeline'
 
 
+def test_external_voice_never_uses_an_unnatural_emergency_speedup():
+    code="""
+import sys
+sys.path.insert(0,sys.argv[1])
+from engine.narration import select_voice_tempo
+pack={'target_minutes':5,'max_voice_tempo':1.22}
+assert select_voice_tempo(pack,'tts_api',438.8,18.6)==1.15
+pack={'target_minutes':5,'max_voice_tempo':1.22,'external_max_voice_tempo':1.15}
+assert select_voice_tempo(pack,'tts_api',438.8,18.6)==1.15
+assert select_voice_tempo(pack,'kokoro',438.8,18.6)==1.22
+"""
+    subprocess.run([str(CORE/'.venv/Scripts/python.exe'),'-c',code,str(CORE)],check=True,capture_output=True,text=True)
+
+
 def test_external_voice_manifest_feeds_timeline_without_piper(tmp_path):
     spoken='Questa frase arriva dalla sintesi esterna.'
     voice=tmp_path/'build/prova/voice';voice.mkdir(parents=True)
