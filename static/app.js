@@ -1,6 +1,6 @@
 import {mediaPage} from './media.js';
 import {documentsPage} from './documents.js';
-import {mountTtsAdmin,ttsSelection,projectTtsSelection,bindReference} from './tts-api.js?v=1.6.0';
+import {mountTtsAdmin,ttsSelection,projectTtsSelection,bindReference} from './tts-api.js?v=1.6.1';
 let disposeMedia,disposeDocuments;
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let timer,health={},config={},cursor=0,logs=[];
@@ -40,7 +40,7 @@ function settingsValue(){const v={...config};for(const k of ['has_api_key','save
  for(const k of ['timeout','max_tokens','render_jobs','fps','request_limit','chatterbox_threads'])v[k]=+$('#'+k).value;
  v.temperature=$('#temperature').value===''?null:+$('#temperature').value;
  for(const k of ['vision','json_mode','clear_api_key'])v[k]=$('#'+k).checked;return v}
-async function admin(){const loaded=await Promise.all([api('/settings'),api('/tts')]);config=loaded[0];const tts=loaded[1];
+async function admin(preferredTtsProfileId=''){const loaded=await Promise.all([api('/settings'),api('/tts')]);config=loaded[0];const tts=loaded[1];
  const saved=config.saved_servers||[],savedOptions=[['','Nuova connessione'],...saved.map(p=>[p.id,providerNames[p.provider]+' · '+p.base_url+(p.model?' · '+p.model:'')])];
  $('#app').innerHTML=top('AMMINISTRAZIONE')+'<h1>Il motore del tuo studio.</h1><p class="lead">Collega il server AI che preferisci. Il rendering continua a funzionare sul tuo PC.</p><div class="admin-grid"><form class="card" id="settings-form"><div class="card-head"><span class="step-no">AI</span><h2>Connessione al modello</h2></div><div class="provider-tabs">'+Object.entries(providerNames).map(([k,v])=>'<button type="button" data-provider="'+k+'" class="'+(config.provider===k?'selected':'')+'">'+v+'</button>').join('')+'</div>'+select('saved_server','Connessioni salvate',savedOptions,config.active_profile)+
  field('base_url','Indirizzo del server',config.base_url,'url','Usa l’IP o il dominio esterno, per esempio http://192.168.1.50:1234/v1.')+
@@ -68,7 +68,7 @@ async function admin(){const loaded=await Promise.all([api('/settings'),api('/tt
  $('#load-models').onclick=async e=>{e.target.disabled=true;try{const d=await api('/provider/models',{method:'POST',body:JSON.stringify(settingsValue())});$('#model-list').innerHTML=d.models.map(x=>'<option value="'+esc(x)+'"></option>').join('');if(!$('#model').value&&d.models.length)$('#model').value=d.models[0];toast(d.models.length+' modelli trovati.')}catch(err){toast(err.message)}finally{e.target.disabled=false}};
  $('#test-model').onclick=async e=>{e.target.disabled=true;const r=$('#test-result');r.textContent='Connessione in corso…';r.className='connection-result';try{const d=await api('/provider/test',{method:'POST',body:JSON.stringify(settingsValue())});r.className='connection-result good';r.textContent=d.message+' '+d.seconds+' s.'}catch(err){r.className='connection-result bad';r.textContent=err.message}finally{e.target.disabled=false}};
  $('#settings-form').onsubmit=async e=>{e.preventDefault();e.submitter.disabled=true;try{await api('/settings',{method:'PUT',body:JSON.stringify(settingsValue())});health=await api('/health');toast('Configurazione salvata.');admin()}catch(err){toast(err.message);e.submitter.disabled=false}};
- mountTtsAdmin($('#tts-api-admin'),tts.profiles,{toast,reload:admin,voices:tts.voices});
+ mountTtsAdmin($('#tts-api-admin'),tts.profiles,{toast,reload:admin,voices:tts.voices,selectedProfileId:preferredTtsProfileId||config.tts_profile_id});
 }
 async function libraryPage(){const [ps,lib]=await Promise.all([api('/projects'),api('/library')]);$('#app').innerHTML=top('LIBRERIA')+'<h1>Le storie del tuo studio.</h1><p class="lead">Produzioni in corso, documentari completati e materiali di lavoro.</p><div class="section-head"><h2>Progetti dell’app</h2><a class="button primary" href="/">+ Nuovo documentario</a></div>'+rows(ps)+'<div class="section-head"><h2>Documentari del motore incluso</h2><span class="tiny muted">Disponibili in consultazione</span></div>'+(lib.length?cards(lib):'<div class="empty">Nessun video trovato nella pipeline configurata.</div>')}
 async function projectPage(id,refresh=false){

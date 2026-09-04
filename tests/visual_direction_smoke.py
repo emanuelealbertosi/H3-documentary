@@ -38,7 +38,9 @@ def main():
         layer['levels']=[str(base/p) for p in layer['levels']]
         if layer.get('alpha'):layer['alpha']=str(base/layer['alpha'])
     write_json(work/'assets/geography/atlas-film/atlas.json',atlas)
-    shutil.copy2(base/'assets/geography/rivers.geojson',work/'assets/geography/rivers.geojson')
+    river_target=work/'assets/geography/rivers.geojson'
+    if river_target.exists():river_target.unlink()
+    shutil.copy2(base/'assets/geography/rivers.geojson',river_target)
     portrait=''
     if args.portrait:
         target=work/'assets/portraits/journey/odisseo.jpg';target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(args.portrait,target);portrait=target.relative_to(work).as_posix()

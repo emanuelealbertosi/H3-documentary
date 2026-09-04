@@ -6,7 +6,7 @@ MAP_SCENES={'map_overview','animated_route','territorial_change','city_focus','n
 
 def direction_for(topic,kind,basis='history'):
     text=''.join(c for c in unicodedata.normalize('NFKD',topic.lower()) if not unicodedata.combining(c))
-    journey=kind=='exploration' or bool(re.search(r'\bviaggi\w*|\bitinerar\w*|\bperiplo\b|\britorno.*(?:ulisse|odisseo|itaca)|\bodisse[ao]\b',text))
+    journey=kind=='exploration' or bool(re.search(r'\bviaggi\w*|\bitinerar\w*|\bperiplo\b|\brientr\w*|\btraversat\w*|\bspostament\w*|\britorno.*(?:ulisse|odisseo|itaca)|\b(?:ulisse|odisse[ao]).*(?:ritorn\w*|rientr\w*|itaca)|\bodisse[ao]\b',text))
     return {'version':1,'journey':journey,'map_led':journey or kind in {'migration','trade_network','territorial_expansion'},
             'timeline_mode':'sequence' if basis=='literary_tradition' else 'historical','auto_persons':True}
 

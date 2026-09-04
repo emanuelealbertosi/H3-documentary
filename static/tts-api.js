@@ -45,7 +45,7 @@ function referenceOptions(voices){
  return '<option value="">Nessun campione · usa la voce configurata</option>'+voices.map(v=>'<option value="'+safe(v.id)+'">'+safe(v.name)+' · '+safe(v.duration_seconds)+' s'+(v.reference_text?' · trascritto':'')+'</option>').join('');
 }
 
-export function mountTtsAdmin(target,initial,{toast,reload,voices=[]}){
+export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedProfileId=''}){
  let profiles=initial||[];
  target.innerHTML=`<section class="card tts-api-card">
   <div class="card-head"><span class="step-no">TTS</span><h2>Server per la voce</h2></div>
@@ -108,11 +108,13 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[]}){
   q('#tts-api-hint').textContent=providers[q('#tts-api-provider').value].hint;q('#tts-api-delete').classList.toggle('hidden',!profile);showHiggs();
  };
  q('#tts-api-profile').onchange=e=>{const p=profiles.find(x=>x.id===e.target.value);if(p){q('#tts-api-provider').value=p.provider;apply(p)}else apply(null)};
- q('#tts-api-provider').onchange=()=>{q('#tts-api-profile').value='';apply(null)};apply(null);
+ q('#tts-api-provider').onchange=()=>{q('#tts-api-profile').value='';apply(null)};
+ const initialProfile=profiles.find(x=>x.id===selectedProfileId)||profiles[0];
+ if(initialProfile){q('#tts-api-profile').value=initialProfile.id;q('#tts-api-provider').value=initialProfile.provider;apply(initialProfile)}else apply(null);
 
  q('#tts-api-save').onclick=async e=>{e.target.disabled=true;try{
   const response=await fetch('/api/tts/profiles',{method:'POST',headers:{'Content-Type':'application/json','X-DocumentariAI':'studio'},body:JSON.stringify(formValue())});
-  if(!response.ok)throw Error(await errorOf(response));toast('Server TTS salvato. Ora compare nella scelta della voce.');await reload();
+  if(!response.ok)throw Error(await errorOf(response));const saved=await response.json();toast('Server TTS salvato. Ora compare nella scelta della voce.');await reload(saved.id);
  }catch(error){q('#tts-api-result').textContent=error.message;q('#tts-api-result').className='connection-result bad'}finally{e.target.disabled=false}};
 
  q('#tts-api-test').onclick=async e=>{e.target.disabled=true;const result=q('#tts-api-result');result.className='connection-result';result.textContent='Carico il modello e genero una breve prova…';try{

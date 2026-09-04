@@ -24,6 +24,11 @@ def test_visual_direction_detects_journey_and_rejects_empty_maps_and_hidden_rout
     assert any('nascosto' in x for x in scene_issues(hidden,direction))
 
 
+def test_visual_direction_detects_rientro_wording_used_by_natural_requests():
+    direction=direction_for('Il rientro di Ulisse a Itaca partendo da Troia','general_history','literary_tradition')
+    assert direction['journey'] and direction['map_led'] and direction['timeline_mode']=='sequence'
+
+
 def test_journey_shot_roles_require_progress_and_full_plan_reports_counts():
     direction=direction_for('Il ritorno di Odisseo','general_history','literary_tradition')
     scenes=[journey_scene(i) for i in range(10)];doc={'visual_direction':direction,'scenes':scenes}

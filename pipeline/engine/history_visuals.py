@@ -49,10 +49,15 @@ class HistoryVisuals(AtlasVisuals):
         im=ImageEnhance.Brightness(im).enhance(.98)
         return im.convert('RGBA')
 
+    def uses_map(self,s):
+        """Keep geographic continuity for map-led stories without inventing a location."""
+        direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
+        return s['scene_type'] not in NONMAP or (direction.get('map_led') and s['scene_type'] in {'event_focus','summary'})
+
     def frame(self,s,t):
         q=max(0,min(1,t/s['duration']));a,b=s['historical_range'];year=interpolate_year(a,b,q)
         kind=s['scene_type'];cam=camera(s,t)
-        if kind in NONMAP:
+        if not self.uses_map(s):
             im=self.card(s,t,year)
         else:
             im=self.map_background(cam)
@@ -79,17 +84,18 @@ class HistoryVisuals(AtlasVisuals):
         people=s.get('person_ids',[]) if direction.get('auto_persons') and s.get('scene_type') not in excluded and not s.get('image_insets') else []
         d=ImageDraw.Draw(im,'RGBA')
         if journey:
-            stops=journey['stops'];left=110;right=1440 if people else 1810;top=500;bottom=738
-            d.rounded_rectangle((left,top,right,bottom),radius=18,fill=(*INK,226),outline=(*GOLD,155),width=2)
-            d.text((left+30,top+22),'SEQUENZA NARRATIVA · POSIZIONI NON LOCALIZZATE',font=font(16),fill=GOLD)
-            y=top+112;xs=[left+55+i*(right-left-110)/max(1,len(stops)-1) for i in range(len(stops))]
+            # A compact lower-third preserves the map and never competes with the portrait.
+            stops=journey['stops'];left=840;right=1475 if people else 1840;top=758;bottom=916
+            d.rounded_rectangle((left,top,right,bottom),radius=14,fill=(*INK,232),outline=(*GOLD,155),width=2)
+            d.text((left+22,top+14),'SEQUENZA NARRATIVA · TAPPE NON LOCALIZZATE',font=font(14),fill=GOLD)
+            y=top+67;xs=[left+40+i*(right-left-80)/max(1,len(stops)-1) for i in range(len(stops))]
             d.line((xs[0],y,xs[-1],y),fill=(*MUTED,150),width=5)
             q=smooth(t/max(1,s['duration']));active=min(len(stops)-1,int(q*len(stops)))
             if active:d.line((xs[0],y,xs[active],y),fill=GOLD,width=7)
             for i,(x,label_text) in enumerate(zip(xs,stops)):
                 r=12 if i<=active else 8;d.ellipse((x-r,y-r,x+r,y+r),fill=GOLD if i<=active else MUTED,outline=CREAM,width=2)
-                textblock(d,(x-100,y+28),label_text,200,19,CREAM,maxlines=2)
-            textblock(d,(left+30,bottom-38),journey['note'],right-left-60,14,MUTED,maxlines=1)
+                textblock(d,(x-65,y+22),label_text,130,15,CREAM,maxlines=1)
+            textblock(d,(left+22,bottom-23),journey['note'],right-left-44,11,MUTED,maxlines=1)
         if people:
             # Linked figures remain readable without replacing the geographic scene.
             slot=min(len(people)-1,int(max(0,min(.999,t/max(1,s['duration'])))*len(people)))
@@ -240,7 +246,7 @@ class HistoryVisuals(AtlasVisuals):
         direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
         shown_date='SEQUENZA NARRATIVA' if direction.get('timeline_mode')=='sequence' else s.get('date',year_label(year))
         d.text((1860,36),shown_date,font=font(22),fill=CREAM,anchor='ra')
-        if s['scene_type'] not in NONMAP:
+        if self.uses_map(s):
             d.text((1840,93),'N ↑',font=font(20),fill=MUTED,anchor='ra')
         d.line((60,143,1860,143),fill=(*GOLD,110),width=1)
 

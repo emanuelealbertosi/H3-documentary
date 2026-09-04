@@ -50,6 +50,18 @@ def test_tts_admin_uses_a_friendly_default_profile_name():
     source=(ROOT/'static/tts-api.js').read_text(encoding='utf-8')
     assert "providers[provider]?.name||'Server TTS'" in source
 
+def test_tts_admin_reopens_the_saved_or_configured_profile():
+    tts=(ROOT/'static/tts-api.js').read_text(encoding='utf-8')
+    app=(ROOT/'static/app.js').read_text(encoding='utf-8')
+    assert 'profiles.find(x=>x.id===selectedProfileId)||profiles[0]' in tts
+    assert 'await reload(saved.id)' in tts
+    assert 'selectedProfileId:preferredTtsProfileId||config.tts_profile_id' in app
+
+def test_map_led_events_keep_geographic_continuity_with_compact_journey_band():
+    source=(ROOT/'pipeline/engine/history_visuals.py').read_text(encoding='utf-8')
+    assert "direction.get('map_led') and s['scene_type'] in {'event_focus','summary'}" in source
+    assert 'left=840;right=1475 if people else 1840;top=758;bottom=916' in source
+
 def test_geo_cache_never_modifies_external_pipeline(tmp_path,monkeypatch):
     from app import pipeline
     monkeypatch.setattr(pipeline,'ROOT',tmp_path)
