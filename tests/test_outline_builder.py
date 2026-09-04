@@ -5,6 +5,7 @@ import pytest,requests
 from app.models import Settings
 from app.general import HistoryOutline,history_tools
 from app.outline_builder import build_history_outline,HistoryCatalog,merge_rows
+from app.outline_normalization import collections,movement_endpoints
 from app.research import assessment
 from app.llm import LLM,ModelError,TruncatedResponse,extract_json
 
@@ -209,3 +210,13 @@ def test_territorial_state_continues_across_scene_batches():
     assert merged[0]['label']=='Area di prova' and len(old[0]['states'])==1
     with pytest.raises(ValueError,match='già salvato'):
         merge_rows(old,[dict(id='territory',states=[dict(year=1500,polygons=[])])],'visual_layers')
+
+
+def test_keyed_movements_and_exact_catalog_endpoints_are_losslessly_normalized():
+    value={'scenes':[{'movements':{'route-1':{'from':'loc-a','to':'loc-b','semantic':'journey'}}}]}
+    shaped=collections(value)
+    assert shaped['scenes'][0]['movements']==[{'from':'loc-a','to':'loc-b','semantic':'journey'}]
+    mapped=movement_endpoints(shaped,CATALOG['places'])
+    assert mapped['scenes'][0]['movements'][0]['points']==[[14,41],[15,42]]
+    unknown=movement_endpoints({'scenes':[{'movements':[{'from':'unknown','to':'loc-b'}]}]},CATALOG['places'])
+    assert 'points' not in unknown['scenes'][0]['movements'][0]

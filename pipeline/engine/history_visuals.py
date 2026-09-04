@@ -57,9 +57,46 @@ class HistoryVisuals(AtlasVisuals):
             im.alpha_composite(Image.fromarray(cv2.resize(np.asarray(overlay),(W,H),interpolation=cv2.INTER_AREA)))
             im.alpha_composite(self.shade)
             self.map_key(im,s)
+        self.directed_overlays(im,s,t)
         self.header(im,s,year)
         self.chronology(im,s,t,year)
         return im.convert('RGB')
+
+    def directed_overlays(self,im,s,t):
+        """Opt-in map storytelling. Existing packs render byte-for-byte as before."""
+        direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
+        if direction.get('version')!=1:return
+        journey=s.get('schematic_journey')
+        excluded={'person_intro','timeline','comparison','data_visualization','quote','artwork','document'}
+        people=s.get('person_ids',[]) if direction.get('auto_persons') and s.get('scene_type') not in excluded and not s.get('image_insets') else []
+        d=ImageDraw.Draw(im,'RGBA')
+        if journey:
+            stops=journey['stops'];left=110;right=1440 if people else 1810;top=500;bottom=738
+            d.rounded_rectangle((left,top,right,bottom),radius=18,fill=(*INK,226),outline=(*GOLD,155),width=2)
+            d.text((left+30,top+22),'SEQUENZA NARRATIVA · POSIZIONI NON LOCALIZZATE',font=font(16),fill=GOLD)
+            y=top+112;xs=[left+55+i*(right-left-110)/max(1,len(stops)-1) for i in range(len(stops))]
+            d.line((xs[0],y,xs[-1],y),fill=(*MUTED,150),width=5)
+            q=smooth(t/max(1,s['duration']));active=min(len(stops)-1,int(q*len(stops)))
+            if active:d.line((xs[0],y,xs[active],y),fill=GOLD,width=7)
+            for i,(x,label_text) in enumerate(zip(xs,stops)):
+                r=12 if i<=active else 8;d.ellipse((x-r,y-r,x+r,y+r),fill=GOLD if i<=active else MUTED,outline=CREAM,width=2)
+                textblock(d,(x-100,y+28),label_text,200,19,CREAM,maxlines=2)
+            textblock(d,(left+30,bottom-38),journey['note'],right-left-60,14,MUTED,maxlines=1)
+        if people:
+            # Linked figures remain readable without replacing the geographic scene.
+            slot=min(len(people)-1,int(max(0,min(.999,t/max(1,s['duration'])))*len(people)))
+            person=self.people[people[slot]];x,y,w,h=1515,205,320,500
+            d.rounded_rectangle((x,y,x+w,y+h),radius=15,fill=(*INK,238),outline=(*GOLD,150),width=2)
+            path=person.get('portrait')
+            if path and (ROOT/path).exists():
+                with Image.open(ROOT/path) as original:
+                    photo=ImageOps.fit(original.convert('RGB'),(288,330),Image.Resampling.LANCZOS,centering=(.5,.25))
+                im.paste(photo,(x+16,y+16))
+            else:
+                d.ellipse((x+75,y+65,x+245,y+235),outline=(*GOLD,100),width=2)
+                d.text((x+160,y+150),''.join(v[0] for v in person['name'].split()[:2]),font=font(64,'serif'),fill=GOLD,anchor='mm')
+            textblock(d,(x+18,y+365),person['name'],w-36,30,CREAM,'serif',2)
+            textblock(d,(x+18,y+438),person.get('role',''),w-36,17,MUTED,maxlines=2)
 
     def battle_symbols(self,im,d,s,t,cam):
         for unit in s.get('units',[]):
@@ -139,7 +176,9 @@ class HistoryVisuals(AtlasVisuals):
         d.rectangle((0,0,W,148),fill=(*INK,242))
         d.text((60,28),self.data['short_title'].upper()+'  /  STORIE VISUALI',font=font(16),fill=GOLD)
         textblock(d,(57,58),s['title'].upper(),1410,53,CREAM,'display',1)
-        d.text((1860,36),s.get('date',year_label(year)),font=font(22),fill=CREAM,anchor='ra')
+        direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
+        shown_date='SEQUENZA NARRATIVA' if direction.get('timeline_mode')=='sequence' else s.get('date',year_label(year))
+        d.text((1860,36),shown_date,font=font(22),fill=CREAM,anchor='ra')
         if s['scene_type'] not in NONMAP:
             d.text((1840,93),'N ↑',font=font(20),fill=MUTED,anchor='ra')
         d.line((60,143,1860,143),fill=(*GOLD,110),width=1)
@@ -163,6 +202,14 @@ class HistoryVisuals(AtlasVisuals):
 
     def chronology(self,im,s,t,year):
         d=ImageDraw.Draw(im);d.rectangle((0,938,W,H),fill=(*INK,250))
+        direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
+        if direction.get('timeline_mode')=='sequence':
+            index=next((i for i,row in enumerate(self.data['scenes']) if row['id']==s['id']),0);q=max(0,min(1,t/s['duration']))
+            d.text((60,956),f'TAPPA {index+1} / {len(self.data["scenes"])}',font=font(26,'serif'),fill=GOLD)
+            d.line((310,988,1640,988),fill=(67,89,95),width=3);d.line((310,988,310+1330*(index+q)/len(self.data['scenes']),988),fill=GOLD,width=3)
+            d.text((1840,957),'Ordine del racconto',font=font(18),fill=MUTED,anchor='ra')
+            d.text((1858,1036),f'{index+1:02} / {len(self.data["scenes"]):02}',font=font(22),fill=GOLD,anchor='ra')
+            d.line((60,1053,1860,1053),fill=(*GOLD,90),width=2);return
         period=self.data.get('historical_period',{});lo=period.get('start',s['historical_range'][0]);hi=period.get('end',s['historical_range'][1])
         def x(y):return 250+1390*max(0,min(1,(historical_value(y)-historical_value(lo))/max(1,historical_value(hi)-historical_value(lo))))
         d.text((60,956),year_label(year),font=font(29,'serif'),fill=GOLD)
@@ -223,7 +270,9 @@ class HistoryVisuals(AtlasVisuals):
                 textblock(d,(250,780),quote.get('author','')+' · '+quote['source'],1460,22,MUTED,maxlines=3)
             elif kind not in ('timeline','data_visualization'):
                 d.text((120,219),s['kicker'].upper(),font=font(23),fill=GOLD)
-                textblock(d,(112,285),s['facts'][0],1550,67,CREAM,'serif',4)
+                direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
+                width=1290 if direction.get('version')==1 and direction.get('auto_persons') and s.get('person_ids') else 1550
+                textblock(d,(112,285),s['facts'][0],width,67,CREAM,'serif',4)
                 cards=s.get('highlights',[])
                 for i,c in enumerate(cards[:3]):
                     x=120+i*575;d.line((x,679,x+480,679),fill=GOLD,width=2);textblock(d,(x,716),c,490,27,MUTED,maxlines=5)

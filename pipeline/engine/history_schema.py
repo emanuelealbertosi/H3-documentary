@@ -92,6 +92,8 @@ def validate_document(doc):
         if hybrid and s.get('quote'):refs(s,required=True)
         for item in s.get('movements',[])+s.get('network',{}).get('edges',[]):
             if not 0<=item.get('cue',0)<len(s['lines']):raise ValueError('Cue fuori intervallo')
+    from .history_direction import require_coverage
+    require_coverage(doc)
     for a in doc.get('visual_assets',[]):
         if not a.get('source') or not a.get('license'):raise ValueError('Materiale privo di provenienza o licenza')
     for path in [a['path'] for a in doc.get('visual_assets',[]) if a.get('path')]+[p['portrait'] for p in doc.get('persons',[]) if p.get('portrait')]:

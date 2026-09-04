@@ -40,6 +40,7 @@ def detect_type(topic):
     if 'battaglia' in t:return 'battle'
     for kind,pattern in rules:
         if re.search(pattern,t):return kind
+    if re.search(r'\bviaggi\w*|\bitinerar\w*|\bperiplo\b|\bodisse[ao]\b|ritorno.*(?:ulisse|itaca)',t):return 'exploration'
     return 'general_history'
 
 def choose_scene(scene,kind,index=0):

@@ -3,6 +3,8 @@ import copy,math
 from .history_profiles import PROFILES
 from .history_schema import validate_document,fit
 from .history_contract import normalize_document
+from .history_direction import direction_for,require_coverage
+from .history_geography import atlas_config
 
 ANALYSIS_FIELDS=['period','geography','protagonists','cities','entities','key_events','chronology','causes','consequences','territorial_changes','movements','networks','routes','flows','alliances','conflicts','cultural_changes','political_changes','quantitative_data','uncertainties']
 
@@ -31,6 +33,7 @@ Non richiedere API ulteriori, non produrre codice eseguibile. Il risultato è un
 
 def compile_outline(outline,narration,sources,project,settings):
     o=copy.deepcopy(outline);slug=project.get('slug','film-'+project['id']);kind=o['documentary_type']
+    direction=o.get('visual_direction') or direction_for(project.get('topic','')+' '+project.get('notes',''),kind,o.get('narrative_basis','history'))
     rows={r['index']:r for r in narration}
     if set(rows)!=set(range(len(o['scenes']))):raise ValueError('Sceneggiatura incompleta')
     places=o.get('places',o.get('locations',[]));by_id={p['id']:p for p in places}
@@ -52,7 +55,7 @@ def compile_outline(outline,narration,sources,project,settings):
     for asset in o.get('visual_assets',[]):
         a=copy.deepcopy(asset);a['path']=f'assets/history/{slug}/{a["id"]}.jpg';assets.append(a)
     d=dict(schema_version=2,documentary_type=kind,slug=slug,title=o['title'],short_title=o['short_title'],description=o.get('description',''),display_date=o.get('display_date',''),
-      historical_period=o['historical_period'],metadata={'analysis':o.get('analysis',{}),'authoring':'Modello remoto configurato, con fonti recuperate e revisione automatica.'},
+      historical_period=o['historical_period'],metadata={'analysis':o.get('analysis',{}),'authoring':'Modello configurato dall’utente, locale o remoto, con fonti recuperate e revisione automatica.','visual_direction':direction},visual_direction=direction,
       target_minutes=project['minutes'],fps=settings.get('fps',24),output=f'output/{slug}_documentario_1080p.mp4',verification_dir=slug+'_verification',locations=places,persons=persons,entities=o.get('entities',[]),events=o.get('events',[]),visual_layers=o.get('visual_layers',[]),visual_assets=assets,
       scenes=scenes,overview=overview,atlas='assets/geography/atlas-film/atlas.json',
       sources=[dict(id=s['id'],title=s['title'],url=s['url'],use='Fonte recuperata; evidenza testuale e data di consultazione nel progetto.') for s in sources],
@@ -63,10 +66,7 @@ def compile_outline(outline,narration,sources,project,settings):
     apply_context(d,settings.get('research_context'))
     d=normalize_document(d)
     validate_document(d)
+    require_coverage(d)
     views=[overview]+[s['camera_end'] for s in scenes]
-    def merc(y):return math.degrees(math.asinh(math.tan(math.radians(y))))
-    def inv(v):return math.degrees(math.atan(math.sinh(math.radians(v))))
-    bounds=[min(x-w*.57 for x,y,w in views),min(inv(merc(y)-w*.33) for x,y,w in views),max(x+w*.57 for x,y,w in views),max(inv(merc(y)+w*.33) for x,y,w in views)]
-    if not(-180<bounds[0]<bounds[2]<180 and -79<bounds[1]<bounds[3]<79):raise ValueError('Suddividere il teatro geografico in viste più contenute')
-    geo={'bounds':bounds,'patches':{},'terrain_zoom':8,'output':'assets/geography/atlas-film'}
+    geo=atlas_config(views)
     return d,geo

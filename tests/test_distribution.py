@@ -37,8 +37,9 @@ def test_bat_uses_own_directory_and_inbox_powershell():
         assert '%~dp0' in data and '%SystemRoot%' in data and '-NoProfile' in data
 
 def test_examples_and_runtime_modules_are_bundled():
-    for file in ['pipeline/engine/render.py','pipeline/engine/atlas.py','pipeline/engine/narration.py',
-                 'pipeline/engine/history_schema.py','pipeline/tools/acquire_atlas.py',
+    for file in ['app/battle_outline.py','pipeline/engine/render.py','pipeline/engine/atlas.py','pipeline/engine/narration.py',
+                 'pipeline/engine/history_schema.py','pipeline/engine/history_direction.py',
+                 'pipeline/engine/history_geography.py','pipeline/tools/acquire_atlas.py',
                  'pipeline/battles/waterloo/battle.json','pipeline/documentaries/rinascimento/documentary.json',
                  'pipeline/documentaries/via-della-seta/documentary.json']:
         assert (ROOT/file).is_file(),file
@@ -72,7 +73,7 @@ def test_example_portraits_are_downloadable_without_original_assets():
 def test_preserved_engine_baseline():
     baseline=json.loads((ROOT/'docs/engine-baseline.json').read_text())
     for name,expected in baseline['normalized_sha256'].items():
-        # Two authoring/schema modules have explicit, tested 1.1.2/1.1.4 extensions.
+        # Named general-history modules have explicit, tested compatibility extensions.
         expected=baseline.get('hybrid_extensions_sha256',{}).get(name,expected)
         data=(ROOT/'pipeline/engine'/name).read_bytes().replace(b'\r\n',b'\n')
         # Strip only named additive hooks; all other original renderer/TTS bytes are checked.

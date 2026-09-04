@@ -26,6 +26,7 @@ class HistoryScene(BaseModel):
     asset_ids:list[str]=Field(default_factory=list)
     territory_ids:list[str]=Field(default_factory=list)
     movements:list[dict]=Field(default_factory=list)
+    schematic_journey:dict|None=Field(default=None,description='Sequenza animata senza coordinate: stops con 2–5 nomi di tappe, note sulla localizzazione incerta. Richiede una mappa di orientamento in focus.')
 
 class HistoryOutline(BaseModel):
     model_config=ConfigDict(extra="allow")

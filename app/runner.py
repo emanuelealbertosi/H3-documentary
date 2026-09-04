@@ -11,6 +11,7 @@ from .research_policy import author_system,validate_references,review_instructio
 from .compiler import compile_pack
 from .general import history_tools,HistoryOutline
 from .outline_builder import build_history_outline
+from .battle_outline import build_battle_outline
 from .pack_migrations import repair_pack
 from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine
 
@@ -104,7 +105,7 @@ def produce(pid,cfg):
                 prompt=history_prompt(p["topic"],p["minutes"],kind,p["notes"],**options)+"\nFONTI:\n"+ev
             if research['fallback_used']:
                 prompt+='\nLe fonti possono essere assenti: usa source_ids=[] per scene basate sulla conoscenza interna, senza inventare riferimenti.'
-            if kind=='battle':obj=llm.structured(system,prompt,Outline)
+            if kind=='battle':obj=build_battle_outline(llm,system,p, sources,research,cp,log,cancel)
             else:obj=build_history_outline(llm,system,p,kind,sources,research,cp,history_prompt,log,cancel)
             if kind!="battle" and p.get("documentary_type","auto")!="auto":obj["documentary_type"]=kind
             if not max(3,count-3)<=len(obj["scenes"])<=count+4:raise ValueError("Il numero di scene prodotto dal modello non è adatto alla durata. Riprendi con un modello capace di risposte più lunghe.")

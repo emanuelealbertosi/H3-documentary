@@ -49,7 +49,7 @@ class GeoPoint(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str = Field(pattern=r"^[a-z0-9_-]{1,50}$")
     name: str = Field(min_length=1,max_length=65)
-    pos: tuple[float,float]
+    pos: tuple[float,float] = Field(description='Coordinate geografiche [LONGITUDINE, LATITUDINE], in questo ordine. Non latitudine/longitudine.')
     uncertain: bool = False
     note: str = Field("",max_length=500)
     @field_validator("pos")
@@ -78,11 +78,11 @@ class Route(BaseModel):
 class OutlineScene(BaseModel):
     title: str = Field(max_length=65)
     date: str = Field(max_length=65)
-    focus: list[str] = Field(min_length=1,max_length=7)
+    focus: list[str] = Field(min_length=1,max_length=7,description='Solo ID di places. Non temi, eventi, eserciti o nomi di persone. Deve identificare cosa inquadrare sulla mappa.')
     event: str = Field(max_length=1400)
     source_ids: list[str] = Field(default_factory=list,max_length=8)
     routes: list[Route] = Field(default_factory=list,max_length=4)
-    commander_ids: list[str] = Field(default_factory=list,max_length=2)
+    commander_ids: list[str] = Field(default_factory=list,max_length=2,description='Solo ID di commanders, mai nomi liberi. [] se nessun comandante è pertinente.')
 
 class Outline(BaseModel):
     title: str = Field(max_length=120)
@@ -95,12 +95,19 @@ class Outline(BaseModel):
     river_names: list[str] = Field(default_factory=list,max_length=15)
     scenes: list[OutlineScene] = Field(min_length=3,max_length=120)
     uncertainties: list[str] = Field(default_factory=list,max_length=15)
+    @model_validator(mode='before')
+    @classmethod
+    def normalize(cls,value):
+        from .outline_normalization import battle_references
+        return battle_references(value)
     @model_validator(mode="after")
     def links(self):
         ids={p.id for p in self.places}; cs={p.id for p in self.commanders}
         if len(ids)!=len(self.places) or len(cs)!=len(self.commanders): raise ValueError("Identificatori duplicati.")
-        for s in self.scenes:
-            if not set(s.focus)<=ids or not set(s.commander_ids)<=cs: raise ValueError("Riferimenti a luoghi o comandanti inesistenti.")
+        for i,s in enumerate(self.scenes):
+            for field,allowed in [('focus',ids),('commander_ids',cs)]:
+                missing=set(getattr(s,field))-allowed
+                if missing:raise ValueError(f"Scena {i+1} ({s.title}), {field}: {sorted(missing)} non sono ID validi. ID ammessi: {sorted(allowed)}. focus contiene luoghi, non temi o eventi; commander_ids contiene ID di comandanti. Correggi i riferimenti senza inventare coordinate.")
         return self
 
 class NarrationScene(BaseModel):

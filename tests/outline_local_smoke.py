@@ -24,6 +24,7 @@ def main():
     from app.runner import SYSTEM
     from app.outline_builder import build_history_outline
     from app.store import write_json
+    from engine.history_profiles import detect_type
     folder=args.output.resolve();folder.mkdir(parents=True,exist_ok=True)
     started=time.monotonic()
     def cancel():
@@ -33,8 +34,9 @@ def main():
     cfg=Settings(base_url=args.url,model=args.model,timeout=180,max_tokens=8192,request_limit=18).model_dump()
     research=assessment([]);llm=LLM(cfg,cancel,audit);llm.progress=log
     try:
+        kind=detect_type(args.topic)
         outline=build_history_outline(llm,author_system(SYSTEM,research),{'topic':args.topic,'minutes':2,'notes':'Esplicita il carattere letterario del racconto.'},
-                                     'general_history',[],research,folder,history_tools(str(ROOT/'pipeline'))[1],log,cancel)
+                                     kind,[],research,folder,history_tools(str(ROOT/'pipeline'))[1],log,cancel)
         write_json(folder/'outline.json',outline)
         result={'passed':True,'scenes':len(outline['scenes']),'calls':llm.calls,'seconds':round(time.monotonic()-started,2),
                 'narrative_basis':outline.get('narrative_basis'),'scope':'Real local model; structural validation only, not independent historical verification or video rendering.'}
