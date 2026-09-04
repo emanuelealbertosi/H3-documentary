@@ -37,7 +37,7 @@ def test_bat_uses_own_directory_and_inbox_powershell():
         assert '%~dp0' in data and '%SystemRoot%' in data and '-NoProfile' in data
 
 def test_examples_and_runtime_modules_are_bundled():
-    for file in ['app/battle_outline.py','pipeline/engine/render.py','pipeline/engine/atlas.py','pipeline/engine/narration.py',
+    for file in ['app/battle_outline.py','app/narration_builder.py','pipeline/engine/render.py','pipeline/engine/atlas.py','pipeline/engine/narration.py',
                  'pipeline/engine/history_schema.py','pipeline/engine/history_direction.py',
                  'pipeline/engine/history_geography.py','pipeline/tools/acquire_atlas.py',
                  'pipeline/battles/waterloo/battle.json','pipeline/documentaries/rinascimento/documentary.json',

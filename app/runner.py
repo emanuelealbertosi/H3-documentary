@@ -12,6 +12,7 @@ from .compiler import compile_pack
 from .general import history_tools,HistoryOutline
 from .outline_builder import build_history_outline
 from .battle_outline import build_battle_outline
+from .narration_builder import build_narration
 from .pack_migrations import repair_pack
 from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine
 
@@ -116,28 +117,7 @@ def produce(pid,cfg):
         if outline.get('narrative_basis')=='literary_tradition':
             system+='\nIl documentario racconta una tradizione letteraria o mitologica. Dichiara questa cornice, distingui luoghi accertati e localizzazioni leggendarie e non trasformare episodi narrativi in fatti storici verificati.'
         def do_narration():
-            all_rows=[];count=len(outline["scenes"]);target=round(p["minutes"]*170/count)
-            for first in range(0,count,3):
-                cancel();path=cp/f"narration-{first:03}.json"
-                if path.exists():batch=store.read_json(path)
-                else:
-                    scenes=[{"index":i,**s} for i,s in enumerate(outline["scenes"]) if first<=i<first+3]
-                    ids={s for row in scenes for s in row["source_ids"]}
-                    local_ev=evidence([s for s in sources if s["id"] in ids])
-                    prompt="Titolo: "+outline["title"]+"\nScaletta generale: "+json.dumps([s["title"] for s in outline["scenes"]],ensure_ascii=False)
-                    prompt+=f"\nScrivi SOLO queste scene. Per ognuna: due paragrafi narrati, in totale tra {round(target*.90)} e {round(target*1.10)} parole italiane. Periodi chiari, ritmo documentaristico, niente indicazioni di regia dentro la voce. Numeri e anni scritti in lettere nella narrazione, forma numerica nei cartelli. Conserva gli indici esatti. Evita ripetizioni tra scene. fact è un cartello sintetico, kicker è un breve sottotitolo.\n"
-                    prompt+=json.dumps(scenes,ensure_ascii=False)+"\nFonti:\n"+local_ev
-                    for attempt in range(3):
-                        batch=llm.structured(system,prompt,NarrationBatch)
-                        expected=set(range(first,min(first+3,count)))
-                        if {s["index"] for s in batch["scenes"]}!=expected:prompt+="\nErrore: restituisci esattamente gli indici "+str(sorted(expected));continue
-                        bad=[s["index"] for s in batch["scenes"] if not target*.82<=sum(len(line.split()) for line in s["lines"])<=target*1.18]
-                        if not bad:break
-                        prompt+="\nLa versione precedente non rispetta la lunghezza nelle scene "+str(bad)+". Riscrivi il gruppo rispettando le parole."
-                    else:raise ValueError("Il modello non rispetta la lunghezza richiesta per le scene. Prova un altro modello o aumenta il limite token.")
-                    store.write_json(path,batch)
-                all_rows.extend(batch["scenes"]);log(f"Sceneggiatura: {min(first+3,count)} / {count} scene.")
-            store.write_json(cp/"narration.json",all_rows)
+            store.write_json(cp/"narration.json",build_narration(llm,system,outline,p,sources,cp,log,cancel))
         stage("narration",do_narration)
         narration=store.read_json(cp/"narration.json")
         def do_review():

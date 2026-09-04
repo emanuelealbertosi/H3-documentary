@@ -35,13 +35,16 @@ class LLM:
         except requests.RequestException as e:raise ModelError("Server non raggiungibile. Controlla indirizzo, porta e accesso dalla rete.") from e
         if r.status_code!=200:raise ModelError(f"Il server modelli risponde HTTP {r.status_code}. Controlla endpoint e credenziali.")
         data=r.json();return [str(x["id"]) for x in data.get("data",[]) if x.get("id")]
-    def chat(self,messages,max_tokens=None):
+    def chat(self,messages,max_tokens=None,response_format=None):
         self.cancel()
         if self.calls>=self.config.get("request_limit",100):raise ModelError("Raggiunto il limite di richieste per questa esecuzione.")
         payload={"model":self.config["model"],"messages":messages,"stream":False,
                  self.config.get("token_parameter","max_tokens"):max_tokens or self.config["max_tokens"]}
         if self.config.get("temperature") is not None:payload["temperature"]=self.config["temperature"]
-        if self.config.get("json_mode"):payload["response_format"]={"type":"json_object"}
+        reasoning=self.config.get('reasoning_mode','server')
+        if reasoning!='server':payload['reasoning_effort']='medium' if reasoning=='on' else 'none'
+        if response_format is not None:payload['response_format']=response_format
+        elif self.config.get("json_mode"):payload["response_format"]={"type":"json_object"}
         for attempt in range(3):
             self.cancel()
             if self.calls>=self.config.get("request_limit",100):raise ModelError("Raggiunto il limite di richieste per questa esecuzione.")
@@ -81,12 +84,16 @@ class LLM:
         raise ModelError("Server temporaneamente non disponibile.")
     def structured(self,system,user,schema,attempts=3,validator=None,split_on_truncation=False):
         spec=schema.model_json_schema() if hasattr(schema,"model_json_schema") else schema
+        response_format=None
+        if self.config.get('json_mode') and self.config.get('provider')=='lmstudio':
+            name=re.sub(r'[^a-zA-Z0-9_-]','_',spec.get('title','h3_documentary'))[:64]
+            response_format={'type':'json_schema','json_schema':{'name':name,'strict':True,'schema':spec}}
         messages=[{"role":"system","content":system+"\nRispondi soltanto con JSON valido secondo questo schema:\n"+json.dumps(spec,ensure_ascii=False)},
                   {"role":"user","content":user}]
         original=list(messages)
         for attempt in range(attempts):
             try:
-                text=self.chat(messages)
+                text=self.chat(messages,response_format=response_format)
                 obj=extract_json(text)
                 obj=schema.model_validate(obj).model_dump() if hasattr(schema,"model_validate") else obj
                 if validator is not None:obj=validator(obj)

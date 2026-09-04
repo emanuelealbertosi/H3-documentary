@@ -41,13 +41,14 @@ def test_unsaved_provider_does_not_receive_old_key():
     assert server.connection(Settings(base_url="http://different.example/v1"))["api_key"]==""
     assert server.connection(Settings())["api_key"]=="secret"
 def test_multiple_servers_remember_model_options_and_separate_encrypted_keys(client):
-    first=Settings(provider='openai',base_url='https://one.example/v1',model='model-one',api_key='first-secret',max_tokens=12000,json_mode=True)
+    first=Settings(provider='openai',base_url='https://one.example/v1',model='model-one',api_key='first-secret',max_tokens=12000,json_mode=True,reasoning_mode='off')
     second=Settings(provider='vllm',base_url='http://192.168.1.50:8000/v1',model='model-two',api_key='second-secret',max_tokens=6000)
     assert client.put('/api/settings',json=first.model_dump()).status_code==200
     assert client.put('/api/settings',json=second.model_dump()).status_code==200
     public=client.get('/api/settings').json()
     assert public['model']=='model-two' and len(public['saved_servers'])==2
     assert {p['model'] for p in public['saved_servers']}=={'model-one','model-two'}
+    assert {p['model']:p['reasoning_mode'] for p in public['saved_servers']}=={'model-one':'off','model-two':'server'}
     assert all(p['has_api_key'] for p in public['saved_servers'])
     assert server.connection(first.model_copy(update={'api_key':None}))['api_key']=='first-secret'
     assert server.connection(second.model_copy(update={'api_key':None}))['api_key']=='second-secret'
@@ -126,11 +127,16 @@ def test_real_http_compatible_contract():
             self.wfile.write(json.dumps({"choices":[{"finish_reason":"stop","message":{"content":'{"ok":true}'}}]}).encode())
     http=ThreadingHTTPServer(("127.0.0.1",0),Handler);thread=threading.Thread(target=http.serve_forever,daemon=True);thread.start()
     try:
-        c=Settings(base_url=f"http://127.0.0.1:{http.server_port}/v1",model="test-model",api_key="fixture",json_mode=True).model_dump()
+        c=Settings(base_url=f"http://127.0.0.1:{http.server_port}/v1",model="test-model",api_key="fixture",json_mode=True,reasoning_mode='off').model_dump()
         llm=LLM(c);assert llm.models()==["test-model"]
         assert extract_json(llm.chat([{"role":"user","content":"test"}]))=={"ok":True}
+        schema={'title':'Fixture','type':'object','properties':{'ok':{'type':'boolean'}},'required':['ok']}
+        assert llm.structured('system','test',schema)=={'ok':True}
         assert calls[0][0]=="/v1/chat/completions" and calls[0][1]=="Bearer fixture"
         assert calls[0][2]["response_format"]=={"type":"json_object"} and calls[0][2]["stream"] is False
+        assert calls[0][2]['reasoning_effort']=='none'
+        assert calls[1][2]['response_format']['type']=='json_schema'
+        assert calls[1][2]['response_format']['json_schema']['schema']==schema
     finally:http.shutdown();http.server_close()
 
 def test_cancel_stops_owned_local_process(tmp_path):

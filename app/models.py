@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
-from typing import Literal
+from pydantic import BaseModel, Field, ConfigDict, StringConstraints, field_validator, model_validator
+from typing import Literal,Annotated
 from urllib.parse import urlsplit, urlunsplit
 import math
 
@@ -13,6 +13,7 @@ class Settings(BaseModel):
     max_tokens: int = Field(8192, ge=512, le=65536)
     temperature: float | None = Field(0.25, ge=0, le=2)
     token_parameter: Literal["max_tokens","max_completion_tokens"] = "max_tokens"
+    reasoning_mode: Literal["server","on","off"] = "server"
     json_mode: bool = False
     vision: bool = False
     pipeline_path: str = ""
@@ -110,9 +111,11 @@ class Outline(BaseModel):
                 if missing:raise ValueError(f"Scena {i+1} ({s.title}), {field}: {sorted(missing)} non sono ID validi. ID ammessi: {sorted(allowed)}. focus contiene luoghi, non temi o eventi; commander_ids contiene ID di comandanti. Correggi i riferimenti senza inventare coordinate.")
         return self
 
+NarrationText=Annotated[str,StringConstraints(strip_whitespace=True,min_length=180,max_length=1200)]
+
 class NarrationScene(BaseModel):
     index: int
-    lines: list[str] = Field(min_length=2,max_length=2)
+    lines: list[NarrationText] = Field(min_length=2,max_length=2,description='Esattamente due paragrafi narrati completi; ogni paragrafo deve avere sostanza documentaristica, non essere una didascalia breve.')
     fact: str = Field(min_length=10,max_length=140)
     kicker: str = Field(min_length=5,max_length=75)
 

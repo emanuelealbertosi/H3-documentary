@@ -72,10 +72,8 @@ def test_connection(value:Settings):
     c=connection(value)
     if not c["model"]:raise ValueError("Seleziona o scrivi il nome del modello.")
     start=time.monotonic()
-    reply=LLM(c).chat([{"role":"system","content":"Rispondi con un solo oggetto JSON."},
-        {"role":"user","content":"Restituisci esattamente {\"ok\":true,\"lingua\":\"italiano\"}."}],max_tokens=256)
-    from .llm import extract_json
-    result=extract_json(reply)
+    schema={'title':'ConnectionTest','type':'object','properties':{'ok':{'type':'boolean'},'lingua':{'type':'string'}},'required':['ok','lingua'],'additionalProperties':False}
+    result=LLM(c).structured('Rispondi con un solo oggetto JSON.','Restituisci esattamente {"ok":true,"lingua":"italiano"}.',schema)
     if not isinstance(result,dict) or result.get("ok") is not True:raise ModelError("Il server risponde, ma il test di risposta strutturata non è riuscito.")
     return {"ok":True,"seconds":round(time.monotonic()-start,2),"message":"Connessione e risposta JSON verificate."}
 
