@@ -61,9 +61,9 @@ def put_settings(value:Settings):
     return store.save_settings(value)
 
 def connection(value):
-    saved=store.settings(True);new=value.model_dump()
+    new=value.model_dump()
     if not new.get("api_key"):
-        new["api_key"]=saved.get("api_key","") if new["base_url"]==saved["base_url"] and not new.get("clear_api_key") else ""
+        new["api_key"]=store.connection_key(new) if not new.get("clear_api_key") else ""
     return new
 @app.post("/api/provider/models")
 def models(value:Settings):return {"models":LLM(connection(value)).models()}

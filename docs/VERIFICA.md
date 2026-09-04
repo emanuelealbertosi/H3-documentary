@@ -1,5 +1,7 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.1.6: profili persistenti per più server locali o remoti. La migrazione legge il precedente formato a connessione singola; ogni URL normalizzato conserva provider, ultimo modello, parametri e chiave DPAPI separata. Le API pubbliche restituiscono soltanto `has_api_key`, mai il segreto. Verificati cambio server, ritorno al primo server senza reinserimento, cambio del solo modello, separazione delle chiavi e assenza dei segreti nel JSON su disco. Controllata anche la sintassi dell'interfaccia JavaScript. **90 test automatici superati.**
+
 Aggiornamento 1.1.5: regia visuale dei viaggi, sequenza narrativa animata per tappe non localizzate, ritratti automatici in riquadro, timeline letteraria e patch cartografiche dettagliate. Il preflight misura il contenuto realmente visibile e interrompe mappe vuote o componenti incompleti prima della voce. Il battle outline usa catalogo e gruppi di due scene, con normalizzazione univoca e diagnostica precisa dei riferimenti. La stessa implementazione è testata attraverso endpoint locali e remoti compatibili simulati; nessuna API a pagamento viene chiamata.
 
 La prova grafica reale genera quattro fotogrammi 1920×1080 usando il motore, l'atlante e un ritratto Commons già acquisito: apertura geografica, due istanti distinti della sequenza e arrivo. Gli stessi timestamp sono deterministici e la sequenza cambia nel tempo. È una prova di rendering, non una ricostruzione storica o un MP4 completo.

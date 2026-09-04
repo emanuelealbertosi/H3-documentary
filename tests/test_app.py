@@ -40,6 +40,35 @@ def test_unsaved_provider_does_not_receive_old_key():
     store.save_settings(Settings(api_key="secret"))
     assert server.connection(Settings(base_url="http://different.example/v1"))["api_key"]==""
     assert server.connection(Settings())["api_key"]=="secret"
+def test_multiple_servers_remember_model_options_and_separate_encrypted_keys(client):
+    first=Settings(provider='openai',base_url='https://one.example/v1',model='model-one',api_key='first-secret',max_tokens=12000,json_mode=True)
+    second=Settings(provider='vllm',base_url='http://192.168.1.50:8000/v1',model='model-two',api_key='second-secret',max_tokens=6000)
+    assert client.put('/api/settings',json=first.model_dump()).status_code==200
+    assert client.put('/api/settings',json=second.model_dump()).status_code==200
+    public=client.get('/api/settings').json()
+    assert public['model']=='model-two' and len(public['saved_servers'])==2
+    assert {p['model'] for p in public['saved_servers']}=={'model-one','model-two'}
+    assert all(p['has_api_key'] for p in public['saved_servers'])
+    assert server.connection(first.model_copy(update={'api_key':None}))['api_key']=='first-secret'
+    assert server.connection(second.model_copy(update={'api_key':None}))['api_key']=='second-secret'
+    # Changing only the selected model keeps that server's encrypted key.
+    changed=first.model_copy(update={'model':'model-one-new','api_key':None})
+    client.put('/api/settings',json=changed.model_dump())
+    assert store.settings()['model']=='model-one-new'
+    assert server.connection(changed)['api_key']=='first-secret'
+    disk=(store.DATA/'settings.json').read_text()
+    assert 'first-secret' not in disk and 'second-secret' not in disk
+    assert 'server_profiles' in disk
+def test_previous_single_server_settings_are_migrated_without_losing_key():
+    legacy=Settings(provider='openai',base_url='https://legacy.example/v1',model='legacy-model').model_dump()
+    legacy.pop('api_key');legacy.pop('clear_api_key');legacy['encrypted_key']=store.protect('legacy-secret')
+    store.write_json(store.DATA/'settings.json',legacy)
+    public=store.settings()
+    assert len(public['saved_servers'])==1 and public['saved_servers'][0]['model']=='legacy-model'
+    assert store.settings(True)['api_key']=='legacy-secret'
+    store.save_settings(Settings(provider='ollama',base_url='http://localhost:11434/v1',model='new-model'))
+    request=Settings(provider='openai',base_url='https://legacy.example/v1',model='legacy-model')
+    assert server.connection(request)['api_key']=='legacy-secret'
 def test_cross_site_mutations_blocked(client):
     assert client.post("/api/projects",json={"topic":"Waterloo"},headers={"Origin":"https://evil.example"}).status_code==403
     c=TestClient(server.app)

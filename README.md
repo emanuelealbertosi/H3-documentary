@@ -64,6 +64,8 @@ La versione **1.1.5** aggiunge una regia visuale verificabile. Viaggi e itinerar
 
 Anche le battaglie vengono ora progettate in passaggi salvati: prima luoghi, fazioni e comandanti, poi gruppi di due scene. Il modello vede gli ID ammessi a ogni richiesta; nomi equivalenti vengono normalizzati solo se univoci e gli errori indicano scena, campo, valore errato e ID validi. Lo stesso protocollo Chat Completions supporta LM Studio, Ollama e vLLM locali oppure endpoint remoti compatibili, senza codice specifico per un modello. Per applicare la nuova regia a un documentario già completato o a un vecchio piano povero occorre **Nuova revisione**, perché l'app non inventa retroattivamente tappe e coordinate.
 
+La versione **1.1.6** conserva più connessioni al modello. Ogni coppia provider/indirizzo ricorda l'ultimo modello e i propri parametri; le chiavi rimangono cifrate separatamente con il profilo Windows. In Amministrazione puoi scegliere una voce da **Connessioni salvate** oppure cambiare scheda provider: l'app ripristina indirizzo, modello e stato della chiave senza mostrarne il contenuto al browser. Inserendo un secondo endpoint non si cancella più la chiave del primo; cambiando soltanto modello, la chiave del server viene conservata.
+
 ## Immagini personali insieme alle mappe
 
 Apri **Immagini e riquadri** per caricare JPG, PNG e WebP tramite drag and drop, collegarli a persone, luoghi, argomenti, eventi, organizzazioni o scene, e posizionare il riquadro nell’anteprima. Le immagini appaiono durante le frasi che citano il nome associato o le sue varianti. Originali e crediti vengono conservati; i progetti già avviati mantengono la propria copia. [Guida e verifiche](docs/IMMAGINI.md).
