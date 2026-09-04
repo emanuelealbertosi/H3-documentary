@@ -43,6 +43,7 @@ def main():
         from engine.visuals import Visuals
         visual=Visuals(timeline);out=ROOT/'build'/pack['slug']/'previews';out.mkdir(exist_ok=True,parents=True)
         for s in timeline['scenes']:
+            if args.scenes and s['id'] not in args.scenes.split(','):continue
             for fraction in [.15,.55,.85]:
                 visual.frame(s,s['duration']*fraction).save(out/f'{s["id"]}-{fraction}.jpg',quality=92)
         print(out)

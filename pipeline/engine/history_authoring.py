@@ -58,7 +58,11 @@ def compile_outline(outline,narration,sources,project,settings):
     for person in o.get('persons',[]):
         p=copy.deepcopy(person)
         p.pop('portrait',None)
-        if p.get('wikipedia_page') or p.get('commons_file'):p['portrait']=f'assets/portraits/{slug}/{p["id"]}.jpg'
+        # Every declared historical person gets a licensed-image attempt. The
+        # downloader falls back to an explicit neutral card when the name is
+        # ambiguous, no lead image exists, or its licence is unsuitable.
+        if not p.get('wikipedia_page'):p['wikipedia_page']=p.get('name','')
+        p['portrait']=f'assets/portraits/{slug}/{p["id"]}.jpg'
         persons.append(p)
     assets=[]
     for asset in o.get('visual_assets',[]):

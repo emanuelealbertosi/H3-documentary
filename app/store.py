@@ -152,6 +152,9 @@ def clone_completed(pid):
             use_media=bool(old.get('use_media')),use_documents=bool(old.get('use_documents')),document_ids=old.get('document_ids',[]),
             documentary_type=old.get('documentary_type') or 'auto',tts_engine='default')
         new=create(request,family_id=family,version=version,parent_id=old['id'])
+        update(new['id'],tts_engine=old.get('tts_engine','kokoro'),tts_reference_id=old.get('tts_reference_id',''),
+               tts_profile_id=old.get('tts_profile_id',''),tts_config=old.get('tts_config',{}),use_media=old.get('use_media',1))
+        new=project(new['id'])
         event(pid,f'Creata la versione V{version}: {new["id"]}.')
         event(new['id'],f'Nuova versione V{version} del progetto {old["id"]}.')
         return new

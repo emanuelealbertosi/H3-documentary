@@ -87,6 +87,7 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     assert 'Voce e cloning one-shot' in frontend.text
     assert 'sidebar-toggle' in shell.text and 'h3-sidebar-collapsed' in frontend.text
     assert 'Tempo di elaborazione:' in frontend.text
+    assert 'Immagini del film' in frontend.text and 'Aggiorna solo le scene interessate' in client.get(f'/static/media.js?v={version}').text
     assert any(x['id']=='chatterbox' and 'Chatterbox Multilingual V3' in x['name'] for x in client.get('/api/tts').json()['engines'])
 
 def test_voice_reference_upload_and_project_selection(client):

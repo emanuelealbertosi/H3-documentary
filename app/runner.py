@@ -1,5 +1,5 @@
 """Persistent staged production. Only a fixed allow-list of local commands is executable."""
-import json,threading,traceback,math,base64,time,re
+import json,threading,traceback,math,base64,time,re,shutil
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from .paths import ROOT,JOBS
@@ -16,7 +16,7 @@ from .battle_visuals import enrich_battle_outline
 from .narration_builder import build_narration,narration_wpm
 from .pack_migrations import repair_pack
 from .pipeline import isolate,reuse_atlas,run,Cancelled,stop_process,verify_pipeline,cache_geographic_inputs,prepare_hybrid_engine,prepare_history_asset_engine,prepare_bundled_runtime_engine
-from . import tts
+from . import tts,media,visual_slots
 
 POOL=ThreadPoolExecutor(max_workers=1,thread_name_prefix="documentary")
 LOCK=threading.RLock();FLAGS={};FUTURES={}
@@ -184,6 +184,7 @@ def produce(pid,cfg):
             if n and not (work/'engine/image_insets.py').is_file():
                 raise ValueError('Il motore esterno configurato non supporta i riquadri. Seleziona il motore incluso in Amministrazione e crea una nuova revisione.')
             if selection:log(f'Immagini personali: {n} riquadri associati alle frasi. Le immagini senza corrispondenza restano nella libreria.')
+            visual_slots.prepare(pack)
             tts.configure_pack(pack,p,work,src)
             store.write_json(packpath,pack);store.write_json(geopath,geo)
         repair_pack(packpath,work,log)
@@ -202,7 +203,23 @@ def produce(pid,cfg):
                 run(pid,python,work,["tools/prepare_atlas.py","--config",georel],cancel,log,max_hours=3)
         stage("geography",geography)
         if kind!='battle' and prepare_history_asset_engine(work,src):log('Motore immagini aggiornato: ricerca licenziata e fallback grafico disponibili per la ripresa.')
-        stage("assets",lambda:cmd("assets"))
+        def assets():
+            current=store.read_json(packpath)
+            original=packpath.read_bytes();visual_slots.prepare(current);store.write_json(packpath,current)
+            try:cmd("assets")
+            except BaseException:
+                packpath.write_bytes(original);raise
+            current=store.read_json(packpath)
+            selection=store.read_json(cp/'media-selection.json') if (cp/'media-selection.json').is_file() else []
+            visual_slots.materialize(current,work,selection)
+            store.write_json(packpath,current)
+            states=[visual_slots._metadata_state(work/s['path'])[0] for s in current.get('visual_slots',[]) if s.get('source_type') in ('person','place')]
+            if states:log(f'Archivio visuale: {states.count("available")} immagini trovate, {states.count("blank")+states.count("missing")} schede da completare.')
+        pending_slots=pack.get('visual_slots') or visual_slots.derive(pack)
+        if (cp/'assets.done.json').exists() and any(not (work/s['path']).is_file() for s in pending_slots if s.get('source_type')=='place'):
+            (cp/'assets.done.json').unlink();log('Nuovi slot visuali rilevati: completo soltanto la ricerca delle immagini.')
+        stage("assets",assets)
+        pack=store.read_json(packpath)
         def voice():
             if pack.get('voice_engine')=='chatterbox':
                 _,tts_python,model,worker=tts.chatterbox_paths(src)
@@ -263,3 +280,56 @@ def produce(pid,cfg):
         if cfg.get("api_key"):message=message.replace(cfg["api_key"],"[chiave rimossa]")
         store.pause_processing(pid);store.update(pid,status="failed",error=message[:2500]);store.event(pid,message,"error")
         (folder/"last-error.txt").write_text(traceback.format_exc().replace(cfg.get("api_key") or "NEVER_SECRET","[chiave rimossa]"),encoding="utf-8")
+
+
+def enqueue_visual_refresh(pid):
+    """Create a V2/V3 and update only clips touched by changed images."""
+    original=store.project(pid)
+    if original['status']!='completed':raise ValueError('L’aggiornamento parziale è disponibile dopo il completamento del film.')
+    with LOCK:
+        if active():raise ValueError('Attendi che la produzione in corso termini.')
+        state=visual_slots.status(pid)
+        if not state['replacement_count']:raise ValueError('Collega prima almeno una nuova immagine a un elemento del film.')
+        target=store.clone_completed(pid)
+        visual_slots.clone_workspace(pid,target['id'])
+        store.update(target['id'],result=original.get('result',{}))
+        FLAGS[target['id']]=threading.Event()
+        store.begin_processing(target['id'])
+        store.update(target['id'],status='queued',stage='Aggiornamento immagini',progress=80,error='')
+        store.event(target['id'],'Aggiornamento visuale in coda. Ricerca, testo, voce e mappe vengono riutilizzati.')
+        FUTURES[target['id']]=POOL.submit(refresh_visuals,target['id'],store.settings(True))
+    return store.project(target['id'])
+
+
+def refresh_visuals(pid,cfg):
+    folder=JOBS/pid;work=folder/'workspace';cancel=lambda:check(pid)
+    def log(message):store.event(pid,str(message))
+    try:
+        cancel();store.update(pid,status='running',stage='Applicazione delle immagini',progress=82)
+        source=verify_pipeline(cfg['pipeline_path']);python=source/'.venv/Scripts/python.exe'
+        for rel in ('documentary.py','engine/render.py','engine/image_insets.py','engine/visuals.py','engine/history_visuals.py','engine/export.py','engine/history_export.py'):
+            src=source/rel;dst=work/rel
+            if src.is_file():dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
+        packpath=visual_slots.project_pack(pid);pack=store.read_json(packpath)
+        changed=visual_slots.materialize(pack,work,media.catalog(),replacements_only=True)
+        if not changed:raise ValueError('Le immagini collegate sono già quelle usate dal film.')
+        store.write_json(packpath,pack);visual_slots.sync_timeline(pack,work)
+        rel=str(packpath.relative_to(work));scene_arg=','.join(changed)
+        cmd=lambda name,*extra:run(pid,python,work,['documentary.py',name,'--battle',rel,*extra],cancel,log)
+        log('Scene interessate: '+', '.join(changed)+'. Le altre clip vengono riutilizzate senza rendering.')
+        store.update(pid,stage='Anteprime aggiornate',progress=86);cmd('preview','--scenes',scene_arg)
+        store.update(pid,stage='Rendering selettivo',progress=90);cmd('render','--scenes',scene_arg,'--jobs',str(cfg['render_jobs']))
+        store.update(pid,stage='Rimontaggio del film',progress=95);cmd('finalize')
+        store.update(pid,stage='Verifica del video',progress=98);cmd('verify')
+        checker='tools/check_history_final.py' if pack.get('schema_version')==2 else 'tools/check_atlas_final.py'
+        run(pid,python,work,[checker,pack['slug']],cancel,log)
+        report=store.read_json(work/'output'/pack['verification_dir']/'report.json')
+        elapsed=store.pause_processing(pid);old=store.project(pid).get('result',{})
+        store.update(pid,status='completed',stage='Documentario completato',progress=100,error='',processing_seconds=elapsed,
+                     result={**old,'duration':report['video_duration'],'bytes':report['bytes'],'sha256':report['sha256'],'visual_update_scenes':changed})
+        log(f'Nuova versione completata: {len(changed)} scene aggiornate, film rimontato e verificato.')
+    except Cancelled:
+        store.pause_processing(pid);store.update(pid,status='cancelled',stage='Interrotto',error='Puoi riprendere dai materiali conservati.');log('Aggiornamento interrotto.')
+    except Exception as e:
+        store.pause_processing(pid);store.update(pid,status='failed',stage='Aggiornamento immagini non completato',error=str(e)[:2500]);store.event(pid,str(e),'error')
+        (folder/'last-error.txt').write_text(traceback.format_exc(),encoding='utf-8')

@@ -1,6 +1,14 @@
 # Immagini e riquadri
 
-Disponibili dalla versione 1.1.0. La libreria è locale, riutilizzabile e separata dalle immagini scaricate automaticamente per i documentari.
+Disponibili dalla versione 1.1.0. Dalla versione 1.8.0 la libreria gestisce anche l’inventario completo delle immagini effettivamente usate in ciascun film.
+
+## Inventario automatico e sostituzione parziale
+
+Quando la struttura del racconto è pronta, l’app crea uno slot per ogni persona e luogo realmente citato e per ogni ritratto, opera, documento o immagine associata usata dalle scene. Per persone e luoghi tenta una ricerca su Wikipedia e Wikimedia Commons, verifica che la licenza sia pubblico dominio, CC0 o Creative Commons compatibile e conserva URL, metadati e impronta del file. Una ricerca non disponibile, ambigua o con licenza inadatta produce una **scheda neutra**: non viene mai presentata come ritratto o fotografia autentica.
+
+La pagina del progetto mostra tutti gli slot con quattro stati: **Trovata automaticamente**, **Scheda neutra**, **Da completare** e **Personalizzata**. Ogni stato è sostituibile. Apri **Gestisci e sostituisci**, trascina una nuova immagine sul soggetto e premi **Aggiorna solo le scene interessate**. Un progetto completato genera automaticamente V2, V3 o la versione successiva; il vecchio film resta intatto. Il motore riusa ricerca, sceneggiatura, TTS, timeline, mappe e clip non coinvolte, renderizza soltanto le scene che contengono l’immagine cambiata, quindi esegue nuovamente montaggio e verifica tecnica.
+
+Per un luogo la fotografia compare soltanto quando il suo nome è pronunciato. Un personaggio può comparire anche nella scena che lo introduce esplicitamente. Le sostituzioni dei ritratti e delle opere aggiornano anche le scene dedicate a quell’asset, non soltanto il riquadro sovrapposto.
 
 ## Uso nell’app
 

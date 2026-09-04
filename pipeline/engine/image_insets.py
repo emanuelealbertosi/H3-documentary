@@ -98,7 +98,8 @@ class InsetVisuals:
         return image
 
 def credits(timeline):
-    lines=['## Immagini fornite dall’utente','Le indicazioni di provenienza e diritti seguenti sono dichiarate dall’utente. Gli originali sono conservati in assets/user.']
+    lines=['## Immagini nei riquadri','Le immagini automatiche conservano provenienza e licenza della fonte. Le sostituzioni caricate conservano le indicazioni dichiarate dall’utente. I file usati dal montaggio sono in assets/user.']
     for item in timeline.get('user_media',[]):
-        lines += [f"### {item['title']}",f"File: {item['filename']}. Autore / attribuzione: {item.get('credit') or 'non indicata'}. Provenienza: {item.get('source') or 'caricamento locale'}. Diritti: {item.get('rights') or 'da specificare; nessuna licenza presunta'}. Ridimensionamento e composizione in riquadro. SHA-256 originale: {item['sha256']}."]
+        origin='Ricerca automatica con controllo licenza' if item.get('origin')=='automatic' else 'Immagine caricata e collegata dall’utente'
+        lines += [f"### {item['title']}",f"{origin}. File: {item['filename']}. Autore / attribuzione: {item.get('credit') or 'non indicata'}. Provenienza: {item.get('source') or 'caricamento locale'}. Diritti: {item.get('rights') or 'da specificare; nessuna licenza presunta'}. Ridimensionamento e composizione in riquadro. SHA-256: {item['sha256']}."]
     return lines

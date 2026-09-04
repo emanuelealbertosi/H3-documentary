@@ -4,7 +4,7 @@ import json,hashlib,time
 import requests
 from .common import ROOT,read_json,write_json
 
-def _placeholder_portrait(path,title,manifests):
+def _placeholder_portrait(path,title,manifests,kind='person'):
     """Create an explicitly generic card when an optional historical image cannot be licensed."""
     from PIL import Image,ImageDraw,ImageFont
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True);seed=int(hashlib.sha256(title.encode('utf-8')).hexdigest()[:8],16)
@@ -12,15 +12,20 @@ def _placeholder_portrait(path,title,manifests):
     for y in range(1200):
         shade=round(22*y/1200);draw.line((0,y,960,y),fill=(34+shade,39+shade,51+shade))
     gold=(211,166,89);ink=(14,18,25);draw.rectangle((44,44,916,1156),outline=gold,width=5)
-    draw.ellipse((300,190,660,550),fill=ink);draw.polygon([(215,1000),(270,660),(390,535),(570,535),(690,660),(745,1000)],fill=ink)
+    if kind=='place':
+        draw.rectangle((170,570,790,950),fill=ink);draw.polygon([(135,570),(330,350),(490,570),(625,405),(825,570)],fill=ink)
+        for x,h in [(230,150),(360,230),(505,175),(650,255)]:draw.rectangle((x,950-h,x+70,950),fill=(45,52,62))
+    else:
+        draw.ellipse((300,190,660,550),fill=ink);draw.polygon([(215,1000),(270,660),(390,535),(570,535),(690,660),(745,1000)],fill=ink)
     try:
         font=ImageFont.truetype(str(ROOT/'assets/fonts/Manrope[wght].ttf'),42);small=ImageFont.truetype(str(ROOT/'assets/fonts/Manrope[wght].ttf'),24)
     except OSError:font=small=ImageFont.load_default()
-    draw.text((480,84),'FIGURA STORICA',font=small,fill=gold,anchor='ma')
+    draw.text((480,84),'LUOGO STORICO' if kind=='place' else 'FIGURA STORICA',font=small,fill=gold,anchor='ma')
     label=title[:34];draw.rectangle((70,1015,890,1128),fill=(19,23,31));draw.text((480,1072),label,font=font,fill=(238,232,216),anchor='mm')
     image.save(path,quality=92,subsampling=0)
     source='https://github.com/emanuelealbertosi/H3-documentary'
-    info={'descriptionurl':source,'extmetadata':{'LicenseShortName':{'value':'CC0-1.0'},'Artist':{'value':'H3-documentary, grafica procedurale'},'ObjectName':{'value':f'Riquadro generico per {title}; non è un ritratto storico attribuito'},'LicenseUrl':{'value':'https://creativecommons.org/publicdomain/zero/1.0/'}}}
+    description=f'Riquadro generico per {title}; non è una fotografia storica attribuita' if kind=='place' else f'Riquadro generico per {title}; non è un ritratto storico attribuito'
+    info={'descriptionurl':source,'h3_placeholder':True,'h3_subject_kind':kind,'extmetadata':{'LicenseShortName':{'value':'CC0-1.0'},'Artist':{'value':'H3-documentary, grafica procedurale'},'ObjectName':{'value':description},'LicenseUrl':{'value':'https://creativecommons.org/publicdomain/zero/1.0/'}}}
     write_json(path.with_suffix('.metadata.json'),info)
     relative=path.relative_to(ROOT).as_posix();manifests.append({'path':relative,'url':source,'source':source,'license':'CC0-1.0 · grafica procedurale, non effigie storica','sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
     print('Optional portrait unavailable; generated neutral card:',title,flush=True)
@@ -58,30 +63,47 @@ def acquire(pack):
     for cid,c in pack['commanders'].items():
         path=ROOT/c['portrait'];metadata=path.with_suffix('.metadata.json')
         if path.exists() and metadata.exists():continue
-        if metadata.exists():info=read_json(metadata)
-        else:
-            filename=c.get('commons_file')
+        try:
+            if metadata.exists():info=read_json(metadata)
+            else:
+                filename=c.get('commons_file');title=c.get('wikipedia_page')
+                if not filename:
+                    if not title:raise ValueError(f'Commander {cid}: specify wikipedia_page, commons_file or local portrait + rights metadata.')
+                    for language in ('en','it'):
+                        q=request(f'https://{language}.wikipedia.org/w/api.php',dict(action='query',titles=title,prop='pageimages',redirects=1,format='json')).json()
+                        filename=next(iter(q['query']['pages'].values())).get('pageimage')
+                        if filename:break
+                    if not filename:raise ValueError('No lead portrait: '+title)
+                result=request('https://commons.wikimedia.org/w/api.php',dict(action='query',titles='File:'+filename,prop='imageinfo',iiprop='url|extmetadata',iiurlwidth=960,format='json')).json()
+                page=next(iter(result['query']['pages'].values()));images=page.get('imageinfo',[])
+                if not images:raise ValueError('Commons metadata unavailable: '+str(filename))
+                info=images[0];write_json(metadata,info)
+            lic=info['extmetadata'].get('LicenseShortName',{}).get('value','')
+            if not any(x in lic.lower() for x in ('public domain','cc0','cc by')):raise ValueError('Unreviewed portrait licence: '+lic)
+            save(info.get('thumburl',info['url']),c['portrait'],lic,info['descriptionurl'])
+        except (requests.RequestException,RuntimeError,KeyError,TypeError,ValueError):
+            if not c.get('portrait_optional'):raise
+            path.unlink(missing_ok=True);metadata.unlink(missing_ok=True);_placeholder_portrait(path,c.get('name',cid),manifests)
+    # Optional people and places that are spoken in the narration use the same
+    # Commons licence gate. They are composed later as semantic inset cards.
+    for item in pack.get('auto_visual_assets',[]):
+        path=ROOT/item['path'];metadata=path.with_suffix('.metadata.json')
+        if path.exists() and metadata.exists():continue
+        try:
+            title=item.get('wikipedia_page') or item['name'];filename=item.get('commons_file')
             if not filename:
-                title=c.get('wikipedia_page')
-                if not title:raise ValueError(f'Commander {cid}: specify wikipedia_page, commons_file or local portrait + rights metadata.')
-                for language in ('en','it'):
+                for language in ('it','en'):
                     q=request(f'https://{language}.wikipedia.org/w/api.php',dict(action='query',titles=title,prop='pageimages',redirects=1,format='json')).json()
                     filename=next(iter(q['query']['pages'].values())).get('pageimage')
                     if filename:break
-                if not filename:
-                    if c.get('portrait_optional'):_placeholder_portrait(path,c.get('name',title),manifests);continue
-                    raise ValueError('No lead portrait: '+title)
+            if not filename:raise ValueError('No lead image: '+title)
             result=request('https://commons.wikimedia.org/w/api.php',dict(action='query',titles='File:'+filename,prop='imageinfo',iiprop='url|extmetadata',iiurlwidth=960,format='json')).json()
             page=next(iter(result['query']['pages'].values()));images=page.get('imageinfo',[])
-            if not images:
-                if c.get('portrait_optional'):_placeholder_portrait(path,c.get('name',title),manifests);continue
-                raise ValueError('Commons metadata unavailable: '+str(filename))
-            info=images[0]
-            write_json(metadata,info)
-        lic=info['extmetadata'].get('LicenseShortName',{}).get('value','')
-        if not any(x in lic.lower() for x in ('public domain','cc0','cc by')):
-            if c.get('portrait_optional'):
-                metadata.unlink(missing_ok=True);_placeholder_portrait(path,c.get('name',cid),manifests);continue
-            raise ValueError('Unreviewed portrait licence: '+lic)
-        save(info.get('thumburl',info['url']),c['portrait'],lic,info['descriptionurl'])
+            if not images:raise ValueError('Commons metadata unavailable: '+str(filename))
+            info=images[0];lic=info['extmetadata'].get('LicenseShortName',{}).get('value','')
+            if not any(x in lic.lower() for x in ('public domain','cc0','cc by')):raise ValueError('Unreviewed image licence: '+lic)
+            info['h3_placeholder']=False;info['h3_subject_kind']=item.get('kind','place');write_json(metadata,info)
+            save(info.get('thumburl',info['url']),item['path'],lic,info['descriptionurl'])
+        except (requests.RequestException,RuntimeError,KeyError,TypeError,ValueError):
+            path.unlink(missing_ok=True);metadata.unlink(missing_ok=True);_placeholder_portrait(path,item['name'],manifests,item.get('kind','place'))
     write_json(ROOT/'assets/manifest.json',manifests)
