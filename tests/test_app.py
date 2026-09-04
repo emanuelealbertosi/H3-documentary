@@ -100,6 +100,7 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     assert 'project-use-media' not in media_frontend and 'enableProjectMedia' in media_frontend
     assert 'Impostazioni per la prossima versione' in frontend.text and 'reg-review-visuals' in frontend.text
     assert 'data-reg-document' in frontend.text and 'a.pathname+a.search+a.hash' in frontend.text
+    assert 'memoria visuale' in media_frontend and 'prossimi progetti' in media_frontend
     assert any(x['id']=='chatterbox' and 'Chatterbox Multilingual V3' in x['name'] for x in client.get('/api/tts').json()['engines'])
 
 def test_voice_reference_upload_and_project_selection(client):

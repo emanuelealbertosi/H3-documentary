@@ -1,5 +1,7 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.10.1: i collegamenti fra immagini e soggetti sono una memoria visuale condivisa fra progetti. Nomi e varianti esplicite vengono conservati nel collegamento; un asset compatibile viene copiato prima del downloader in tutti i percorsi previsti per persona, luogo o opera, evitando la ricerca web senza modificare le copie congelate dei film precedenti. **163 test automatici superati.**
+
 Aggiornamento 1.10.0: ogni progetto espone un pannello richiudibile per configurare la rigenerazione. La richiesta può sostituire argomento, durata, tipo, prompt editoriale, link, revisione visuale, documenti, TTS e campione; le impostazioni vengono validate prima di archiviare un tentativo. Un progetto completato conserva immutata la versione precedente e crea il gemello numerato. La navigazione interna conserva query e identificatore dell’immagine selezionata. **162 test automatici superati.**
 
 Aggiornamento 1.9.4: rimossa dall’interfaccia la spunta generale **Inserisci le mie immagini associate**. I nuovi progetti abilitano automaticamente le immagini e ogni collegamento creato in un vecchio progetto ancora modificabile riattiva in modo trasparente il campo compatibile. Il formato persistente e i progetti precedenti restano leggibili. **160 test automatici superati.**

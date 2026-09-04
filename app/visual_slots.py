@@ -112,9 +112,10 @@ def _collections(pack):
 def _uses(pack, kind, subject):
     result = []
     ident, label = subject["id"], subject.get("name", subject["id"])
+    terms = [label, *media.subject_aliases(subject)]
     for scene in pack.get("scenes", []):
         lines = scene.get("lines", [])
-        cues = [i for i, line in enumerate(lines) if media.mention(line, label)]
+        cues = [i for i, line in enumerate(lines) if any(media.mention(line, term) for term in terms)]
         if kind == "person" and not cues:
             explicit = ident in scene.get("person_ids", [])
             explicit = explicit or any((x.get("id") if isinstance(x, dict) else x) == ident for x in scene.get("commanders", []))
@@ -144,6 +145,7 @@ def derive(pack):
                 "kind": kind,
                 "subject_id": row["id"],
                 "label": row["name"],
+                "aliases": media.subject_aliases(row),
                 "uses": uses,
                 "path": f"assets/user/automatic/{ident}.jpg",
                 "wikipedia_page": row.get("wikipedia_page") or row["name"],
@@ -166,6 +168,7 @@ def derive(pack):
         old = existing.get(ident, {})
         slots.append({"id": ident, "kind": "topic", "subject_id": asset["id"],
             "label": asset.get("title", asset["id"]), "uses": uses, "path": asset["path"],
+            "aliases": media.subject_aliases(asset),
             "source_path": asset["path"], "source_type": "visual_asset", "wikipedia_page": asset.get("wikipedia_page", ""),
             "required": True, "optional": False, "enabled": bool(old.get("enabled", True))})
     # Non-map cards deliberately use a dark editorial canvas. Expose that canvas
@@ -186,6 +189,7 @@ def derive(pack):
         slot = {
             "id": ident, "kind": "scene", "subject_id": scene["id"],
             "label": "Sfondo · " + scene.get("title", f"Scena {scene['id']}"),
+            "aliases": [],
             "uses": [{"scene_id": scene["id"], "cue": 0}],
             "path": f"assets/user/automatic/{ident}.jpg", "source_path": "",
             "source_type": "scene_background", "wikipedia_page": "", "optional": True,
@@ -208,6 +212,7 @@ def derive(pack):
             continue
         slots.append({"id": ident, "kind": binding.get("kind", "topic"),
             "subject_id": item["id"], "label": binding.get("label") or item.get("title", "Immagine"), "uses": uses,
+            "aliases": list(binding.get("aliases", [])),
             "path": item["path"], "source_path": item["path"], "source_type": "manual_media",
             "existing_media_id": item["id"], "wikipedia_page": "", "required": True, "optional": False,
             "enabled": bool(old.get("enabled", True))})
@@ -259,11 +264,12 @@ def _credit(info, label, state):
 
 
 def _binding_match(item, slot):
+    slot_terms = {media.normalized(term) for term in [slot.get("label", ""), *slot.get("aliases", [])] if media.normalized(term)}
     for binding in item.get("bindings", []):
         if binding.get("kind") != slot["kind"]:
             continue
         terms = [binding.get("label", ""), *binding.get("aliases", [])]
-        if any(media.normalized(term) == media.normalized(slot["label"]) for term in terms):
+        if slot_terms.intersection(media.normalized(term) for term in terms if media.normalized(term)):
             return True
     return False
 
@@ -289,6 +295,34 @@ def _copy_replacement(item, slot, work):
     store.write_json(target.with_suffix(".metadata.json"), metadata)
     slot["replacement_media_id"] = item["id"]
     return target, metadata
+
+
+def seed_reusable(pack, work, records):
+    """Place remembered subject images before acquisition so no web lookup is needed."""
+    work = Path(work)
+    slots = prepare(pack)
+    reused = []
+    for slot in slots:
+        if slot.get("source_type") not in ("person", "place", "visual_asset"):
+            continue
+        if not slot.get("enabled", not slot.get("optional")):
+            continue
+        item = next((record for record in records if record.get("enabled") and _binding_match(record, slot)), None)
+        if item is None:
+            continue
+        target, metadata = _copy_replacement(item, slot, work)
+        source_path = slot.get("source_path")
+        if source_path:
+            source = work / source_path
+            if source != target:
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.unlink(missing_ok=True)
+                shutil.copy2(target, source)
+                source_meta = source.with_suffix(".metadata.json")
+                source_meta.unlink(missing_ok=True)
+                shutil.copy2(target.with_suffix(".metadata.json"), source_meta)
+        reused.append({"slot_id": slot["id"], "label": slot["label"], "media_id": item["id"]})
+    return reused
 
 
 def _person_source(pack, slot, work):

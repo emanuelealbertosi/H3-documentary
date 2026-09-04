@@ -208,12 +208,15 @@ def produce(pid,cfg):
         if kind!='battle' and prepare_history_asset_engine(work,src):log('Motore immagini aggiornato: ricerca licenziata e fallback grafico disponibili per la ripresa.')
         def assets():
             current=store.read_json(packpath)
-            original=packpath.read_bytes();visual_slots.prepare(current);store.write_json(packpath,current)
+            original=packpath.read_bytes();visual_slots.prepare(current)
+            selection=store.read_json(cp/'media-selection.json') if (cp/'media-selection.json').is_file() else []
+            reused=visual_slots.seed_reusable(current,work,selection)
+            store.write_json(packpath,current)
+            if reused:log(f'Memoria visuale: {len(reused)} immagini associate riutilizzate; ricerca e download evitati per questi soggetti.')
             try:cmd("assets")
             except BaseException:
                 packpath.write_bytes(original);raise
             current=store.read_json(packpath)
-            selection=store.read_json(cp/'media-selection.json') if (cp/'media-selection.json').is_file() else []
             visual_slots.materialize(current,work,selection)
             store.write_json(packpath,current)
             states=[visual_slots._metadata_state(work/s['path'])[0] for s in current.get('visual_slots',[]) if s.get('source_type') in ('person','place')]

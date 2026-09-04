@@ -33,7 +33,7 @@ def make_project(review_visuals=False):
     portrait=work/"assets/portraits/film-test/eroe.jpg";portrait.parent.mkdir(parents=True);Image.new("RGB",(200,300),"navy").save(portrait)
     store.write_json(portrait.with_suffix(".metadata.json"),{"descriptionurl":"https://example.test/eroe","extmetadata":{"LicenseShortName":{"value":"Public domain"},"ObjectName":{"value":"Eroe"}}})
     artwork=work/"assets/history/film-test/opera.jpg";artwork.parent.mkdir(parents=True);Image.new("RGB",(300,200),"gold").save(artwork)
-    pack={"schema_version":2,"slug":"film-test","verification_dir":"film-test_verification","persons":[{"id":"eroe","name":"Eroe","portrait":"assets/portraits/film-test/eroe.jpg"}],
+    pack={"schema_version":2,"slug":"film-test","verification_dir":"film-test_verification","persons":[{"id":"eroe","name":"Eroe","aliases":["Campione"],"portrait":"assets/portraits/film-test/eroe.jpg"}],
           "locations":[{"id":"citta","name":"Città","pos":[12,42]}],
           "visual_assets":[{"id":"opera","title":"Opera antica","path":"assets/history/film-test/opera.jpg","source":"https://example.test","license":"Public domain"}],
           "scenes":[{"id":"01","lines":["L'Eroe raggiunge la Città."],"person_ids":["eroe"],"location_ids":["citta"],"asset_ids":[]},
@@ -70,6 +70,20 @@ def test_user_replacement_changes_only_scenes_that_use_the_asset():
     assert changed==["01"] and (work/pack["persons"][0]["portrait"]).read_bytes()!=before
     entry=next(x for x in pack["user_media"] if x["id"]==portrait_slot["id"])
     assert entry["origin"]=="user_replacement" and entry["image_sha256"]==hashlib.sha256((work/entry["path"]).read_bytes()).hexdigest()
+
+
+def test_linked_subject_is_reused_before_download_in_a_future_project():
+    uploaded=media.upload(image_bytes("green"),"odisseo.png")
+    remembered=media.save(uploaded["id"],media.MediaEdit(title="Ritratto di Odisseo",bindings=[{"kind":"person","label":"Odisseo"}],rights="test"))
+    work=store.DATA/"future-project";work.mkdir()
+    pack={"schema_version":2,"slug":"future-film","persons":[{"id":"ulisse","name":"Ulisse","aliases":["Odisseo"]}],
+          "locations":[],"visual_assets":[],"scenes":[{"id":"01","lines":["Odisseo torna verso Itaca."],"person_ids":["ulisse"]}]}
+    reused=visual_slots.seed_reusable(pack,work,[remembered])
+    slot=next(x for x in pack["visual_slots"] if x["kind"]=="person")
+    portrait=work/pack["persons"][0]["portrait"]
+    assert reused==[{"slot_id":slot["id"],"label":"Ulisse","media_id":remembered["id"]}]
+    assert slot["replacement_media_id"]==remembered["id"] and (work/slot["path"]).is_file() and portrait.is_file()
+    assert store.read_json(portrait.with_suffix(".metadata.json"))["h3_user_replacement"] is True
 
 
 def test_nonmap_scene_exposes_optional_background_without_creating_a_blank_inset():
@@ -155,6 +169,7 @@ def test_completed_project_api_lists_all_replaceable_images_and_clone_omits_old_
     response=client.get(f"/api/projects/{pid}/visual-slots")
     assert response.status_code==200 and len(response.json()["slots"])==3
     targets=client.get(f"/api/projects/{pid}/media").json()['targets']
+    assert next(x for x in targets if x.get('visual_slot_id') and x['kind']=='person')['aliases']==['Campione']
     preview=next(x for x in targets if x.get('visual_slot_id') and x.get('visual_has_preview'))
     assert client.get(f"/api/projects/{pid}/visual-slots/{preview['visual_slot_id']}/image").status_code==200
     slot=response.json()['slots'][0]

@@ -98,6 +98,23 @@ def normalized(text):
     text=''.join(c for c in unicodedata.normalize('NFKD',str(text).lower()) if not unicodedata.combining(c))
     return ' '.join(re.findall(r'\w+',text))
 
+def subject_aliases(row):
+    """Return explicit subject variants without guessing historical identities."""
+    values=[]
+    for key in ('aliases','alternate_names','also_known_as','variants'):
+        raw=row.get(key,[]) if isinstance(row,dict) else []
+        if isinstance(raw,str):raw=[raw]
+        if isinstance(raw,list):values.extend(str(value).strip() for value in raw if str(value).strip())
+    ident=str(row.get('id','')).replace('_',' ').replace('-',' ').strip() if isinstance(row,dict) else ''
+    if ident:values.append(ident)
+    label=normalized(row.get('name') or row.get('title') or '') if isinstance(row,dict) else ''
+    result=[];seen={label}
+    for value in values:
+        key=normalized(value)
+        if len(value)>=2 and key and key not in seen:
+            seen.add(key);result.append(value[:120])
+    return result[:12]
+
 def mention(text, term):
     term=normalized(term)
     return bool(term and (' '+term+' ') in (' '+normalized(text)+' '))
@@ -162,5 +179,8 @@ def targets(pid):
             if isinstance(rows,dict):rows=rows.values()
             for r in rows:
                 name=r.get('name') or r.get('title')
-                if name:out.append({'kind':kind,'label':name})
+                if name:
+                    target={'kind':kind,'label':name};aliases=subject_aliases(r)
+                    if aliases:target['aliases']=aliases
+                    out.append(target)
     return out

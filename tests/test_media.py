@@ -111,7 +111,8 @@ def test_project_opt_out_and_frozen_settings(client):
 
 def test_draft_targets_are_extracted_from_outline():
     p=store.create(ProjectRequest(topic='Annibale in Italia',start=False))
-    store.write_json(store.JOBS/p['id']/'checkpoints/outline.json',{'places':[{'id':'roma','name':'Roma'}],'commanders':[{'name':'Annibale'}],'scenes':[{'title':'Le Alpi'}]})
+    store.write_json(store.JOBS/p['id']/'checkpoints/outline.json',{'places':[{'id':'roma','name':'Roma'}],'commanders':[{'id':'annibale','name':'Annibale','aliases':['Hannibal Barca']}],'scenes':[{'title':'Le Alpi'}]})
     assert {'kind':'place','label':'Roma'} in media.targets(p['id'])
-    assert {'kind':'person','label':'Annibale'} in media.targets(p['id'])
+    person=next(x for x in media.targets(p['id']) if x['kind']=='person')
+    assert person['label']=='Annibale' and person['aliases']==['Hannibal Barca']
     assert {'kind':'scene','label':'Le Alpi'} in media.targets(p['id'])
