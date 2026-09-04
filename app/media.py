@@ -53,6 +53,17 @@ def save(mid, value):
         store.write_json(folder(mid)/'record.json', record)
         return record
 
+def remove(mid):
+    """Delete one library item; immutable copies already frozen in projects remain intact."""
+    with store.LOCK:
+        get(mid)
+        root=(store.DATA/'media').resolve()
+        target=folder(mid).resolve()
+        if target.parent != root:
+            raise ValueError('Percorso della libreria non valido.')
+        shutil.rmtree(target)
+        return {'deleted':True,'id':mid}
+
 def upload(raw, filename):
     if not raw or len(raw)>MAX_BYTES: raise ValueError('Usa un’immagine fino a 20 MB.')
     try:

@@ -165,6 +165,22 @@ def test_completed_project_api_lists_all_replaceable_images_and_clone_omits_old_
     assert movie.read_bytes()==b"old movie" and not (store.JOBS/clone["id"]/"workspace/output").exists()
 
 
+def test_visual_layout_is_a_pending_project_choice_and_marks_only_its_scene():
+    pid,work,packpath=make_project(review_visuals=True);pack=store.read_json(packpath)
+    visual_slots.prepare(pack);visual_slots.materialize(pack,work,[]);store.write_json(packpath,pack)
+    store.update(pid,status='review',stage='Revisione immagini e sfondi')
+    slot=next(x for x in visual_slots.status(pid)['slots'] if x['kind']=='person')
+    layout={'x':.08,'y':.23,'width':.3,'fit':'cover'}
+    state=visual_slots.set_layout(pid,slot['id'],layout)
+    changed=next(x for x in state['slots'] if x['id']==slot['id'])
+    assert changed['layout']==layout and changed['pending_layout'] and state['change_count']==1
+    pack=store.read_json(packpath)
+    visual_slots.apply_options(pack,visual_slots.options(pid),visual_slots.layout_options(pid))
+    scenes=visual_slots.materialize(pack,work,[],replacements_only=True)
+    inset=next(x for x in pack['scenes'][0]['image_insets'] if x['asset_id']==slot['id'])
+    assert scenes==['01'] and inset['layout']==layout
+
+
 def test_selective_worker_renders_only_changed_scene_and_reassembles(monkeypatch,tmp_path):
     pid,work,packpath=make_project();pack=store.read_json(packpath);visual_slots.prepare(pack);visual_slots.materialize(pack,work,[]);store.write_json(packpath,pack)
     timeline={**{k:v for k,v in pack.items() if k!='scenes'},"duration":6,"scenes":[

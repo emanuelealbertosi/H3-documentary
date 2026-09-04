@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
+from pydantic import ValidationError
 from starlette.concurrency import run_in_threadpool
 from . import media, store
 
@@ -19,6 +20,11 @@ async def upload(request:Request, filename:str='Immagine'):
 @router.put('/api/media/{mid}')
 def edit(mid:str,value:media.MediaEdit):return media.save(mid,value)
 
+@router.delete('/api/media/{mid}')
+def delete(mid:str):
+    try:return media.remove(mid)
+    except KeyError:raise HTTPException(404,'Immagine non disponibile.')
+
 @router.get('/api/media/{mid}/{kind}')
 def image(mid:str,kind:str):
     media.get(mid)
@@ -30,6 +36,8 @@ def project_media(pid:str):
     p=store.project(pid);path=store.JOBS/pid/'checkpoints/media-selection.json'
     from .visual_slots import status
     visual=status(pid);targets=media.targets(pid)
+    visual['editable']=p['status'] in ('review','completed')
+    visual['project_status']=p['status']
     for slot in visual['slots']:
         target={'kind':slot['kind'],'label':slot['label'],'visual_slot_id':slot['id'],'visual_state':slot['state'],'scene_ids':slot['scene_ids'],'source_type':slot.get('source_type',''),
                 'optional':bool(slot.get('optional')),'required':bool(slot.get('required')),'enabled':bool(slot.get('enabled')),'pending_option':bool(slot.get('pending_option')),
@@ -63,10 +71,17 @@ def visual_slot_image(pid:str,slot_id:str):
 
 @router.put('/api/projects/{pid}/visual-slots/{slot_id}')
 def visual_slot_edit(pid:str,slot_id:str,value:dict):
-    if type(value.get('enabled')) is not bool:raise HTTPException(422,'Indica se mostrare questo riferimento nel film.')
-    from .visual_slots import set_enabled
-    try:return set_enabled(pid,slot_id,value['enabled'])
+    if 'enabled' not in value and 'layout' not in value:raise HTTPException(422,'Indica la modifica visuale richiesta.')
+    from .visual_slots import set_enabled,set_layout,status
+    try:
+        if 'enabled' in value:
+            if type(value['enabled']) is not bool:raise HTTPException(422,'Indica se mostrare questo riferimento nel film.')
+            set_enabled(pid,slot_id,value['enabled'])
+        if 'layout' in value:set_layout(pid,slot_id,value['layout'])
+        return status(pid)
     except KeyError:raise HTTPException(404,'Riferimento visuale non disponibile.')
+    except ValidationError:raise HTTPException(422,'Inquadratura visuale non valida.')
+    except ValueError as error:raise HTTPException(409,str(error))
 
 @router.post('/api/projects/{pid}/visual-refresh',status_code=202)
 def visual_refresh(pid:str):

@@ -311,7 +311,7 @@ def approve_visual_review(pid):
         if active(pid):raise ValueError('Questo progetto è ancora in esecuzione.')
         packpath=visual_slots.project_pack(pid);work=packpath.parents[2]
         pack=store.read_json(packpath)
-        visual_slots.apply_options(pack,visual_slots.options(pid))
+        visual_slots.apply_options(pack,visual_slots.options(pid),visual_slots.layout_options(pid))
         changed=visual_slots.materialize(pack,work,media.catalog(),replacements_only=True)
         store.write_json(packpath,pack)
         marker=JOBS/pid/'checkpoints/visual-review.approved.json'
@@ -350,7 +350,7 @@ def refresh_visuals(pid,cfg):
             src=source/rel;dst=work/rel
             if src.is_file():dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
         packpath=visual_slots.project_pack(pid);pack=store.read_json(packpath)
-        visual_slots.apply_options(pack,visual_slots.options(pid))
+        visual_slots.apply_options(pack,visual_slots.options(pid),visual_slots.layout_options(pid))
         changed=visual_slots.materialize(pack,work,media.catalog(),replacements_only=True)
         if not changed:raise ValueError('Le immagini collegate sono già quelle usate dal film.')
         store.write_json(packpath,pack);visual_slots.sync_timeline(pack,work)

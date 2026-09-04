@@ -24,20 +24,44 @@ def _options_path(pid: str) -> Path:
     return store.JOBS / pid / "checkpoints" / "visual-options.json"
 
 
-def options(pid: str) -> dict:
+def preferences(pid: str) -> dict:
     path = _options_path(pid)
     if not path.is_file():
-        return {}
+        return {"slots": {}, "layouts": {}}
     data = store.read_json(path)
-    return {str(key): bool(value) for key, value in data.get("slots", {}).items()}
+    return {
+        "slots": {str(key): bool(value) for key, value in data.get("slots", {}).items()},
+        "layouts": {str(key): media.Layout.model_validate(value).model_dump() for key, value in data.get("layouts", {}).items()},
+    }
 
 
-def apply_options(pack, selected):
+def options(pid: str) -> dict:
+    return preferences(pid)["slots"]
+
+
+def layout_options(pid: str) -> dict:
+    return preferences(pid)["layouts"]
+
+
+def apply_options(pack, selected, layouts=None):
     """Overlay project-local choices without changing the reusable source model."""
     slots = derive(pack)
     for slot in slots:
         if slot["id"] in selected:
             slot["enabled"] = bool(selected[slot["id"]])
+    changed_scenes=set()
+    for slot_id,layout in (layouts or {}).items():
+        slot=next((item for item in slots if item["id"]==slot_id),None)
+        if slot is None:continue
+        layout=media.Layout.model_validate(layout).model_dump()
+        entry=next((item for item in pack.get("user_media",[]) if item.get("id")==slot_id),None)
+        if entry is not None and entry.get("layout")!=layout:
+            entry["layout"]=layout;changed_scenes.update(use["scene_id"] for use in slot["uses"])
+        for scene in pack.get("scenes",[]):
+            for inset in scene.get("image_insets",[]):
+                if inset.get("asset_id")==slot_id and inset.get("layout")!=layout:
+                    inset["layout"]=layout;changed_scenes.add(scene["id"])
+    if changed_scenes:pack["_pending_visual_layout_scenes"]=sorted(changed_scenes)
     pack["visual_slots"] = slots
     return slots
 
@@ -50,10 +74,23 @@ def set_enabled(pid: str, slot_id: str, enabled: bool):
     slot = next((item for item in slots if item.get("id") == slot_id), None)
     if slot is None:
         raise KeyError(slot_id)
-    chosen = options(pid);chosen[slot_id] = bool(enabled)
-    store.write_json(_options_path(pid), {"slots": chosen, "updated": store.now()})
+    chosen = preferences(pid);chosen["slots"][slot_id] = bool(enabled);chosen["updated"] = store.now()
+    store.write_json(_options_path(pid), chosen)
     action = "attivato" if enabled else "escluso"
     store.event(pid, f"Riferimento visuale {action}: {slot['label']}.")
+    return status(pid)
+
+
+def set_layout(pid: str, slot_id: str, layout):
+    project=store.project(pid)
+    if project["status"] not in ("review","completed"):
+        raise ValueError("Puoi cambiare posizione e dimensione durante la revisione visuale oppure dopo il completamento del film.")
+    slot=next((item for item in derive(store.read_json(project_pack(pid))) if item.get("id")==slot_id),None)
+    if slot is None:raise KeyError(slot_id)
+    value=media.Layout.model_validate(layout).model_dump()
+    chosen=preferences(pid);chosen["layouts"][slot_id]=value;chosen["updated"]=store.now()
+    store.write_json(_options_path(pid),chosen)
+    store.event(pid,f"Inquadratura visuale modificata: {slot['label']}.")
     return status(pid)
 
 
@@ -302,7 +339,7 @@ def materialize(pack, work, records=None, replacements_only=False):
     records = list(records or [])
     old_entries = {x.get("id"): x for x in pack.get("user_media", []) if isinstance(x, dict)}
     manual_entries = [dict(x) for x in pack.get("user_media", []) if not str(x.get("id", "")).startswith("visual-")]
-    changed_scenes = set()
+    changed_scenes = set(pack.pop("_pending_visual_layout_scenes", []))
     superseded_manual_ids = set()
     disabled_manual_ids = set()
     disabled_asset_ids = set()
@@ -485,6 +522,7 @@ def status(pid):
     pack = store.read_json(packpath)
     slots = derive(pack)
     selected = options(pid)
+    layout_choices = layout_options(pid)
     entries = {x.get("id"): x for x in pack.get("user_media", []) if isinstance(x, dict)}
     records = media.catalog()
     result = []
@@ -495,7 +533,7 @@ def status(pid):
         path = packpath.parents[2] / entry.get("path", slot["path"])
         if not path.is_file() and slot.get("source_path"):
             path = packpath.parents[2] / slot["source_path"]
-        state, _ = _metadata_state(path)
+        state, info = _metadata_state(path)
         if slot.get("source_type") == "scene_background" and state == "missing":
             state = "empty"
         current_manual=next((x for x in pack.get('user_media',[]) if not str(x.get('id','')).startswith('visual-') and _binding_match(x,slot)),None) if slot.get('source_type') in ('person','place') else None
@@ -505,7 +543,11 @@ def status(pid):
         replacement = next((x for x in records if enabled and x.get("enabled") and x.get("id") not in current_ids and _binding_match(x, slot)), None)
         if not enabled:state = "disabled"
         elif slot.get("optional") and state in ("missing", "empty"):state = "blank"
+        saved_layout=media.Layout.model_validate(entry.get("layout", {})).model_dump()
+        layout=layout_choices.get(slot["id"],saved_layout)
+        credit=_credit(info,slot["label"],state)
         result.append({**slot, "enabled": enabled, "state": state, "pending_option": enabled != saved_enabled,
+                       "pending_layout": layout != saved_layout, "layout": layout, **credit,
                        "replacement_ready": bool(replacement), "has_preview": path.is_file(),
                        "replacement_title": replacement.get("title", "") if replacement else "",
                        "scene_ids": sorted({u["scene_id"] for u in slot["uses"]})})
@@ -516,7 +558,7 @@ def status(pid):
         "blank_count": sum(x["state"] in ("blank", "missing") for x in result),
         "empty_background_count": sum(x["source_type"] == "scene_background" and not x["enabled"] for x in result),
         "replacement_count": sum(x["replacement_ready"] for x in result),
-        "change_count": sum(x["replacement_ready"] or x["pending_option"] for x in result),
+        "change_count": sum(x["replacement_ready"] or x["pending_option"] or x["pending_layout"] for x in result),
         "required_count": sum(bool(x.get("required")) for x in result),
         "suggested_count": sum(bool(x.get("optional")) for x in result),
         "active_suggested_count": sum(bool(x.get("optional")) and x["enabled"] for x in result),

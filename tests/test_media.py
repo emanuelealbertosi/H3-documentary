@@ -65,6 +65,12 @@ def test_archive_restore_preserves_files(client):
     v.enabled=True
     assert client.put('/api/media/'+m['id'],json=v.model_dump()).json()['enabled'] is True
 
+def test_delete_removes_only_the_library_copy(client):
+    m=bound();target=media.folder(m['id'])
+    response=client.delete('/api/media/'+m['id'])
+    assert response.status_code==200 and response.json()=={'deleted':True,'id':m['id']}
+    assert not target.exists() and client.delete('/api/media/'+m['id']).status_code==404
+
 def test_snapshot_no_mutation_or_unmatched_assets(tmp_path):
     m=bound();unused=media.upload(picture('blue'),'altro.png')
     p=store.create(ProjectRequest(topic='La storia di Annibale',start=False))

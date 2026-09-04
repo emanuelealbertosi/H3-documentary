@@ -1,4 +1,4 @@
-import {mediaPage} from './media.js?v=1.9.1-ui2';
+import {mediaPage} from './media.js?v=1.9.2';
 import {documentsPage} from './documents.js';
 import {mountTtsAdmin,ttsSelection,projectTtsSelection,bindReference} from './tts-api.js?v=1.8.0';
 let disposeMedia,disposeDocuments;

@@ -92,6 +92,8 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     assert 'Immagini del film' in frontend.text and 'Aggiorna solo le scene interessate' in media_frontend
     assert 'media-column-resizer' in media_frontend and 'h3-media-target-width' in media_frontend
     assert '--media-target-width:380px' in media_styles and 'cursor:col-resize' in media_styles
+    assert "const all=project?[...(project.targets||[]),...extra]" in media_frontend
+    assert 'Scollega' in media_frontend and 'delete-image' in media_frontend and 'visual-replace' in media_frontend
     assert any(x['id']=='chatterbox' and 'Chatterbox Multilingual V3' in x['name'] for x in client.get('/api/tts').json()['engines'])
 
 def test_voice_reference_upload_and_project_selection(client):
