@@ -110,7 +110,7 @@ def test_admin_reasoning_control_is_visible_and_frontend_is_revalidated(client):
     assert 'Tempo di elaborazione:' in frontend.text
     media_frontend=client.get(f'/static/media.js?v={version}').text
     media_styles=client.get('/static/media.css').text
-    assert 'Immagini del film' in frontend.text and 'Aggiorna solo le scene interessate' in media_frontend
+    assert 'Immagini del film' in frontend.text and 'Rivedi e aggiorna questo video' in media_frontend
     assert 'media-column-resizer' in media_frontend and 'h3-media-target-width' in media_frontend
     assert '--media-target-width:380px' in media_styles and 'cursor:col-resize' in media_styles
     assert "const all=project?[...(project.targets||[]),...extra]" in media_frontend

@@ -38,11 +38,11 @@ export class ReviewDraft {
  }
 }
 
-export function editorHtml(){return `<div class="review-editor-heading"><div><h2>Rivedi il racconto e i luoghi</h2><p class="tiny muted">Tutto facoltativo. Puoi correggere il testo narrato o spostare un luogo prima di produrre la voce e il video.</p></div><span data-review-badge class="status"></span></div>
+export function editorHtml({finalReview=false}={}){return `<div class="review-editor-heading"><div><h2>Rivedi il racconto e i luoghi</h2><p class="tiny muted" data-review-introduction>Tutto facoltativo. Puoi correggere il testo narrato o spostare un luogo ${finalReview?'nel film già completato.':'prima di produrre la voce e il video.'}</p></div><span data-review-badge class="status"></span></div>
  <p data-review-reason class="tiny muted" role="status"></p><div data-review-content hidden>
  <details class="review-section" data-review-text><summary>Testo narrato <span data-review-scene-total></span></summary><div class="review-scene-toolbar"><div class="field"><label for="review-scene">Scena da rivedere</label><select id="review-scene" data-review-scenes></select></div><div class="actions"><button type="button" class="secondary" data-review-reset-text>Annulla modifiche non salvate</button><button type="button" class="secondary" data-review-original-text>Ripristina testo originale</button></div></div><p class="tiny muted" data-review-scene-caption></p><div data-review-lines></div><p class="tiny muted">Ogni casella corrisponde a un passaggio già associato alle animazioni. Puoi riscriverlo; la durata e la sincronizzazione verranno ricalcolate quando continui.</p></details>
  <details class="review-section" data-review-geography><summary>Luoghi sulla mappa <span data-review-place-total></span></summary><p class="tiny muted">Questa mappa serve a posizionare i luoghi. Le coste sono uno sfondo geografico di orientamento, non confini storici. Le correzioni spostano i riferimenti collegati al luogo nelle scene.</p><div class="review-geography-grid"><div class="review-place-sidebar"><div class="field"><label for="review-place-search">Cerca tra i luoghi del progetto</label><input id="review-place-search" data-review-search type="search" placeholder="Nome del luogo"></div><div class="review-place-list" data-review-places role="group" aria-label="Luoghi del progetto"></div></div><div class="review-map-column"><div class="review-map-toolbar"><button type="button" class="secondary" data-review-all>Mostra tutti i luoghi</button><button type="button" class="secondary" data-review-detail aria-pressed="false">Mappa dettagliata online</button></div><p class="tiny muted" data-review-map-note>La mappa iniziale funziona anche senza connessione. I dettagli online richiedono le mappe di OpenStreetMap; viene condivisa soltanto l’area visualizzata.</p><div class="review-map" data-review-map aria-label="Mappa dei luoghi del progetto"></div><p data-review-map-status class="tiny muted" role="status"></p><div class="review-place-controls"><h3 data-review-place-name></h3><p class="tiny muted" data-review-place-scenes></p><div class="actions"><button type="button" class="secondary" data-review-position aria-pressed="false">Posiziona sulla mappa</button><button type="button" class="secondary" data-review-reset-place>Annulla spostamento non salvato</button><button type="button" class="secondary" data-review-original-place>Ripristina posizione originale</button></div><p class="tiny muted">Trascina il segnaposto oppure premi Posiziona sulla mappa e indica il punto. Puoi anche inserire le coordinate qui sotto.</p><details><summary>Coordinate del luogo</summary><div class="form-grid"><div class="field"><label for="review-lat">Latitudine</label><input id="review-lat" data-review-lat type="number" min="-78" max="78" step="any"></div><div class="field"><label for="review-lon">Longitudine</label><input id="review-lon" data-review-lon type="number" min="-179" max="179" step="any"></div></div></details></div></div></div></details>
- <div class="review-save-row"><div><b data-review-save-status role="status" aria-live="polite"></b><p class="tiny muted">Salvare prepara le modifiche. Premi <b>Continua produzione</b> per applicarle al film insieme alle immagini.</p></div><button type="button" class="primary" data-review-save>Salva la revisione</button></div></div><button type="button" data-review-retry class="secondary" hidden>Riprova ad aprire la revisione</button>`}
+ <div class="review-save-row"><div><b data-review-save-status role="status" aria-live="polite"></b><p class="tiny muted" data-review-save-help>Salvare prepara le modifiche. Premi <b>${finalReview?'Aggiorna questo video':'Continua produzione'}</b> per applicarle al film insieme alle immagini.</p></div><button type="button" class="primary" data-review-save>Salva la revisione</button></div></div><button type="button" data-review-retry class="secondary" hidden>Riprova ad aprire la revisione</button>`}
 
 function loadLeaflet(){
  if(globalThis.L)return Promise.resolve(globalThis.L);
@@ -52,9 +52,9 @@ function loadLeaflet(){
  });return leafletReady;
 }
 
-function mount(target,id,{api,toast}){
- target.innerHTML=editorHtml();
- const ui={target,id,api,toast,model:null,stateKey:'',sceneId:null,placeId:null,map:null,markers:new Map(),dead:false,loading:null,placing:false};
+function mount(target,id,{api,toast,finalReview}){
+ target.innerHTML=editorHtml({finalReview:!!finalReview?.editing||!!finalReview?.busy});
+ const ui={target,id,api,toast,finalReview:!!finalReview?.editing||!!finalReview?.busy,model:null,stateKey:'',sceneId:null,placeId:null,map:null,markers:new Map(),dead:false,loading:null,placing:false};
  ui.node=name=>target.querySelector('[data-review-'+name+']');
  const n=ui.node;
  ui.beforeUnload=event=>{if(ui.model?.dirty){event.preventDefault();event.returnValue=''}};window.addEventListener('beforeunload',ui.beforeUnload);
@@ -148,7 +148,7 @@ async function save(ui){
  if(!ui.model.dirty)return;
  const request=ui.model.save(patch=>ui.api('/projects/'+encodeURIComponent(ui.id)+'/editorial-review',{method:'PUT',body:JSON.stringify(patch)}));
  renderStatus(ui);
- try{await request;if(!ui.dead)ui.toast('Revisione salvata. Verrà applicata quando continui la produzione.')}finally{if(!ui.dead)renderStatus(ui)}
+ try{await request;if(!ui.dead)ui.toast(ui.finalReview?'Revisione salvata. Premi Aggiorna questo video per applicarla al film.':'Revisione salvata. Verrà applicata quando continui la produzione.')}finally{if(!ui.dead)renderStatus(ui)}
 }
 
 async function ensureMap(ui){
@@ -192,16 +192,19 @@ async function toggleDetails(ui){
 export function updateReviewEditor(target,id,project,options){
  if(!target)return;
  if(!active||active.target!==target||active.id!==id){disposeReviewEditor();active=mount(target,id,options)}
- const ui=active,key=project.status+'|'+project.stage+'|'+!!options.presentationBusy;
+ const ui=active,finalReview=options.finalReview||{},key=project.status+'|'+project.stage+'|'+!!options.presentationBusy+'|'+!!finalReview.editing+'|'+!!finalReview.busy+'|'+(finalReview.revision_number||0)+'|'+(finalReview.status||'');
+ ui.finalReview=!!finalReview.editing||!!finalReview.busy;
+ ui.node('introduction').textContent='Tutto facoltativo. Puoi correggere il testo narrato o spostare un luogo '+(ui.finalReview?'nel film già completato.':'prima di produrre la voce e il video.');
+ ui.node('save-help').innerHTML='Salvare prepara le modifiche. Premi <b>'+(ui.finalReview?'Aggiorna questo video':'Continua produzione')+'</b> per applicarle al film insieme alle immagini.';
  if(key!==ui.stateKey){ui.stateKey=key;
-  if(ui.model&&['running','queued','cancelling'].includes(project.status)){ui.model.saved.editable=false;ui.model.saved.reason='La produzione è in corso: le modifiche saranno disponibili alla pausa di revisione.';renderStatus(ui)}
+  if(ui.model&&(finalReview.busy||['running','queued','cancelling'].includes(project.status))){ui.model.saved.editable=false;ui.model.saved.reason='La produzione è in corso: le modifiche saranno disponibili alla pausa di revisione.';renderStatus(ui)}
   load(ui);
- }else if(project.status==='review'&&ui.model?.saved.available&&!ui.model.saved.editable&&!ui.model.dirty&&!ui.loading&&Date.now()-ui.lastLoad>=7000&&/^Attendi/.test(ui.model.saved.reason||'')){
+ }else if((project.status==='review'||finalReview.editing)&&ui.model?.saved.available&&!ui.model.saved.editable&&!ui.model.dirty&&!ui.loading&&Date.now()-ui.lastLoad>=7000&&/^Attendi/.test(ui.model.saved.reason||'')){
   // A review can be published just before the worker releases its lock.
   // Retry only this transient state; an ordinary project poll never reloads text.
   load(ui);
  }
 }
-export async function saveReviewEditor(){if(active?.loading)await active.loading;if(active?.model?.dirty)await save(active)}
+export async function saveReviewEditor(){if(active?.loading)await active.loading;if(active?.model?.dirty)await save(active);if(active?.model?.dirty)throw Error('Hai aggiunto altre modifiche durante il salvataggio. Salva di nuovo la revisione prima di aggiornare il video.')}
 export function canLeaveReview(){return !active?.model?.dirty||confirm('Ci sono modifiche alla revisione non salvate. Vuoi uscire e perderle?')}
 export function disposeReviewEditor(){if(!active)return;active.dead=true;window.removeEventListener('beforeunload',active.beforeUnload);active.map?.remove();active=null}

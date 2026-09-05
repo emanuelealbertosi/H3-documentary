@@ -14,8 +14,38 @@ mostrare una scheda da completare.
 
 Nel progetto in revisione, apri **Rivedi il racconto e i luoghi**. Non occorre
 abilitare un nuovo modello o installare un altro programma. Le produzioni già in
-corso non vengono modificate durante il rendering; per un film completato crea
-prima una nuova versione con la revisione attivata, conservando il video vecchio.
+corso non vengono modificate durante il rendering. Per un film completato usa
+**Riapri revisione**, disponibile nella pagina del progetto.
+
+## Correggere un film completato nello stesso progetto
+
+**Riapri revisione** rende nuovamente disponibili testi, luoghi e immagini.
+Modifica soltanto ciò che ti serve, poi premi **Aggiorna questo video**.
+Il pulsante salva anche i testi ancora aperti nell'editor. Non crea V2/V3,
+non ripete la ricerca e non riscrive il racconto con il modello.
+
+- Le immagini aggiornano le scene in cui compaiono.
+- Il testo corretto viene risintetizzato conservando voce, riferimento e
+  impostazioni del film. Le frasi ancora valide vengono riutilizzate dalla cache;
+  tutti gli audio delle scene intatte vengono conservati.
+- I luoghi aggiornano percorsi e inquadrature collegati. Se necessario si
+  prepara nuovamente la base geografica e si aggiornano le scene che la mostrano.
+- Se cambia la durata della voce o un elemento grafico comune, possono servire
+  altre scene per mantenere coerenti timeline e localizzatori. Il diario lo indica.
+
+Il montaggio finale, i sottotitoli e i controlli integrali vengono rifatti sul
+video aggiornato. Il film precedente resta scaricabile durante il lavoro e viene
+conservato in una copia locale prima della sostituzione verificata. Se un servizio
+TTS o il rendering fallisce, il vecchio film resta disponibile e la revisione
+può essere corretta e ritentata. Lo stesso vale dopo un'interruzione dell'app.
+Non occorre collegare un LLM per applicare correzioni manuali.
+
+**Annulla revisione** ripristina testo, luoghi e scelte visuali salvati prima
+dell'apertura; le immagini aggiunte alla libreria restano riutilizzabili. Il film
+non cambia finché non premi **Aggiorna questo video** e la verifica riesce.
+Le presentazioni PDF già esportate vengono conservate: crea un altro PDF se vuoi
+includere le nuove correzioni. **Prepara nuova versione** resta il comando per
+cambiare struttura, argomento o fonti e ripartire dalla ricerca.
 
 ## Rivedere il testo narrato
 

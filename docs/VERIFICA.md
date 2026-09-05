@@ -1,5 +1,31 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.17.0: revisione facoltativa dei film completati nello stesso
+progetto, senza nuova versione né ricerca LLM. **604 test automatici superati**,
+includendo 50 nuovi controlli su riapertura, snapshot indipendenti, esclusione
+delle modifiche concorrenti, annullamento, recupero dopo riavvio, pubblicazione
+verificata con rollback, conservazione degli audio e dipendenze grafiche della
+timeline. I vecchi motori ricevono soltanto i moduli vocali necessari nella copia
+candidata; renderer, pack e clip precedenti restano conservati.
+
+Prova end-to-end reale: film tecnico di 9 secondi, tre tavole culturali originali,
+1920×1080 a 12 fps. Una sostituzione della tavola 02 attraversa apertura,
+caricamento immagine, snapshot, worker, rendering, montaggio, verifica e
+pubblicazione. Le clip 01/03 e tutte le WAV conservano hash identici; la clip 02
+e l'MP4 cambiano. Archivio precedente identico all'originale, stesso ID/famiglia/
+versione, unico progetto e sorgente ancora schema 2. Decodificati tutti i 108
+fotogrammi, audio AAC stereo 48 kHz a −15,98 LUFS, tre capitoli, sottotitoli e
+controllo flicker superato. L'audio della prova è procedurale: nessuna chiamata
+LLM/TTS e nessuna nuova produzione dell'utente. I test vocali separati usano
+WAV reali e FFmpeg con un sintetizzatore controllato, senza certificare il timbro
+di un servizio remoto.
+
+Nell'interfaccia reale su istanza isolata verificati **Riapri revisione**, modifica
+e salvataggio di un passaggio, **Annulla revisione**, ritorno al film completato
+e assenza di errori JavaScript. Il testo salvato non modifica il film prima
+dell'applicazione; l'annullamento rimuove la bozza. I controlli HTTP dei pannelli
+e la conservazione del video durante l'aggiornamento sono coperti dalla suite.
+
 Aggiornamento 1.16.0: **554 test automatici superati**. Controllo esplicito del seed fisso nei profili Higgs, con conservazione dei valori salvati, gestione di 0 e modalità casuale. Le prove HTTP simulate verificano stesso seed e stesso riferimento nelle richieste JSON/multipart, nei retry di trasporto, nel ripiego senza tag e dopo una ripresa parziale con profilo modificato in Amministrazione. Cambiare esplicitamente seed o registrazione vocale distingue la cache; riusare lo stesso campione mantiene i file validi. Il diario e il manifesto vocale registrano i controlli richiesti senza dichiarare garantita l'identità del narratore.
 
 Nel browser, in una copia isolata, verificati creazione del profilo Higgs con seed 42, salvataggio e riapertura del seed 0, disattivazione e riattivazione della spunta. Nessuna sintesi remota o chiamata a modelli, nessun film rigenerato e nessuna modifica automatica ai profili personali. Il video segnalato usava seed -1 e nessun campione o voice ID: questo è un dato di configurazione, non una prova acustica che attribuisca ogni variazione al solo seed.

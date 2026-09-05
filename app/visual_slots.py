@@ -8,6 +8,7 @@ import shutil
 from pathlib import Path
 
 from . import media, store
+from .presentations import project_mutation
 from pipeline.engine.image_rights import manual_allowed, metadata_policy, usage_for
 
 NONMAP_SCENES = {"timeline", "person_intro", "event_focus", "comparison", "data_visualization", "quote", "artwork", "document", "transition", "summary"}
@@ -67,6 +68,7 @@ def apply_options(pack, selected, layouts=None):
     return slots
 
 
+@project_mutation
 def set_enabled(pid: str, slot_id: str, enabled: bool):
     project = store.project(pid)
     if project["status"] not in ("review", "completed"):
@@ -82,6 +84,7 @@ def set_enabled(pid: str, slot_id: str, enabled: bool):
     return status(pid)
 
 
+@project_mutation
 def set_layout(pid: str, slot_id: str, layout):
     project=store.project(pid)
     if project["status"] not in ("review","completed"):
@@ -306,8 +309,15 @@ def _binding_match(item, slot):
     return False
 
 
-def _copy_replacement(item, slot, work):
-    source = media.folder(item["id"])
+def _replacement_folder(ident, media_root=None):
+    if media_root is None:return media.folder(ident)
+    root=Path(media_root).resolve();source=(root/ident).resolve()
+    if source.parent!=root:raise ValueError('Riferimento immagine non valido.')
+    return source
+
+
+def _copy_replacement(item, slot, work, media_root=None):
+    source = _replacement_folder(item["id"],media_root)
     target = work / slot["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
     if hashlib.sha256((source / "image.png").read_bytes()).hexdigest() != item["image_sha256"]:
@@ -404,7 +414,7 @@ def _placeholder(slot, work):
     return target
 
 
-def materialize(pack, work, records=None, replacements_only=False):
+def materialize(pack, work, records=None, replacements_only=False, media_root=None):
     """Attach automatic cards or user replacements to the exact spoken cues."""
     work = Path(work)
     slots = prepare(pack)
@@ -441,7 +451,7 @@ def materialize(pack, work, records=None, replacements_only=False):
             if slot["subject_id"] in pack.get("disabled_visual_asset_ids", []):
                 changed_scenes.update(use["scene_id"] for use in slot["uses"])
             if replacement:
-                source = media.folder(replacement["id"]) / "image.png"; target = work / slot["source_path"]
+                source = _replacement_folder(replacement["id"],media_root) / "image.png"; target = work / slot["source_path"]
                 previous_sha = hashlib.sha256(target.read_bytes()).hexdigest() if target.is_file() else ""
                 target.unlink(missing_ok=True); target.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(source, target)
                 metadata = target.with_suffix(".metadata.json"); metadata.unlink(missing_ok=True)
@@ -473,7 +483,7 @@ def materialize(pack, work, records=None, replacements_only=False):
                 entry = next((x for x in manual_entries if x.get("id") == slot["existing_media_id"]), None)
                 if entry:
                     target = work / entry["path"]; previous_sha = entry.get("image_sha256", "")
-                    target.unlink(missing_ok=True); shutil.copy2(media.folder(replacement["id"]) / "image.png", target)
+                    target.unlink(missing_ok=True); shutil.copy2(_replacement_folder(replacement["id"],media_root) / "image.png", target)
                     entry.update(title=replacement["title"], filename=replacement["filename"], image_sha256=replacement["image_sha256"], sha256=replacement["sha256"],
                                  credit=replacement.get("credit", ""), source=replacement.get("source", ""), rights=replacement.get("rights", ""), license_url=replacement.get("license_url", ""), origin="user_replacement")
                     if entry["image_sha256"] != previous_sha: changed_scenes.update(use["scene_id"] for use in slot["uses"])
@@ -482,7 +492,7 @@ def materialize(pack, work, records=None, replacements_only=False):
         if replacement:
             if current_manual:
                 superseded_manual_ids.add(current_manual['id']);manual_entries=[x for x in manual_entries if x.get('id')!=current_manual['id']]
-            target, info = _copy_replacement(replacement, slot, work)
+            target, info = _copy_replacement(replacement, slot, work,media_root)
             state, origin = "user", "user_replacement"
             if slot["kind"] == "person" and slot.get("source_path"):
                 portrait = work / slot["source_path"]

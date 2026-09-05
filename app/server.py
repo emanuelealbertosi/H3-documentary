@@ -15,10 +15,13 @@ from .document_routes import router as document_router
 from .tts_routes import router as tts_router,preview_router
 from .presentations import router as presentation_router,project_mutation
 from .review_editor import router as review_editor_router
+from .final_review import router as final_review_router
 
 @asynccontextmanager
 async def lifespan(app):
     store.init()
+    from .final_review import recover as recover_final_reviews
+    recover_final_reviews()
     yield
     from .runner import shutdown
     shutdown()
@@ -31,6 +34,7 @@ app.include_router(tts_router)
 app.include_router(preview_router)
 app.include_router(presentation_router)
 app.include_router(review_editor_router)
+app.include_router(final_review_router)
 
 @app.middleware("http")
 async def local_boundary(request:Request,call_next):
@@ -135,10 +139,15 @@ def get_events(pid:str,after:int=0):
 @app.post("/api/projects/{pid}/start")
 @project_mutation
 def start_project(pid:str):
+    from . import final_review
+    if final_review.read(pid).get('status') in (final_review.EDITING | final_review.BUSY):
+        raise HTTPException(409,'Questa produzione ha una revisione finale: usa Aggiorna questo video per applicare le modifiche.')
     from .runner import enqueue
     enqueue(pid);return store.project(pid)
 @app.post("/api/projects/{pid}/cancel")
 def cancel_project(pid:str):
+    from .final_review import cancel as cancel_final_review
+    if cancel_final_review(pid):return store.project(pid)
     from .runner import cancel
     cancel(pid);return store.project(pid)
 @app.post('/api/projects/{pid}/regenerate')

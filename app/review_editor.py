@@ -185,7 +185,8 @@ def state(pid):
         except (ValueError, OSError):
             return empty
         reason = ""
-        if project["status"] != "review":
+        from .final_review import is_editing
+        if project["status"] != "review" and not (project["status"] == "completed" and is_editing(pid)):
             reason = "Puoi modificare testo e luoghi quando il progetto è fermo per la revisione."
         elif runner.active(pid):
             reason = "Attendi che il motore termini il passaggio corrente."
