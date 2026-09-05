@@ -122,7 +122,11 @@ def ground_coordinates(document,workspace):
     locations=result.get('locations',result.get('places',[]))
     if not documents or not isinstance(locations,list):return result,[]
     changes=[];replacements={}
+    reviewed={place['id']:tuple(place['pos']) for place in locations if place.get('coordinate_origin')=='user_review'}
     for place in locations:
+        # A deliberate correction in the review UI takes precedence over the
+        # document's original coordinates, including on later production resumes.
+        if place['id'] in reviewed:continue
         candidate=_candidate(place,documents)
         if not candidate or _distance(place['pos'],candidate['pos'])<1:continue
         old=list(place['pos']);place['pos']=candidate['pos'];replacements[tuple(old)]=tuple(candidate['pos'])
@@ -130,10 +134,16 @@ def ground_coordinates(document,workspace):
         place['note']=(note+f" Coordinate ricontrollate nel documento locale «{candidate['source']}».").strip()
         changes.append({'id':place['id'],'name':place['name'],'old':old,**candidate})
     if not changes:return result,[]
+    changed_positions={change['id']:change['pos'] for change in changes}
     for scene in result.get('scenes',[]):
-        for movement in scene.get('movements',[]):
-            movement['points']=[list(replacements.get(tuple(point),tuple(point))) for point in movement.get('points',[])]
-        for edge in scene.get('network',{}).get('edges',[]):
-            edge['points']=[list(replacements.get(tuple(point),tuple(point))) for point in edge.get('points',[])]
+        for movement in [*scene.get('movements',[]),*scene.get('network',{}).get('edges',[])]:
+            # If two places share a point, do not move a manually reviewed one
+            # incidentally while grounding the other. Explicit endpoints remain
+            # able to follow their own automatically corrected location.
+            movement['points']=[list(tuple(point) if tuple(point) in reviewed.values() else replacements.get(tuple(point),tuple(point)))
+                                for point in movement.get('points',[])]
+            if movement['points']:
+                for field,index in (('from',0),('to',-1)):
+                    if movement.get(field) in changed_positions:movement['points'][index]=list(changed_positions[movement[field]])
     _refresh_views(result)
     return result,changes

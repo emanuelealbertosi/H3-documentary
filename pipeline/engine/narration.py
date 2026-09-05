@@ -34,6 +34,7 @@ def select_voice_tempo(pack,backend,natural,gaps):
     """Fit narration to the requested duration without penalising slow external voices."""
     delivery=delivery_options(pack)
     if delivery:return delivery['speed']
+    if pack.get('metadata',{}).get('manual_narration') is True:return 1.0
     if pack.get('_voice_preview'):return 1.0
     target=float(pack['target_minutes'])*60
     available=max(1.,target-gaps)
@@ -188,7 +189,7 @@ def synthesize(pack,keep_timing=False):
     maximum=pack.get('max_minutes',pack['target_minutes']*1.12)*60
     if backend in ('chatterbox','tts_api'):
         maximum=max(maximum,pack['target_minutes']*1.5*60)
-    if delivery:
+    if delivery or pack.get('metadata',{}).get('manual_narration') is True:
         timeline['voice_tempo_mode']='user delivery; duration follows measured narration'
         print(f'Lettura personalizzata: durata misurata {cursor/60:.2f} minuti; obiettivo indicativo {target/60:.2f}.',flush=True)
     elif not minimum<=cursor<=maximum:

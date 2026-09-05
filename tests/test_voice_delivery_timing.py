@@ -1,10 +1,12 @@
 import array,hashlib,json,math,subprocess,sys,wave
+import pytest
 from pathlib import Path
 
 CORE=Path(__file__).resolve().parents[1]/'pipeline'
 
 
-def test_delivery_timing_uses_measured_audio_and_keeps_clean_cues(tmp_path):
+@pytest.mark.parametrize('manual',[False,True])
+def test_delivery_timing_uses_measured_audio_and_keeps_clean_cues(tmp_path,manual):
     voice=tmp_path/'build/test/voice';voice.mkdir(parents=True)
     lines=['Il viaggio inizia dal porto.','La nave raggiunge la nuova città.']
     manifest={'backend':'tts_api','items':{}}
@@ -18,6 +20,8 @@ def test_delivery_timing_uses_measured_audio_and_keeps_clean_cues(tmp_path):
     pack={'slug':'test','voice':'test','voice_engine':'tts_api','target_minutes':10,'fps':24,
           'voice_delivery':{'style':'calm','speed':.9,'pause_seconds':.5},
           'scenes':[{'id':'01','title':'Prova','lines':lines}]}
+    if manual:
+        pack.pop('voice_delivery');pack['metadata']={'manual_narration':True}
     (tmp_path/'pack.json').write_text(json.dumps(pack),encoding='utf-8')
     code='''
 import json,sys,wave
@@ -28,10 +32,11 @@ from engine.voice_delivery import delivery_options
 narration.ROOT=Path(sys.argv[2])
 pack=json.loads((narration.ROOT/'pack.json').read_text())
 t=narration.synthesize(pack)
-assert t['voice_tempo']==.9
+manual=pack.get('metadata',{}).get('manual_narration')
+assert t['voice_tempo']==(1.0 if manual else .9)
 s=t['scenes'][0];a,b=s['cues']
-assert abs(b['start']-a['end']-.5)<.00001
-assert 2.15<a['end']-a['start']<2.3
+assert abs(b['start']-a['end']-(.18 if manual else .5))<.00001
+assert (1.9 if manual else 2.15)<a['end']-a['start']<(2.1 if manual else 2.3)
 assert [c['text'] for c in s['cues']]==pack['scenes'][0]['lines']
 assert t['duration']<10 and 'user delivery' in t['voice_tempo_mode']
 with wave.open(str(narration.ROOT/s['audio'])) as f:

@@ -159,7 +159,10 @@ def produce(pid,cfg):
             if any(w.get('placeholder') for w in warnings):
                 p['review_visuals']=True;store.update(pid,review_visuals=True)
                 log('Alcune visuali non sono coerenti con il racconto: preparo schede da completare. Prima della voce potrai caricare una mappa o un’immagine, oppure continuare con i segnaposto.')
-        if kind=='battle':outline=enrich_battle_outline(llm,system,outline,cp,log,cancel)
+        if kind=='battle':
+            manually_reviewed=packpath.is_file() and bool(store.read_json(packpath).get('metadata',{}).get('editorial_review'))
+            if manually_reviewed:log('Correzioni manuali conservate: uso il piano di battaglia già approvato senza nuova geocodifica o riscrittura.')
+            else:outline=enrich_battle_outline(llm,system,outline,cp,log,cancel)
         if outline.get('narrative_basis')=='literary_tradition':
             system+='\nIl documentario racconta una tradizione letteraria o mitologica. Dichiara questa cornice, distingui luoghi accertati e localizzazioni leggendarie e non trasformare episodi narrativi in fatti storici verificati.'
         def do_narration():
@@ -262,8 +265,8 @@ def produce(pid,cfg):
                 store.write_json(draft,{'completed':store.now(),'timing':'estimated'})
             state=visual_slots.status(pid)
             elapsed=store.pause_processing(pid)
-            store.update(pid,status='review',stage='Revisione immagini e sfondi',progress=round(6/len(STAGES)*100,1),error='',processing_seconds=elapsed)
-            log(f'Pausa visuale: {state["blank_count"]} immagini da completare e {state.get("empty_background_count",0)} sfondi facoltativi. Apri Immagini e riquadri; puoi completare le schede oppure premere Continua produzione per mantenere i segnaposto.')
+            store.update(pid,status='review',stage='Revisione testi, luoghi e immagini',progress=round(6/len(STAGES)*100,1),error='',processing_seconds=elapsed)
+            log(f'Pausa per la revisione: {state["blank_count"]} immagini da completare e {state.get("empty_background_count",0)} sfondi facoltativi. Puoi anche correggere il testo narrato o i luoghi sulla mappa. Tutto è opzionale: Continua produzione conserva ciò che non modifichi.')
             return
         def voice():
             if pack.get('voice_engine')=='chatterbox':
@@ -328,21 +331,34 @@ def produce(pid,cfg):
 
 
 def approve_visual_review(pid):
-    """Apply review-time replacements and resume at voice without re-authoring."""
-    p=store.project(pid)
-    if p['status']!='review' or not p.get('review_visuals'):
-        raise ValueError('Questo progetto non è in attesa della revisione visuale.')
-    with LOCK:
+    """Apply optional human corrections and replacements without re-authoring."""
+    with LOCK,store.LOCK:
+        p=store.project(pid)
+        if p['status']!='review' or not p.get('review_visuals'):
+            raise ValueError('Questo progetto non è in attesa della revisione.')
         if active(pid):raise ValueError('Questo progetto è ancora in esecuzione.')
+        from .presentations import ensure_idle
+        ensure_idle(pid)
         packpath=visual_slots.project_pack(pid);work=packpath.parents[2]
         pack=store.read_json(packpath)
+        from .review_editor import pending
+        draft=pending(pid,pack);report=None;cp=JOBS/pid/'checkpoints'
+        if draft:
+            from .review_changes import transform,commit
+            geo=store.read_json(packpath.with_name('geography.json')) if packpath.with_name('geography.json').is_file() else {}
+            outline=store.read_json(cp/'outline.json') if (cp/'outline.json').is_file() else {}
+            narration=store.read_json(cp/'narration.json') if (cp/'narration.json').is_file() else []
+            pack,geo,outline,narration,report=transform(pack,geo,outline,narration,draft)
         visual_slots.apply_options(pack,visual_slots.options(pid),visual_slots.layout_options(pid))
         changed=visual_slots.materialize(pack,work,media.catalog(),replacements_only=True)
-        store.write_json(packpath,pack)
+        if report:
+            commit(pid,packpath,pack,geo,outline,narration,report)
+            changed=sorted(set(changed)|set(report['scene_ids']))
+        else:store.write_json(packpath,pack)
         marker=JOBS/pid/'checkpoints/visual-review.approved.json'
-        store.write_json(marker,{'approved':store.now(),'changed_scenes':changed})
-        store.event(pid,'Revisione visuale approvata. Riprendo dalla voce; ricerca, testo, mappe e asset restano invariati.')
-    enqueue(pid)
+        store.write_json(marker,{'approved':store.now(),'changed_scenes':changed,'editorial':report})
+        store.event(pid,'Revisione approvata. Riprendo dalle fasi necessarie con le modifiche salvate.' if report else 'Revisione visuale approvata. Riprendo dalla voce; ricerca, testo, mappe e asset restano invariati.')
+        enqueue(pid)
     return store.project(pid)
 
 

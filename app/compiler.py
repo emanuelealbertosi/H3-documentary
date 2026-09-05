@@ -32,6 +32,34 @@ def source_method(sources):
             'pagine web consultate' if web else 'nessuna fonte esterna consultabile')
     retrieval=' I passaggi locali sono scelti con ricerca ibrida.' if local else ''
     return f'Fonti: {origin}; sceneggiatura e revisione mediante modello configurato.{retrieval} La revisione automatica non equivale a una verifica storiografica indipendente.'
+
+def geography_for_views(overview,poses,output='assets/geography/atlas-film'):
+    """Plan battle terrain consistently for original and manually corrected views."""
+    bbox=bounds_for_views([overview,*poses])
+    # Each camera scale gets enough terrain pixels for the final 1080p frame.
+    # A single low zoom for the whole campaign made tactical close-ups look like
+    # enlarged thumbnails. Per-patch zooms preserve both bounded downloads and
+    # crisp local relief.
+    candidates=[]
+    for i,view in enumerate(poses):
+        if view[2]>16:continue
+        b=bounds_for_views([view])
+        zoom=max(8,min(15,math.ceil(math.log2(360*(1920/view[2]*.75)/256))))
+        candidates.append((zoom,-(b[2]-b[0])*(b[3]-b[1]),i,b))
+    selected=[]
+    for zoom,negative_area,i,b in sorted(candidates):
+        if any(ez>=zoom and eb[0]<=b[0] and eb[1]<=b[1] and eb[2]>=b[2] and eb[3]>=b[3] for ez,_,_,eb in selected):continue
+        selected.append((zoom,negative_area,i,b))
+    if len(selected)>6:
+        context=min(selected,key=lambda row:(row[0],row[1]))
+        details=sorted((row for row in selected if row is not context),key=lambda row:(-row[0],-row[1]))[:5]
+        selected=[context,*details]
+    # Lower-resolution context layers are composited first; close tactical
+    # layers are last and therefore retain their detail.
+    selected=sorted(selected,key=lambda row:(row[0],row[1]))
+    patches={f"detail{i+1}":{"bounds":b,"zoom":zoom} for zoom,_,i,b in selected}
+    return {"bounds":bbox,"patches":patches,"terrain_zoom":8,"output":output}
+
 def compile_pack(outline,narration,sources,project,settings):
     o=Outline.model_validate(outline).model_dump()
     places={p["id"]:dict(name=p["name"],pos=p["pos"],size=24) for p in o["places"]}
@@ -44,7 +72,7 @@ def compile_pack(outline,narration,sources,project,settings):
     overview=fit([p["pos"] for p in o["places"]],pad=1.6,min_width=.45)
     poses=[fit([places[x]["pos"] for x in s["focus"]]+[p for r in s["routes"] for p in r["points"]],pad=1.75,min_width=.075) for s in o["scenes"]]
     poses[0]=overview;poses[-1]=overview
-    bbox=bounds_for_views([overview,*poses]);slug="film-"+project["id"]
+    slug="film-"+project["id"]
     commanders={c["id"]:dict(name=c["name"],subtitle=c["role"],side=commander_side(c),portrait="assets/portraits/"+slug+"/"+c["id"]+".jpg",wikipedia_page=c["wikipedia_page"],
                    portrait_note=[c["role"][:45],"Ritratto storico · fonte nei crediti"]) for c in o["commanders"]}
     scenes=[];prev=overview
@@ -95,27 +123,5 @@ def compile_pack(outline,narration,sources,project,settings):
         territorial_note="Nord in alto. Base fisica moderna, percorsi schematici. Nessun confine attuale è presentato come storico.",
         map_notice="Mappe illustrative su base fisica moderna; percorsi e orari incerti sono segnalati.",
         extra_credits=CREDIT+(" OpenStreetMap contributors (ODbL); geocodifica Nominatim. https://www.openstreetmap.org/copyright/" if any('Nominatim' in p.get('note','') for p in o['places']) else ''),assets=[],scenes=scenes)
-    # Each camera scale gets enough terrain pixels for the final 1080p frame.
-    # A single low zoom for the whole campaign made tactical close-ups look like
-    # enlarged thumbnails. Per-patch zooms preserve both bounded downloads and
-    # crisp local relief.
-    candidates=[]
-    for i,view in enumerate(poses):
-        if view[2]>16:continue
-        b=bounds_for_views([view])
-        zoom=max(8,min(15,math.ceil(math.log2(360*(1920/view[2]*.75)/256))))
-        candidates.append((zoom,-(b[2]-b[0])*(b[3]-b[1]),i,b))
-    selected=[]
-    for zoom,negative_area,i,b in sorted(candidates):
-        if any(ez>=zoom and eb[0]<=b[0] and eb[1]<=b[1] and eb[2]>=b[2] and eb[3]>=b[3] for ez,_,_,eb in selected):continue
-        selected.append((zoom,negative_area,i,b))
-    if len(selected)>6:
-        context=min(selected,key=lambda row:(row[0],row[1]))
-        details=sorted((row for row in selected if row is not context),key=lambda row:(-row[0],-row[1]))[:5]
-        selected=[context,*details]
-    # Lower-resolution context layers are composited first; close tactical
-    # layers are last and therefore retain their detail.
-    selected=sorted(selected,key=lambda row:(row[0],row[1]))
-    patches={f"detail{i+1}":{"bounds":b,"zoom":zoom} for zoom,_,i,b in selected}
-    geo={"bounds":bbox,"patches":patches,"terrain_zoom":8,"output":"assets/geography/atlas-film"}
+    geo=geography_for_views(overview,poses)
     return pack,geo
