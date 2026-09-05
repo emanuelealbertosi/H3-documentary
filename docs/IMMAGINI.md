@@ -4,7 +4,26 @@ Disponibili dalla versione 1.1.0. Dalla versione 1.8.0 la libreria gestisce anch
 
 ## Inventario automatico e sostituzione parziale
 
-Quando la struttura del racconto è pronta, l’app crea uno slot per ogni persona e luogo realmente citato e per ogni ritratto, opera, documento o immagine associata usata dalle scene. Per persone e luoghi tenta una ricerca su Wikipedia e Wikimedia Commons, verifica che la licenza sia pubblico dominio, CC0 o Creative Commons compatibile e conserva URL, metadati e impronta del file. Una ricerca non disponibile, ambigua o con licenza inadatta produce una **scheda neutra**: non viene mai presentata come ritratto o fotografia autentica.
+Quando la struttura del racconto è pronta, l’app crea uno slot per ogni persona e luogo realmente citato e per ogni ritratto, opera, documento o immagine associata usata dalle scene. Per persone e luoghi cerca prima su Wikipedia e Wikimedia Commons; quando non trova un’immagine utilizzabile, estende la ricerca a Openverse. Verifica la licenza rispetto alla destinazione d’uso del progetto e conserva URL, metadati e impronta del file. Una ricerca non disponibile, ambigua o con licenza inadatta produce una **scheda neutra**: non viene mai presentata come ritratto o fotografia autentica.
+
+## Destinazione d’uso e ricerca delle immagini
+
+In **Amministrazione → Uso di mappe e immagini** la stessa scelta governa le fonti ammesse per confini e download automatici:
+
+| Destinazione d’uso | Immagini ammesse automaticamente |
+| --- | --- |
+| **Anche commerciale** | Pubblico dominio, CC0, CC BY e CC BY-SA. |
+| **Didattico non commerciale** | Le precedenti, più CC BY-NC e CC BY-NC-SA. |
+
+L’opzione didattica permette quindi di cercare in un insieme più ampio, quando esistono immagini pertinenti e con una licenza riconosciuta. Wikimedia Commons rimane la prima fonte: la sua [politica sulle licenze](https://commons.wikimedia.org/wiki/Commons:Licensing) non accetta materiali riservati agli usi non commerciali, quindi è la ricerca aggiuntiva su Openverse a rendere disponibili anche candidati con licenza NC. Openverse è un indice: la provenienza dell’immagine e la sua licenza restano quelle dell’autore o dell’archivio originario.
+
+Le immagini con clausola **ND** (senza opere derivate) e quelle con licenza sconosciuta vengono escluse dall’acquisizione automatica. L’uso didattico non autorizza automaticamente ogni immagine trovata sul web. Autore, provenienza, licenza e condizioni di condivisione dei singoli materiali vengono mantenuti nei crediti; restano applicabili le condizioni della [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/) e delle altre licenze scelte per ciascun asset.
+
+La scelta è salvata nel pack del progetto come `asset_usage`: **Riprendi** conserva la selezione del progetto, mentre una nuova produzione o **Rigenera** usa l’impostazione corrente dell’Amministrazione. I film completati restano intatti; cambiare l’impostazione non concede nuovi diritti agli asset già scaricati. Le immagini caricate manualmente conservano la provenienza e i diritti dichiarati dall’utente, senza ricevere una licenza presunta.
+
+Le anteprime e gli slot già disponibili restano sostituibili come descritto sotto. La ricerca aggiuntiva non richiede una chiave API a pagamento e, se una fonte non è raggiungibile o non offre risultati idonei, resta la scheda neutra.
+
+## Gestione delle immagini trovate
 
 La pagina del progetto mostra tutti gli slot con quattro stati: **Trovata automaticamente**, **Scheda neutra**, **Da completare** e **Personalizzata**. Ogni stato è sostituibile. Apri **Gestisci e sostituisci**, trascina una nuova immagine sul soggetto e premi **Aggiorna solo le scene interessate**. Un progetto completato genera automaticamente V2, V3 o la versione successiva; il vecchio film resta intatto. Il motore riusa ricerca, sceneggiatura, TTS, timeline, mappe e clip non coinvolte, renderizza soltanto le scene che contengono l’immagine cambiata, quindi esegue nuovamente montaggio e verifica tecnica.
 

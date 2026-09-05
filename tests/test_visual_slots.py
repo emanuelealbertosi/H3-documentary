@@ -49,6 +49,43 @@ def test_inventory_includes_people_places_and_authored_artwork():
     assert pack["auto_visual_assets"][0]["name"]=="Città"
 
 
+@pytest.mark.parametrize('payload',[
+    '{"extmetadata":', 'null', '[]', '{"extmetadata":null}',
+    '{"extmetadata":[]}', '{"extmetadata":{"ObjectName":"broken"}}',
+    '{"extmetadata":{"LicenseShortName":null}}',
+])
+def test_invalid_cached_metadata_is_missing_and_recovers_with_placeholder(payload):
+    pid,work,packpath=make_project();pack=store.read_json(packpath)
+    paths=[work/pack['persons'][0]['portrait'],work/pack['visual_assets'][0]['path']]
+    for path in paths:
+        path.with_suffix('.metadata.json').write_text(payload,encoding='utf-8')
+        assert visual_slots._metadata_state(path)==('missing',{})
+    visual_slots.materialize(pack,work,[])
+    for path in paths:
+        state,info=visual_slots._metadata_state(path)
+        assert state=='blank' and info['h3_placeholder'] is True
+    assert next(x for x in pack['user_media'] if x['subject_kind']=='person')['visual_state']=='blank'
+    assert pack['visual_assets'][0]['placeholder'] is True
+
+
+@pytest.mark.parametrize('was_placeholder',[False,True])
+def test_recovered_artwork_updates_placeholder_title_but_keeps_editorial_titles(was_placeholder):
+    pid,work,packpath=make_project();pack=store.read_json(packpath)
+    asset=pack['visual_assets'][0];asset['placeholder']=was_placeholder
+    old_title='Riquadro generico per Opera antica' if was_placeholder else 'Opera antica · lettura editoriale'
+    asset['title']=old_title
+    target=work/asset['path']
+    store.write_json(target.with_suffix('.metadata.json'),{
+        'descriptionurl':'https://museum.example.test/recovered',
+        'h3_placeholder':False,
+        'extmetadata':{'ObjectName':{'value':'Ritratto conservato nel museo'},
+            'Artist':{'value':'Autore documentato'},'LicenseShortName':{'value':'CC BY 4.0'}}})
+    visual_slots.materialize(pack,work,[],replacements_only=True)
+    assert asset['placeholder'] is False
+    assert asset['title']==('Ritratto conservato nel museo' if was_placeholder else old_title)
+    assert asset['creator']=='Autore documentato' and asset['license']=='CC BY 4.0'
+
+
 def test_neutral_place_and_portrait_are_attached_to_spoken_cue():
     pid,work,packpath=make_project();pack=store.read_json(packpath);visual_slots.prepare(pack)
     place=next(x for x in pack["visual_slots"] if x["kind"]=="place");target=work/place["path"];target.parent.mkdir(parents=True)
@@ -84,6 +121,69 @@ def test_linked_subject_is_reused_before_download_in_a_future_project():
     assert reused==[{"slot_id":slot["id"],"label":"Ulisse","media_id":remembered["id"]}]
     assert slot["replacement_media_id"]==remembered["id"] and (work/slot["path"]).is_file() and portrait.is_file()
     assert store.read_json(portrait.with_suffix(".metadata.json"))["h3_user_replacement"] is True
+
+
+@pytest.mark.parametrize('usage,rights,expected',[
+    ('commercial','CC BY-NC-SA 4.0',False),('education_nc','CC BY-NC-SA 4.0',True),
+    ('education_nc','CC BY-ND 4.0',False),('commercial','',True),
+])
+def test_subject_cache_reuse_obeys_frozen_usage(usage,rights,expected):
+    pid,work,packpath=make_project();pack=store.read_json(packpath);pack['asset_usage']=usage
+    uploaded=media.upload(image_bytes('green'),'eroe.png')
+    remembered=media.save(uploaded['id'],media.MediaEdit(title='Ritratto',bindings=[{'kind':'person','label':'Eroe'}],rights=rights))
+    reused=visual_slots.seed_reusable(pack,work,[remembered])
+    assert bool(reused) is expected
+    visual_slots.materialize(pack,work,[remembered])
+    entry=next(x for x in pack['user_media'] if x['subject_kind']=='person')
+    assert (entry['visual_state']=='user') is expected
+
+
+@pytest.mark.parametrize('usage,expected',[('commercial','blank'),('education_nc','available')])
+def test_cached_download_is_checked_and_original_credit_is_retained(usage,expected):
+    pid,work,packpath=make_project();pack=store.read_json(packpath);pack['asset_usage']=usage
+    portrait=work/pack['persons'][0]['portrait']
+    original={"descriptionurl":"https://museum.example.test/catalog/42","extmetadata":{
+        "ObjectName":{"value":"Ritratto di Eroe"},"Artist":{"value":"Maria Rossi"},
+        "LicenseShortName":{"value":"CC BY-NC-SA 4.0"},
+        "LicenseUrl":{"value":"https://creativecommons.org/licenses/by-nc-sa/4.0/"}}}
+    store.write_json(portrait.with_suffix('.metadata.json'),original)
+    visual_slots.materialize(pack,work,[])
+    entry=next(x for x in pack['user_media'] if x['subject_kind']=='person')
+    assert entry['visual_state']==expected
+    if expected=='available':
+        assert entry['credit']=='Maria Rossi' and entry['source']==original['descriptionurl']
+        assert entry['rights']=='CC BY-NC-SA 4.0'
+        assert entry['license_url']=='https://creativecommons.org/licenses/by-nc-sa/4.0/'
+    else:
+        assert store.read_json(portrait.with_suffix('.metadata.json'))['h3_placeholder'] is True
+    # Selective refresh also rechecks an already materialized image.
+    pack['asset_usage']='commercial'
+    visual_slots.materialize(pack,work,[],replacements_only=True)
+    assert next(x for x in pack['user_media'] if x['subject_kind']=='person')['visual_state']=='blank'
+
+
+def test_automatic_inserts_keep_cartographic_sharealike_notice():
+    pid,work,packpath=make_project();pack=store.read_json(packpath)
+    pack['video_license']='Le mappe derivate da CShapes sono distribuite con CC BY-NC-SA 4.0.'
+    pack['boundary_report']={'sources':[{'license':'CC-BY-NC-SA-4.0'}]}
+    visual_slots.materialize(pack,work,[])
+    assert 'CC BY-NC-SA 4.0' in pack['video_license'] and 'base_video_license' not in pack
+
+
+@pytest.mark.parametrize('map_source',[False,True])
+def test_selective_timeline_preserves_map_obligations_and_removes_obsolete_blanket_license(map_source):
+    pid,work,packpath=make_project();pack=store.read_json(packpath)
+    notice='Le mappe derivate sono distribuite con CC BY-NC-SA 4.0.' if map_source else 'CC0'
+    pack['video_license']=notice;pack['asset_usage']='education_nc'
+    if map_source:pack['boundary_report']={'sources':[{'license':'CC-BY-NC-SA-4.0'}]}
+    store.write_json(work/'build'/pack['slug']/'timeline.json',pack)
+    visual_slots.materialize(pack,work,[])
+    timeline=visual_slots.sync_timeline(pack,work)
+    assert timeline['asset_usage']=='education_nc'
+    if map_source:
+        assert timeline['video_license']==notice and 'base_video_license' not in timeline
+    else:
+        assert 'video_license' not in timeline and timeline['base_video_license']=='CC0'
 
 
 def test_nonmap_scene_exposes_optional_background_without_creating_a_blank_inset():

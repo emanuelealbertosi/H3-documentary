@@ -12,7 +12,7 @@ La regia richiede territori colorati che conservano lo stato nel tempo, oltre al
 
 ## Archivi e uso didattico
 
-In **Amministrazione → Confini storici e destinazione d’uso** scegli l’uso delle mappe:
+In **Amministrazione → Uso di mappe e immagini** scegli la destinazione d’uso. La scelta governa sia gli archivi cartografici sia le licenze ammesse per le immagini automatiche, descritte in [Immagini e riquadri](IMMAGINI.md#destinazione-duso-e-ricerca-delle-immagini). Per i confini:
 
 - **Anche commerciale**, predefinito nelle nuove installazioni: [Cliopatria v0.2.0](https://github.com/Seshat-Global-History-Databank/cliopatria/tree/v0.2.0), Seshat Global History Databank, CC BY 4.0. Copertura generale dal 3400 a.C. al 2024 d.C.; la presenza del periodo non garantisce la copertura di ogni territorio. La legenda dice «ricostruzione da fonte».
 - **Didattico non commerciale**: aggiunge [CShapes 2.0](https://icr.ethz.ch/data/cshapes/), ETH Zurich, codifica Gleditsch–Ward, 1886–2019, CC BY-NC-SA 4.0. Nel suo periodo ha precedenza quando esiste una corrispondenza univoca. Le mappe derivate conservano attribuzione, uso non commerciale e condivisione alle stesse condizioni. Non è un archivio di fronti o occupazioni militari.

@@ -5,6 +5,7 @@ from typing import Literal
 from PIL import Image, ImageOps, UnidentifiedImageError
 from pydantic import BaseModel, Field, ConfigDict
 from . import store
+from pipeline.engine.image_rights import license_policy, manual_allowed, usage_for
 
 MAX_BYTES = 20 * 1024 * 1024
 KINDS = ('person', 'place', 'topic', 'event', 'entity', 'scene')
@@ -134,6 +135,7 @@ def scene_matches(scene, item):
 def attach(pack, records, work):
     """Only matched assets enter the project. Existing checkpoints never change."""
     used={}; count=0
+    records=[item for item in records if manual_allowed(item,usage_for(pack))]
     for scene in pack['scenes']:
         cues={}
         for item in records:
@@ -158,10 +160,17 @@ def attach(pack, records, work):
         store.write_json(dest/'record.json',entry);manifest.append(entry)
     pack['user_media']=manifest
     # Uploaded material never inherits a blanket public-domain video license.
-    if pack.get('video_license'):
-        pack['base_video_license']=pack.pop('video_license')
+    detach_blanket_license(pack)
     store.write_json(work/'assets/user/manifest.json',manifest)
     return count
+
+def detach_blanket_license(pack):
+    """User inserts change a blanket license, never the sourced map obligations."""
+    sources=pack.get('boundary_report',{}).get('sources',[])
+    policies=[license_policy(s.get('license',''),usage_for(pack),s.get('license_url','')) for s in sources]
+    cartographic=any(p['noncommercial'] or p['sharealike'] for p in policies)
+    if pack.get('video_license') and not cartographic:
+        pack['base_video_license']=pack.pop('video_license')
 
 def freeze(pid, enabled):
     path=store.JOBS/pid/'checkpoints/media-selection.json'

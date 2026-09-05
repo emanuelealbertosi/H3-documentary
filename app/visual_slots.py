@@ -8,6 +8,7 @@ import shutil
 from pathlib import Path
 
 from . import media, store
+from pipeline.engine.image_rights import manual_allowed, metadata_policy, usage_for
 
 NONMAP_SCENES = {"timeline", "person_intro", "event_focus", "comparison", "data_visualization", "quote", "artwork", "document", "transition", "summary"}
 
@@ -242,8 +243,15 @@ def _metadata_state(path: Path):
     metadata = path.with_suffix(".metadata.json")
     if not path.is_file():
         return "missing", {}
-    info = store.read_json(metadata) if metadata.is_file() else {}
+    try:
+        info = store.read_json(metadata) if metadata.is_file() else {}
+    except (OSError, ValueError):
+        return "missing", {}
+    if not isinstance(info, dict):
+        return "missing", {}
     ex = info.get("extmetadata", {})
+    if not isinstance(ex, dict) or any(not isinstance(value, dict) for value in ex.values()):
+        return "missing", {}
     if info.get("h3_user_replacement"):
         return "user", info
     placeholder = bool(info.get("h3_placeholder")) or "riquadro generico" in str(ex.get("ObjectName", {}).get("value", "")).lower()
@@ -260,7 +268,26 @@ def _credit(info, label, state):
         "credit": value("Attribution") or value("Artist", "H3-documentary" if state == "blank" else ""),
         "source": info.get("descriptionurl", ""),
         "rights": value("LicenseShortName", "Licenza indicata nella scheda sorgente"),
+        "license_url": value("LicenseUrl") or info.get("license_url", ""),
     }
+
+
+def _usable_image(path, usage, declared=None):
+    """Cached discovery has the same rules as a fresh download; uploads stay explicit."""
+    state, info = _metadata_state(path)
+    if state == "missing":
+        return False
+    if state == "blank":
+        return True
+    if info.get("h3_user_replacement"):
+        return manual_allowed(_credit(info, path.stem, state), usage)
+    if info:
+        return metadata_policy(info, usage)["allowed"]
+    # Authored visual assets can have their attribution in the pack itself.
+    if declared and declared.get("license"):
+        return metadata_policy({"extmetadata": {"LicenseShortName": {"value": declared["license"]},
+            "LicenseUrl": {"value": declared.get("license_url", "")}}}, usage)["allowed"]
+    return False
 
 
 def _binding_match(item, slot):
@@ -290,6 +317,7 @@ def _copy_replacement(item, slot, work):
             "ObjectName": {"value": item["title"]},
             "Artist": {"value": item.get("credit") or "attribuzione non indicata"},
             "LicenseShortName": {"value": item.get("rights") or "diritti dichiarati dall’utente"},
+            "LicenseUrl": {"value": item.get("license_url", "")},
         },
     }
     store.write_json(target.with_suffix(".metadata.json"), metadata)
@@ -307,7 +335,7 @@ def seed_reusable(pack, work, records):
             continue
         if not slot.get("enabled", not slot.get("optional")):
             continue
-        item = next((record for record in records if record.get("enabled") and _binding_match(record, slot)), None)
+        item = next((record for record in records if record.get("enabled") and manual_allowed(record, usage_for(pack)) and _binding_match(record, slot)), None)
         if item is None:
             continue
         target, metadata = _copy_replacement(item, slot, work)
@@ -333,6 +361,10 @@ def _person_source(pack, slot, work):
     source = work / row["portrait"]
     if not source.is_file():
         return None
+    if not _usable_image(source, usage_for(pack)):
+        # The battle/person renderer can also use the original portrait path.
+        _placeholder({**slot, "path": row["portrait"]}, work)
+        slot["search_note"] = "Immagine esclusa: licenza non compatibile con l’uso scelto."
     target = work / slot["path"]
     target.parent.mkdir(parents=True, exist_ok=True)
     target.unlink(missing_ok=True)
@@ -357,7 +389,8 @@ def _placeholder(slot, work):
     draw.ellipse((cx-radius, cy-radius, cx+radius, cy+radius), outline=(210, 181, 118, 100), width=max(2,width//300))
     draw.line((cx-radius*2, cy, cx+radius*2, cy), fill=(210, 181, 118, 80), width=max(2,width//360))
     draw.line((cx, cy-radius*2, cx, cy+radius*2), fill=(210, 181, 118, 80), width=max(2,width//360))
-    target = Path(work) / slot["path"];target.parent.mkdir(parents=True, exist_ok=True);image.save(target, quality=91)
+    target = Path(work) / slot["path"];target.parent.mkdir(parents=True, exist_ok=True)
+    target.unlink(missing_ok=True);image.save(target, quality=91)
     store.write_json(target.with_suffix(".metadata.json"), {
         "descriptionurl": "generato localmente", "h3_placeholder": True,
         "extmetadata": {"ObjectName": {"value": "Riquadro generico per " + slot["label"]},
@@ -370,12 +403,13 @@ def materialize(pack, work, records=None, replacements_only=False):
     """Attach automatic cards or user replacements to the exact spoken cues."""
     work = Path(work)
     slots = prepare(pack)
-    records = list(records or [])
+    usage = usage_for(pack)
+    records = [item for item in (records or []) if manual_allowed(item, usage)]
     old_entries = {x.get("id"): x for x in pack.get("user_media", []) if isinstance(x, dict)}
-    manual_entries = [dict(x) for x in pack.get("user_media", []) if not str(x.get("id", "")).startswith("visual-")]
+    manual_entries = [dict(x) for x in pack.get("user_media", []) if not str(x.get("id", "")).startswith("visual-") and manual_allowed(x, usage)]
     changed_scenes = set(pack.pop("_pending_visual_layout_scenes", []))
     superseded_manual_ids = set()
-    disabled_manual_ids = set()
+    disabled_manual_ids = {x["id"] for x in pack.get("user_media", []) if not str(x.get("id", "")).startswith("visual-") and not manual_allowed(x, usage)}
     disabled_asset_ids = set()
     automatic = []
     for slot in slots:
@@ -397,6 +431,8 @@ def materialize(pack, work, records=None, replacements_only=False):
         if current_manual and not replacement:
             continue
         if slot.get("source_type") == "visual_asset":
+            asset = next(x for x in pack.get("visual_assets", []) if x["id"] == slot["subject_id"])
+            was_placeholder = bool(asset.get("placeholder"))
             if slot["subject_id"] in pack.get("disabled_visual_asset_ids", []):
                 changed_scenes.update(use["scene_id"] for use in slot["uses"])
             if replacement:
@@ -406,15 +442,26 @@ def materialize(pack, work, records=None, replacements_only=False):
                 metadata = target.with_suffix(".metadata.json"); metadata.unlink(missing_ok=True)
                 store.write_json(metadata, {"descriptionurl": replacement.get("source") or "caricamento locale", "h3_user_replacement": True,
                     "extmetadata": {"ObjectName": {"value": replacement["title"]}, "Artist": {"value": replacement.get("credit") or "attribuzione non indicata"},
-                    "LicenseShortName": {"value": replacement.get("rights") or "diritti dichiarati dall’utente"}}})
+                    "LicenseShortName": {"value": replacement.get("rights") or "diritti dichiarati dall’utente"},
+                    "LicenseUrl": {"value": replacement.get("license_url", "")}}})
                 current_sha = hashlib.sha256(target.read_bytes()).hexdigest()
                 if current_sha != previous_sha: changed_scenes.update(use["scene_id"] for use in slot["uses"])
-                asset = next(x for x in pack.get("visual_assets", []) if x["id"] == slot["subject_id"])
                 asset.update(title=replacement["title"], creator=replacement.get("credit", ""), source=replacement.get("source") or "caricamento locale",
-                             license=replacement.get("rights") or "diritti dichiarati dall’utente")
+                             license=replacement.get("rights") or "diritti dichiarati dall’utente", license_url=replacement.get("license_url", ""))
                 slot["replacement_media_id"] = replacement["id"]
-            elif not (work / slot["source_path"]).is_file():
+            elif not _usable_image(work / slot["source_path"], usage, asset):
+                previous_sha = hashlib.sha256((work / slot["source_path"]).read_bytes()).hexdigest() if (work / slot["source_path"]).is_file() else ""
                 _placeholder(slot, work)
+                if previous_sha != hashlib.sha256((work / slot["source_path"]).read_bytes()).hexdigest():
+                    changed_scenes.update(use["scene_id"] for use in slot["uses"])
+                slot["search_note"] = "Immagine esclusa: licenza non compatibile con l’uso scelto."
+            image_state, image_info = _metadata_state(work / slot["source_path"])
+            if image_info:
+                credit = _credit(image_info, slot["label"], image_state)
+                asset.update(creator=credit["credit"], source=credit["source"], license=credit["rights"], license_url=credit["license_url"])
+                asset["placeholder"] = image_state == "blank"
+                if was_placeholder or asset["placeholder"]:
+                    asset["title"] = credit["title"]
             continue
         if slot.get("source_type") == "manual_media":
             if replacement:
@@ -423,7 +470,7 @@ def materialize(pack, work, records=None, replacements_only=False):
                     target = work / entry["path"]; previous_sha = entry.get("image_sha256", "")
                     target.unlink(missing_ok=True); shutil.copy2(media.folder(replacement["id"]) / "image.png", target)
                     entry.update(title=replacement["title"], filename=replacement["filename"], image_sha256=replacement["image_sha256"], sha256=replacement["sha256"],
-                                 credit=replacement.get("credit", ""), source=replacement.get("source", ""), rights=replacement.get("rights", ""), origin="user_replacement")
+                                 credit=replacement.get("credit", ""), source=replacement.get("source", ""), rights=replacement.get("rights", ""), license_url=replacement.get("license_url", ""), origin="user_replacement")
                     if entry["image_sha256"] != previous_sha: changed_scenes.update(use["scene_id"] for use in slot["uses"])
                     slot["replacement_media_id"] = replacement["id"]
             continue
@@ -438,7 +485,7 @@ def materialize(pack, work, records=None, replacements_only=False):
                 portrait_meta = portrait.with_suffix(".metadata.json"); portrait_meta.unlink(missing_ok=True); shutil.copy2(target.with_suffix(".metadata.json"), portrait_meta)
         elif replacements_only:
             previous = old_entries.get(slot["id"])
-            if previous:
+            if previous and _usable_image(work / previous["path"], usage):
                 automatic.append(previous)
                 continue
             if not slot.get("required") and slot.get("source_type") != "scene_background":
@@ -462,6 +509,10 @@ def materialize(pack, work, records=None, replacements_only=False):
             origin = "automatic"
         if not target.is_file():
             continue
+        if not _usable_image(target, usage):
+            _placeholder(slot, work)
+            state, info = _metadata_state(target)
+            slot["search_note"] = "Immagine esclusa: licenza non compatibile con l’uso scelto."
         current_sha = hashlib.sha256(target.read_bytes()).hexdigest()
         previous_sha = old_entries.get(slot["id"], {}).get("image_sha256")
         if current_sha != previous_sha and (replacement or replacements_only):
@@ -481,6 +532,8 @@ def materialize(pack, work, records=None, replacements_only=False):
     by_scene = {scene["id"]: scene for scene in pack.get("scenes", [])}
     managed_manual_ids = {slot.get("existing_media_id") for slot in slots if slot.get("source_type") == "manual_media"}
     for scene in by_scene.values():
+        if any(x.get("asset_id") in disabled_manual_ids for x in scene.get("image_insets", [])):
+            changed_scenes.add(scene["id"])
         if str(scene.get("background_asset_id", "")).startswith("visual-background-"):
             scene.pop("background_asset_id", None)
         scene["image_insets"] = [x for x in scene.get("image_insets", []) if not str(x.get("asset_id", "")).startswith("visual-") and x.get('asset_id') not in (superseded_manual_ids | disabled_manual_ids | managed_manual_ids)]
@@ -523,8 +576,8 @@ def materialize(pack, work, records=None, replacements_only=False):
                 inset["slot"], inset["slots"] = index, len(rows)
     manifest = work / "assets/user/automatic/visual-slots.json"
     store.write_json(manifest, slots)
-    if pack.get("video_license") and automatic:
-        pack["base_video_license"] = pack.pop("video_license")
+    if automatic:
+        media.detach_blanket_license(pack)
     return sorted(changed_scenes)
 
 
@@ -535,6 +588,10 @@ def sync_timeline(pack, work):
     timeline = store.read_json(path)
     for key in ("user_media","visual_slots","visual_assets","persons","disabled_visual_asset_ids"):
         if key in pack:timeline[key]=pack[key]
+    for key in ("video_license", "base_video_license"):
+        if key in pack:timeline[key]=pack[key]
+        else:timeline.pop(key, None)
+    if "asset_usage" in pack:timeline["asset_usage"]=pack["asset_usage"]
     authored = {s["id"]: s for s in pack["scenes"]}
     for scene in timeline["scenes"]:
         scene["image_insets"] = authored[scene["id"]].get("image_insets", [])
@@ -558,7 +615,7 @@ def status(pid):
     selected = options(pid)
     layout_choices = layout_options(pid)
     entries = {x.get("id"): x for x in pack.get("user_media", []) if isinstance(x, dict)}
-    records = media.catalog()
+    records = [item for item in media.catalog() if manual_allowed(item, usage_for(pack))]
     result = []
     for slot in slots:
         saved_enabled = bool(slot.get("enabled", not slot.get("optional")))

@@ -35,7 +35,11 @@ def main():
             from engine.history_assets import acquire_history as acquire
         else:
             from engine.acquire import acquire
-        acquire(pack);return
+        acquire(pack)
+        if pack.get('documentary_schema_version')==2:
+            from engine.history_assets import sync_image_metadata
+            if sync_image_metadata(raw,ROOT):write_json(ROOT/args.battle,raw)
+        return
     if args.command in ('voice','build'):
         from engine.narration import synthesize
         previous_path=ROOT/'build'/pack['slug']/'timeline.json'

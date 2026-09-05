@@ -116,3 +116,27 @@ def test_draft_targets_are_extracted_from_outline():
     person=next(x for x in media.targets(p['id']) if x['kind']=='person')
     assert person['label']=='Annibale' and person['aliases']==['Hannibal Barca']
     assert {'kind':'scene','label':'Le Alpi'} in media.targets(p['id'])
+
+
+@pytest.mark.parametrize('usage,rights,expected',[
+    ('commercial','CC BY-NC 4.0',0),('education_nc','CC BY-NC 4.0',1),
+    ('education_nc','CC BY-NC-ND 4.0',0),('commercial','',1),
+])
+def test_remembered_user_image_respects_known_restrictions(tmp_path,usage,rights,expected):
+    item=bound();item['rights']=rights
+    pack={'asset_usage':usage,'scenes':[{'id':'01','lines':['Annibale attraversa le Alpi.']}]}
+    assert media.attach(pack,[item],tmp_path/'production')==expected
+    if expected:
+        assert pack['user_media'][0]['rights']==rights
+        assert pack['user_media'][0]['credit']=='Autore prova'
+    else:
+        assert not pack.get('user_media') and not pack['scenes'][0].get('image_insets')
+
+
+def test_uploaded_insert_keeps_specific_cartographic_license(tmp_path):
+    license_text='Le mappe derivate da CShapes sono distribuite con CC BY-NC-SA 4.0.'
+    pack={'asset_usage':'education_nc','video_license':license_text,
+          'boundary_report':{'sources':[{'license':'CC-BY-NC-SA-4.0'}]},
+          'scenes':[{'id':'01','lines':['Annibale attraversa le Alpi.']}]}
+    assert media.attach(pack,[bound()],tmp_path/'production')==1
+    assert pack['video_license']==license_text and 'base_video_license' not in pack

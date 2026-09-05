@@ -94,6 +94,9 @@ def export_documents(timeline):
     if timeline.get('user_media'):
         from .image_insets import credits as image_credits
         credits+=image_credits(timeline)
+    if timeline.get('asset_usage'):
+        from .image_rights import image_license_notice
+        credits+=['',*image_license_notice(timeline,root=ROOT)]
     # END H3 IMAGE INSETS
     (ROOT/'credits.md').write_text('\n\n'.join(credits),encoding='utf-8')
     description=[timeline['title'],'',timeline.get('description','Un documentario storico in italiano attraverso mappe animate e ritratti storici.'),'', 'CAPITOLI']
@@ -114,6 +117,11 @@ def export_documents(timeline):
     if timeline.get('video_license'):
         description+=['','LICENZA E RITRATTI',timeline['video_license'],*portrait_credits,
           'Licenze ritratti: https://creativecommons.org/licenses/by/4.0/ ; https://creativecommons.org/licenses/by-sa/3.0/de/ . Fonti complete e crediti nel progetto.']
+    # BEGIN H3 IMAGE INSETS
+    if timeline.get('asset_usage'):
+        from .image_rights import image_license_notice
+        description+=['',*image_license_notice(timeline,root=ROOT)]
+    # END H3 IMAGE INSETS
     (out/'youtube_description.txt').write_text('\n'.join(description),encoding='utf-8')
     # BEGIN H3 RESEARCH PROVENANCE
     if timeline.get('research', {}).get('fallback_used'):

@@ -181,6 +181,8 @@ def produce(pid,cfg):
                 compile_outline_data,compile_sources=prepare_boundaries(outline,sources,work,cp,cfg.get('boundary_usage','commercial'),log,cancel)
             compiler=compile_pack if kind=="battle" else history_compile
             pack,geo=compiler(compile_outline_data,narration,compile_sources,p,{**cfg,'research_context':research})
+            pack['asset_usage']=cfg.get('boundary_usage','commercial')
+            pack.setdefault('metadata',{})['asset_usage']=pack['asset_usage']
             if outline.get('narrative_basis'):pack.setdefault('metadata',{})['narrative_basis']=outline['narrative_basis']
             if kind=='battle' and research['fallback_used']:
                 from engine.research_provenance import apply_context

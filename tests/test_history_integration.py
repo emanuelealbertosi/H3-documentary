@@ -96,11 +96,12 @@ def test_generic_runner_dispatch_with_explicit_stubs(tmp_path,monkeypatch):
             store.write_json(target,{'video_duration':120,'bytes':0,'sha256':'STUB_NOT_A_VIDEO'})
     monkeypatch.setattr(runner,'run',command)
     runner.FLAGS[project['id']]=threading.Event()
-    runner.produce(project['id'],Settings(model='TEST_STUB',pipeline_path=str(CORE),fps=24).model_dump())
+    runner.produce(project['id'],Settings(model='TEST_STUB',pipeline_path=str(CORE),fps=24,boundary_usage='education_nc').model_dump())
     result=store.project(project['id'])
     assert result['status']=='completed',result['error']
     assert any(c[0]=='tools/history_layout.py' for c in commands)
     assert any(c[0]=='tools/check_history_final.py' for c in commands)
     pack=store.read_json(next((work/'battles').glob('*/battle.json')))
     assert pack['schema_version']==2 and pack['documentary_type']=='cultural_movement'
+    assert pack['asset_usage']=='education_nc' and pack['metadata']['asset_usage']=='education_nc'
     assert 'factions' not in pack

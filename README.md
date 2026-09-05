@@ -4,7 +4,9 @@
 
 Il progetto riunisce DocumentariAI Studio e il suo motore già funzionante. Il renderer, le animazioni, il TTS e i formati delle battaglie sono conservati. Non richiede una cartella DocumentariAI separata, Python già installato, FFmpeg di sistema o un editor video.
 
-**Novità 1.12.1:** recupero automatico di confini da archivi datati, con cache locale, provenienza e licenze. Cliopatria copre molte epoche; l’opzione didattica non commerciale aggiunge CShapes. Il progetto distingue geometrie da archivio, copertura parziale e aree indicative. Restano le modalità raggruppate e i livelli separati per territori, influenze e contese. Vedi [Territori, confini e influenze](docs/TERRITORI.md).
+**Novità 1.13.0:** la scelta **Uso di mappe e immagini** vale anche per le foto scaricate e riutilizzate. L’uso didattico non commerciale ammette anche CC BY-NC e CC BY-NC-SA. Dopo Wikimedia Commons, la ricerca può consultare Openverse, controllando i metadati della singola opera sulla pagina originaria prima del download. Attribuzioni, provenienza e condizioni restano nei crediti. Vedi [Immagini e riquadri](docs/IMMAGINI.md).
+
+Il recupero dei confini usa archivi datati con cache locale: Cliopatria copre molte epoche; l’opzione didattica non commerciale aggiunge CShapes. Il progetto distingue geometrie da archivio, copertura parziale e aree indicative. Vedi [Territori, confini e influenze](docs/TERRITORI.md).
 
 ## Avvio su Windows
 

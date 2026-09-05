@@ -120,5 +120,5 @@ def credits(timeline):
     for item in timeline.get('user_media',[]):
         origin='Ricerca automatica con controllo licenza' if item.get('origin')=='automatic' else 'Immagine caricata e collegata dall’utente'
         composition='Ridimensionamento e composizione come sfondo di scena.' if str(item.get('id','')).startswith('visual-background-') else 'Ridimensionamento e composizione in riquadro.'
-        lines += [f"### {item['title']}",f"{origin}. File: {item['filename']}. Autore / attribuzione: {item.get('credit') or 'non indicata'}. Provenienza: {item.get('source') or 'caricamento locale'}. Diritti: {item.get('rights') or 'da specificare; nessuna licenza presunta'}. {composition} SHA-256: {item['sha256']}."]
+        lines += [f"### {item['title']}",f"{origin}. File: {item['filename']}. Autore / attribuzione: {item.get('credit') or 'non indicata'}. Provenienza: {item.get('source') or 'caricamento locale'}. Diritti: {item.get('rights') or 'da specificare; nessuna licenza presunta'}. {item.get('license_url','')} {composition} SHA-256: {item['sha256']}."]
     return lines

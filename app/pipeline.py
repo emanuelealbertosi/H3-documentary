@@ -80,6 +80,7 @@ def prepare_bundled_runtime_engine(work,source):
         Path('engine/narration.py'),Path('engine/atlas.py'),Path('engine/history_visuals.py'),
         Path('engine/history_territories.py'),Path('engine/history_schema.py'),
         Path('engine/acquire.py'),Path('engine/history_assets.py'),Path('engine/image_insets.py'),Path('engine/render.py'),
+        Path('engine/image_rights.py'),Path('engine/image_search.py'),Path('engine/export.py'),
         Path('documentary.py'),
         Path('tools/chatterbox/synthesize_documentary.py'),
     )
