@@ -57,7 +57,8 @@ class HistoryVisuals(AtlasVisuals):
         return s['scene_type'] not in NONMAP or (direction.get('map_led') and s['scene_type'] in {'event_focus','summary'})
 
     def frame(self,s,t):
-        q=max(0,min(1,t/s['duration']));a,b=s['historical_range'];year=interpolate_year(a,b,q)
+        q=max(0,min(1,t/s['duration']));a,b=s['historical_range']
+        year=interpolate_year(a,b,q,calendar=bool(self.data.get('boundary_report',{}).get('sources')))
         kind=s['scene_type'];cam=camera(s,t)
         if not self.uses_map(s):
             im=self.card(s,t,year)

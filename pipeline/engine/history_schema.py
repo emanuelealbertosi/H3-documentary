@@ -12,9 +12,10 @@ def historical_value(year):
     if year==0:raise ValueError('Usare anni storici senza anno zero: -1 = 1 a.C., 1 = 1 d.C.')
     return year+1 if year<0 else year
 
-def interpolate_year(a,b,q):
+def interpolate_year(a,b,q,*,calendar=False):
     v=historical_value(a)+(historical_value(b)-historical_value(a))*max(0,min(1,q))
-    n=round(v);return n-1 if n<=0 else n
+    n=math.floor(v) if calendar else round(v)
+    return n-1 if n<=0 else n
 
 def position(p):
     if len(p)!=2 or not all(isinstance(x,(int,float)) and math.isfinite(x) for x in p) or not(-180<=p[0]<=180 and -79<=p[1]<=79):raise ValueError('Coordinate lon/lat non valide')

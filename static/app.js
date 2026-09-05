@@ -1,7 +1,7 @@
-import {documentaryModeSelect,bindDocumentaryMode} from './documentary-modes.js?v=1.12.0';
-import {boundaryUsageField,showBoundaryReport} from './boundaries.js?v=1.12.0';
-import {mediaPage} from './media.js?v=1.12.0';
-import {documentsPage} from './documents.js?v=1.12.0';
+import {documentaryModeSelect,bindDocumentaryMode} from './documentary-modes.js?v=1.12.1';
+import {boundaryUsageField,showBoundaryReport} from './boundaries.js?v=1.12.1';
+import {mediaPage} from './media.js?v=1.12.1';
+import {documentsPage} from './documents.js?v=1.12.1';
 import {mountTtsAdmin,ttsSelection,projectTtsSelection,bindReference} from './tts-api.js?v=1.8.0';
 let disposeMedia,disposeDocuments;
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

@@ -66,6 +66,14 @@ def test_same_year_changes_use_documented_calendar_days():
     ancient=feature_record('cliopatria',feature('Roman Republic',-10,-1),0)
     assert ancient['start']==-9 and ancient['end']==1  # no historical year zero
 
+def test_displayed_calendar_year_does_not_anticipate_a_sourced_boundary():
+    from engine.history_schema import interpolate_year
+    assert interpolate_year(1918,1920,.75,calendar=True)==1919
+    assert interpolate_year(1918,1920,1,calendar=True)==1920
+    assert interpolate_year(-1,1,.75,calendar=True)==-1
+    assert interpolate_year(-1,1,1,calendar=True)==1
+    assert interpolate_year(1918,1920,.75)==1920  # Existing editorial timelines unchanged.
+
 def test_influence_and_ambiguous_matches_never_become_a_national_border(tmp_path):
     provider=Provider([candidate(),candidate(key='1')])
     doc,sources,report=resolve(outline(),tmp_path,log=lambda *_:None,provider=provider)
