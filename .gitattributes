@@ -6,3 +6,5 @@
 *.jpg binary
 *.ttf binary
 *.wav binary
+# Preserve upstream distribution bytes and their published integrity hashes.
+static/vendor/leaflet/** -text whitespace=cr-at-eol

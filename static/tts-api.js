@@ -1,4 +1,4 @@
-import {normalizeDelivery,previewText} from './voice-delivery.js?v=1.15.0';
+import {normalizeDelivery,previewText} from './voice-delivery.js?v=1.15.1';
 const providers={
  openai:{name:'OpenAI compatibile',base_url:'http://localhost:8000/v1',model:'tts-1',voice:'',format:'mp3',timeout:180,hint:'Per server locali che espongono POST /v1/audio/speech.'},
  higgs:{name:'Higgs TTS remoto',base_url:'http://localhost:8095/v1',model:'',voice:'',format:'wav',timeout:900,hint:'Contratto Higgs Audio v3: H3 carica il modello prima della sintesi e lo scarica al termine. Il server HTTP resta attivo.'},
