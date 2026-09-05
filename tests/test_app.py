@@ -26,6 +26,27 @@ def test_provider_url_normalization():
         assert Settings(base_url=url).base_url==expected
     for url in ["file:///secrets","http://key:pass@host/v1","https://host/v1?key=secret"]:
         with pytest.raises(ValueError):Settings(base_url=url)
+
+def test_boundary_usage_persists_and_project_exposes_only_frozen_materials(client):
+    value=Settings(boundary_usage='education_nc',api_key='private-test-key')
+    assert client.put('/api/settings',json=value.model_dump()).status_code==200
+    assert client.get('/api/settings').json()['boundary_usage']=='education_nc'
+    value.api_key=None;value.model='another-model'
+    assert client.put('/api/settings',json=value.model_dump()).status_code==200
+    assert store.settings(True)['api_key']=='private-test-key'
+    pid=store.create(ProjectRequest(topic='Confini europei',start=False))['id']
+    endpoint=f'/api/projects/{pid}'
+    assert client.get(endpoint+'/boundaries').json() is None
+    report={'usage':'education_nc','layers':[{'id':'fr','status':'sourced'}]}
+    store.write_json(store.JOBS/pid/'checkpoints/boundary-report.json',report)
+    store.write_json(store.JOBS/pid/'workspace/assets/boundaries/cshapes.geojson',{'type':'FeatureCollection','features':[]})
+    store.write_json(store.JOBS/pid/'checkpoints/boundary-outline.json',{'private':'not an exposed checkpoint'})
+    assert client.get(endpoint+'/boundaries').json()==report
+    path='workspace/assets/boundaries/cshapes.geojson'
+    assert path in {v['path'] for v in client.get(endpoint+'/files').json()}
+    assert client.get(endpoint+'/file',params={'path':path}).status_code==200
+    assert client.get(endpoint+'/file',params={'path':'checkpoints/boundary-outline.json'}).status_code==404
+    assert client.get(endpoint+'/file',params={'path':'../../settings.json'}).status_code==404
 def test_secrets_masking_rotation(client):
     a=Settings(model="model",api_key="test-only-secret")
     r=client.put("/api/settings",json=a.model_dump());assert r.status_code==200

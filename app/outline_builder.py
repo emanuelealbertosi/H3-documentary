@@ -157,6 +157,10 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
     def validate(batch,first,last):
         # Model-drawn coordinates are illustrative even when it claims precise borders.
         for layer in batch.get('visual_layers',[]):
+            for state_row in layer.get('states',[]):
+                if isinstance(state_row,dict):
+                    for reserved in ('at','valid_until','geometry_source','geometry_status','schematic'):state_row.pop(reserved,None)
+            layer.pop('geometry_source',None)
             if layer.get('states') and ('kind' in layer or not any(row['id']==layer.get('id') for row in state['visual_layers'])):
                 layer['schematic']=True
         for scene in batch.get('scenes',[]):normalize_visual_role(scene,shot_role(direction,scene.get('index',first),count))

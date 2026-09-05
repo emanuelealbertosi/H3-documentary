@@ -192,16 +192,22 @@ def library_file(slug:str,kind:str):
     if not item or kind not in ("movie","thumbnail") or not item[kind]:raise HTTPException(404,"File non disponibile.")
     return FileResponse(item[kind],media_type="video/mp4" if kind=="movie" else "image/jpeg")
 
-PUBLIC_EXT={".mp4",".jpg",".png",".srt",".md",".json",".txt",".pdf",".docx"}
+@app.get('/api/projects/{pid}/boundaries')
+def project_boundaries(pid:str):
+    store.project(pid)
+    path=JOBS/pid/'checkpoints/boundary-report.json'
+    return store.read_json(path) if path.is_file() else None
+
+PUBLIC_EXT={".mp4",".jpg",".png",".srt",".md",".json",".geojson",".txt",".pdf",".docx"}
 def output_files(pid):
     store.project(pid);work=JOBS/pid/"workspace";items=[]
-    roots=[work/"output",work/"battles",work/"documentaries",work/"assets/user",work/"assets/documents",JOBS/pid/"checkpoints"]
+    roots=[work/"output",work/"battles",work/"documentaries",work/"assets/user",work/"assets/documents",work/'assets/boundaries',JOBS/pid/"checkpoints"]
     for root in roots:
         if not root.exists():continue
         for f in sorted(root.rglob("*")):
             if not f.is_file() or f.suffix not in (PUBLIC_EXT|({'.webp'} if root==work/'assets/user' else set())):continue
             if not f.resolve().is_relative_to((JOBS/pid).resolve()):continue
-            if root.name=="checkpoints" and f.name not in ("sources.json","outline.json","review.json","research.json"):continue
+            if root.name=="checkpoints" and f.name not in ("sources.json","outline.json","review.json","research.json","boundary-report.json"):continue
             rel=f.relative_to(JOBS/pid).as_posix()
             items.append({"path":rel,"name":f.name,"bytes":f.stat().st_size})
     return items

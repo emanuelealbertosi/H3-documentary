@@ -1,0 +1,25 @@
+{
+  "cliopatria": {
+    "title": "Cliopatria 0.2.0 — Seshat Global History Databank",
+    "url": "https://raw.githubusercontent.com/Seshat-Global-History-Databank/cliopatria/v0.2.0/cliopatria.geojson.zip",
+    "page": "https://zenodo.org/records/20274630",
+    "sha256": "d01ae3a20d358cc5d54f69d9d725d390767d9c8759ac89ad6f90c58d106f3370",
+    "member": "cliopatria_polities_only.geojson",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "credit": "Ed Chalstrey, James Bennett e collaboratori; Seshat Global History Databank. Cliopatria v0.2.0, DOI 10.5281/zenodo.20274630.",
+    "quality": "reconstruction",
+    "note": "Ricostruzione pubblicata a scala storica generale; le date indicano la validità dichiarata dal dataset, non la precisione assoluta delle frontiere."
+  },
+  "cshapes": {
+    "title": "CShapes 2.0 — ETH Zurich, codifica Gleditsch–Ward",
+    "url": "https://icr.ethz.ch/data/cshapes/CShapes-2.0.geojson",
+    "page": "https://icr.ethz.ch/data/cshapes/",
+    "sha256": "384b1ea90b9419f30a858d7ec237c85a22c60d1b35b5f85f215a1204f9989d42",
+    "license": "CC-BY-NC-SA-4.0",
+    "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "credit": "Guy Schvitz, Seraina Rüegger, Luc Girardin, Lars-Erik Cederman, Nils Weidmann e Kristian Skrede Gleditsch (2022), Mapping The International System, 1886–2017: The CShapes 2.0 Dataset, Journal of Conflict Resolution 66(1), 144–161.",
+    "quality": "dataset",
+    "note": "Confini secondo la codifica Gleditsch–Ward del dataset; non equivale a una carta dei fronti o delle occupazioni militari. Uso non commerciale, attribuzione e condivisione alle stesse condizioni."
+  }
+}

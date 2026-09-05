@@ -75,7 +75,7 @@ class HistoryVisuals(AtlasVisuals):
             im.alpha_composite(Image.fromarray(cv2.resize(np.asarray(overlay),(W,H),interpolation=cv2.INTER_AREA)))
             im.alpha_composite(self.shade)
             self.map_key(im,s)
-            if modern_areas(self.data):self.territory_legend(im,s,year)
+            if modern_areas(self.data):self.territory_legend(im,s,value-1 if value<=0 else value)
         self.directed_overlays(im,s,t)
         self.header(im,s,year)
         self.chronology(im,s,t,year)
@@ -192,12 +192,17 @@ class HistoryVisuals(AtlasVisuals):
         style=area_style(layer,state);col=tuple(state.get('color',layer.get('color',GOLD)))
         area=Image.new('RGBA',im.size);draw=ImageDraw.Draw(area)
         mask=Image.new('L',im.size) if style['hatch'] else None
-        for poly in state['polygons']:
+        for index,poly in enumerate(state['polygons']):
             pts=[screen(p,cam) for p in poly];scaled=[(x*SS,y*SS) for x,y in pts]
             draw.polygon(scaled,fill=(*col,int(style['fill']*opacity)))
             if mask:ImageDraw.Draw(mask).polygon(scaled,fill=255)
             polyline(draw,pts+[pts[0]],(*INK,int(95*opacity)),7,style['dashed'])
             polyline(draw,pts+[pts[0]],(*col,int(230*opacity)),style['width'],style['dashed'])
+            for hole in (state.get('polygon_holes') or [[] for _ in state['polygons']])[index]:
+                inner=[screen(p,cam) for p in hole]
+                draw.polygon([(x*SS,y*SS) for x,y in inner],fill=(0,0,0,0))
+                if mask:ImageDraw.Draw(mask).polygon([(x*SS,y*SS) for x,y in inner],fill=0)
+                polyline(draw,inner,(*col,int(230*opacity)),style['width'],style['dashed'])
         if mask:
             # Clip diagonal hatching to contested areas; deterministic at any frame order.
             hatch=Image.new('RGBA',im.size);hd=ImageDraw.Draw(hatch)
@@ -208,7 +213,7 @@ class HistoryVisuals(AtlasVisuals):
     def territory_legend(self,im,s,year):
         rows=[]
         for layer in selected_layers(self.data,s):
-            state,_=territory_state(layer,year)
+            blended=state_blend(layer,year);state=blended[-1][0] if blended else None
             if state and state.get('polygons'):rows.append((layer,state,area_style(layer,state)))
         if not rows:return
         d=ImageDraw.Draw(im,'RGBA');x=60;y=170;width=435

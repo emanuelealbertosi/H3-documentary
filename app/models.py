@@ -23,6 +23,7 @@ class Settings(BaseModel):
     request_limit: int = Field(100, ge=10, le=500)
     search_url: str = ""
     research_mode: Literal["hybrid", "strict"] = "hybrid"
+    boundary_usage: Literal["commercial", "education_nc"] = "commercial"
     instructions: str = Field("", max_length=12000)
     tts_engine: Literal["kokoro","chatterbox","api"] = "kokoro"
     tts_profile_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")

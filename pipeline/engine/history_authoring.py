@@ -10,7 +10,7 @@ ANALYSIS_FIELDS=['period','geography','protagonists','cities','entities','key_ev
 
 def source_method(sources):
     local=any(s.get('origin')=='local_document' for s in sources)
-    web=any(s.get('origin')!='local_document' for s in sources)
+    web=any(s.get('origin') not in {'local_document','boundary_dataset'} for s in sources)
     origin=('documenti locali selezionati e pagine web consultate' if local and web else
             'documenti locali selezionati' if local else
             'pagine web consultate' if web else 'nessuna fonte esterna consultabile')
@@ -76,9 +76,16 @@ def compile_outline(outline,narration,sources,project,settings):
       historical_period=o['historical_period'],metadata={'analysis':o.get('analysis',{}),'authoring':'Modello configurato dall’utente, locale o remoto, con fonti recuperate e revisione automatica.','visual_direction':direction},visual_direction=direction,
       target_minutes=project['minutes'],fps=settings.get('fps',24),output=f'output/{slug}_documentario_1080p.mp4',verification_dir=slug+'_verification',locations=places,persons=persons,entities=o.get('entities',[]),events=o.get('events',[]),visual_layers=o.get('visual_layers',[]),visual_assets=assets,
       scenes=scenes,overview=overview,atlas='assets/geography/atlas-film/atlas.json',
-      sources=[dict(id=s['id'],title=s['title'],url=s['url'],use=('Documento locale: '+s.get('citation','provenienza indicata dall’utente')+'. Passaggi recuperati dall’indice locale; originale conservato nel progetto.' if s.get('origin')=='local_document' else 'Fonte web recuperata; evidenza testuale e data di consultazione nel progetto.')) for s in sources],
+      sources=[dict(id=s['id'],title=s['title'],url=s['url'],
+        **{k:s[k] for k in ('origin','citation','license','license_url','sha256') if k in s},
+        use=('Geometrie datate selezionate per identità e periodo; estratti originali in assets/boundaries.' if s.get('origin')=='boundary_dataset' else
+          'Documento locale: '+s.get('citation','provenienza indicata dall’utente')+'. Passaggi recuperati dall’indice locale; originale conservato nel progetto.' if s.get('origin')=='local_document' else
+          'Fonte web recuperata; evidenza testuale e data di consultazione nel progetto.')) for s in sources],
       editorial_notes=o.get('uncertainties',[]),source_method=source_method(sources),map_notice='Base fisica moderna. Percorsi e aree schematici se non documentati con maggiore precisione.')
     words=sum(len(l.split()) for s in scenes for l in s['lines']);wpm=project.get('narration_wpm',170)
+    if o.get('boundary_report'):
+        from .boundary_credits import attach_credits
+        attach_credits(d,o['boundary_report'])
     if not project['minutes']*wpm*.82<=words<=project['minutes']*wpm*1.18:raise ValueError('Lunghezza della sceneggiatura non adatta alla durata')
     from .research_provenance import apply_context
     apply_context(d,settings.get('research_context'))

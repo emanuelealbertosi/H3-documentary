@@ -175,8 +175,12 @@ def produce(pid,cfg):
         stage("review",do_review)
         # Write once after successful review. Later visual repairs are retained on resume.
         if not packpath.exists():
+            compile_outline_data,compile_sources=outline,sources
+            if kind!='battle':
+                from .boundaries import prepare as prepare_boundaries
+                compile_outline_data,compile_sources=prepare_boundaries(outline,sources,work,cp,cfg.get('boundary_usage','commercial'),log,cancel)
             compiler=compile_pack if kind=="battle" else history_compile
-            pack,geo=compiler(outline,narration,sources,p,{**cfg,'research_context':research})
+            pack,geo=compiler(compile_outline_data,narration,compile_sources,p,{**cfg,'research_context':research})
             if outline.get('narrative_basis'):pack.setdefault('metadata',{})['narrative_basis']=outline['narrative_basis']
             if kind=='battle' and research['fallback_used']:
                 from engine.research_provenance import apply_context

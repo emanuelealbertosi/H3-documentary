@@ -63,12 +63,22 @@ def validate_document(doc):
                 duration=layer.get('transition_years',0)
                 if isinstance(duration,bool) or not isinstance(duration,(int,float)) or not math.isfinite(duration) or duration<0:raise ValueError('transition_years deve essere un numero finito non negativo')
                 if layer.get('label_pos') is not None:position(layer['label_pos'])
-                years=[state.get('year') for state in layer.get('states',[])]
+                years=[state.get('at',historical_value(state['year'])) for state in layer.get('states',[])]
                 if len(set(years))!=len(years):raise ValueError('Stati territoriali duplicati nello stesso anno')
                 for row in [layer,*layer.get('states',[])]:
                     if 'color' in row and (not isinstance(row['color'],(list,tuple)) or len(row['color'])!=3 or any(isinstance(x,bool) or not isinstance(x,int) or not 0<=x<=255 for x in row['color'])):raise ValueError('Colore territoriale RGB non valido')
             for state in layer.get('states',[]):
                 historical_value(state['year'])
+                if 'at' in state:
+                    at=state['at'];base=historical_value(state['year']);until=state.get('valid_until')
+                    if isinstance(at,bool) or not isinstance(at,(int,float)) or not math.isfinite(at) or not base<=at<base+1:raise ValueError('Data geografica at incoerente con year')
+                    if not isinstance(until,(int,float)) or not math.isfinite(until) or until<=at:raise ValueError('Intervallo geografico valid_until non valido')
+                holes=state.get('polygon_holes',[])
+                if holes and len(holes)!=len(state.get('polygons',[])):raise ValueError('Anelli interni dei territori non coerenti')
+                for group in holes:
+                    for ring in group:
+                        if len(ring)<4 or ring[0]!=ring[-1]:raise ValueError('Anello interno non chiuso')
+                        for p in ring:position(p)
                 for polygon in state.get('polygons',[]):
                     if len(polygon)<3:raise ValueError('Poligono incompleto')
                     for p in polygon:position(p)
@@ -117,6 +127,9 @@ def adapt(doc):
     if doc.get('schema_version')!=2:return doc
     doc=normalize_document(doc)
     validate_document(doc);d=copy.deepcopy(doc);kind=d.get('documentary_type','general_history');d['documentary_type']=kind
+    period=d.get('historical_period')
+    if isinstance(period,(list,tuple)) and len(period)==2:
+        d['historical_period']={'start':period[0],'end':period[1]}
     d['documentary_schema_version']=2;d['schema_version']=1;d['visual_style']='history'
     d['documentary']={'type':kind,'title':d['title'],'slug':d['slug']};d.setdefault('metadata',{})
     for k,v in dict(language='it',width=1920,height=1080,fps=24,target_minutes=5,short_title=d['title'][:35],subtitle=PROFILES[kind].label,display_date='',description=d['title'],editorial_notes=[],pronunciation={},assets=[],extra_credits='Natural Earth: pubblico dominio. Cartografia fisica moderna. Rilievo Mapzen / Copernicus: attribuzioni in assets/geography/terrain-attribution.md.',voice_engine='kokoro',voice='assets/voice/kokoro/kokoro-v1.0.onnx',voice_styles='assets/voice/kokoro/voices-v1.0.bin',voice_speaker='if_sara',voice_credit='Kokoro 82M / if_sara, sintesi italiana locale. Pesi Apache-2.0.').items():d.setdefault(k,v)

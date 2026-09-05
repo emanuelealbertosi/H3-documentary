@@ -4,7 +4,7 @@
 
 Il progetto riunisce DocumentariAI Studio e il suo motore già funzionante. Il renderer, le animazioni, il TTS e i formati delle battaglie sono conservati. Non richiede una cartella DocumentariAI separata, Python già installato, FFmpeg di sistema o un editor video.
 
-**Novità 1.11.0:** modalità organizzate in cinque famiglie, territori persistenti con espansioni e perdite, zone d’influenza e contese visivamente distinte, legenda e inquadrature che comprendono le aree. I contorni generati dal modello sono dichiarati schematici; i confini storici precisi richiedono geometrie documentate. Vedi [Territori, confini e influenze](docs/TERRITORI.md).
+**Novità 1.12.0:** recupero automatico di confini da archivi datati, con cache locale, provenienza e licenze. Cliopatria copre molte epoche; l’opzione didattica non commerciale aggiunge CShapes. Il progetto distingue geometrie da archivio, copertura parziale e aree indicative. Restano le modalità raggruppate e i livelli separati per territori, influenze e contese. Vedi [Territori, confini e influenze](docs/TERRITORI.md).
 
 ## Avvio su Windows
 

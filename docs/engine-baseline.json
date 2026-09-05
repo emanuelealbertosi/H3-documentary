@@ -38,16 +38,17 @@
     "visuals.py": "1e2e24a67033963a5d235d7f9848be29c1b55895c1b9005e9255cd25bb4c0a3a",
     "__init__.py": "e30f968d8d2aa6dec40db521982c34e2a33f768ebf9b863339e85d5b820e8918"
   },
-  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval; 1.4.0: API-TTS asset bypass; 1.6.0: modern deterministic cartography and explicit external-TTS cache manifest; 1.6.1: persistent TTS profile selection and compact map-led journey overlays; 1.7.1: voice-aware script length and natural external-TTS tempo ceiling; 1.8.0: licensed visual slots for every cited person/place and neutral offline fallback; 1.9.0: suppressible authored artwork and optional scene backgrounds; 1.9.1: partial-plan scene counts and deterministic visual-role adaptation. Original hashes are retained above for audit; compatible extensions are fingerprinted here. 1.11.0: opt-in territory style, semantic areas and polygon-aware cameras; legacy drawing and battle renderer preserved.",
+  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval; 1.4.0: API-TTS asset bypass; 1.6.0: modern deterministic cartography and explicit external-TTS cache manifest; 1.6.1: persistent TTS profile selection and compact map-led journey overlays; 1.7.1: voice-aware script length and natural external-TTS tempo ceiling; 1.8.0: licensed visual slots for every cited person/place and neutral offline fallback; 1.9.0: suppressible authored artwork and optional scene backgrounds; 1.9.1: partial-plan scene counts and deterministic visual-role adaptation. Original hashes are retained above for audit; compatible extensions are fingerprinted here. 1.11.0: opt-in territory style, semantic areas and polygon-aware cameras; legacy drawing and battle renderer preserved. 1.12.0: pinned dated boundary acquisition, provenance, inner rings, fractional-year states and historical-period list adapter; existing battle rendering and TTS unchanged.",
   "hybrid_extensions_sha256": {
     "acquire.py": "7d6b7e374ed66c426b94d3a99538b771a7780b4ca533eace656a9972e82047ce",
-    "history_authoring.py": "9ee5bcd1bc717f46f4c8bc8f9c6461225004a1b9b3e30f3f1172a63784d3bc1b",
-    "history_schema.py": "cb9a30b188cf9d389b9ed9129ae7d2dcf444f0284acba850a20a42c23c78203a",
+    "history_authoring.py": "1bd1335e84bbdae4fcfadb8b5a4c72cb0d8c59d7344255db31e70dc75a610afa",
+    "history_schema.py": "5102535c48ac7a973d48a5fee5e1bffca01606339a7bcad1c5fdc73b11d83e78",
     "history_profiles.py": "d2617eb355805d5a5b8431339889a3b97aa8e0197fa2b68a0fd5a12e65076948",
-    "history_visuals.py": "5ae8d216d740a602ee2a24ea7455ab01dcea4ad91bad94d3862bc27dbb39a6c0",
+    "history_visuals.py": "5c0bd2cf0ab1425a6c0e4bc872fd5c0727de6a0ad38926add0834fdbae1eba4f",
     "history_assets.py": "4f6582479a21adf20d2ae463db01b7e90fe0eea9fd5aae69d0c2fd89facec58c",
     "atlas.py": "2066ace1795c4ddf56bd8d000c8ecefe4e0c2bd9b45cd1b53229e651a8aaffcd",
     "narration.py": "2087ee474f57bf1391e175109aee259bb7399b049808fe7b8f691e5d2564f784",
-    "history_direction.py": "7383947017120011b7443fcfaa7f8ca02dca00c76c05b7242a23683f68d47597"
+    "history_direction.py": "cbd2ec8d6d6e563e79338c1337acb2a0912c1db85e5cd11fbef98bfca0fec9a4",
+    "history_territories.py": "98e51271cf188df770b205282b3a18daa2a49093e2b53b6ef1a34bce59b82256"
   }
 }
