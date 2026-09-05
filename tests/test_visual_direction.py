@@ -17,7 +17,7 @@ def journey_scene(index,kind=None):
 
 def test_visual_direction_detects_journey_and_rejects_empty_maps_and_hidden_routes():
     direction=direction_for('Viaggio di Ulisse da Troia a Itaca','general_history','literary_tradition')
-    assert direction=={'version':1,'movement_sync':1,'journey':True,'map_led':True,'timeline_mode':'sequence','auto_persons':True}
+    assert direction=={'version':1,'movement_sync':1,'territory_style':2,'territory_mode':'','journey':True,'map_led':True,'timeline_mode':'sequence','auto_persons':True}
     empty={'scene_type':'map_overview','focus':[],'movements':[]}
     assert any('mappa vuota' in x for x in scene_issues(empty,direction))
     hidden={**empty,'scene_type':'event_focus','movements':[{'points':[[1,2],[2,3]]}]}

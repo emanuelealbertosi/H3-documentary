@@ -7,7 +7,8 @@ MAP_SCENES={'map_overview','animated_route','territorial_change','city_focus','n
 def direction_for(topic,kind,basis='history'):
     text=''.join(c for c in unicodedata.normalize('NFKD',topic.lower()) if not unicodedata.combining(c))
     journey=kind=='exploration' or bool(re.search(r'\bviaggi\w*|\bitinerar\w*|\bperiplo\b|\brientr\w*|\btraversat\w*|\bspostament\w*|\britorno.*(?:ulisse|odisseo|itaca)|\b(?:ulisse|odisse[ao]).*(?:ritorn\w*|rientr\w*|itaca)|\bodisse[ao]\b',text))
-    return {'version':1,'movement_sync':1,'journey':journey,'map_led':journey or kind in {'migration','trade_network','territorial_expansion'},
+    return {'version':1,'movement_sync':1,'territory_style':2,'territory_mode':'territory' if kind=='territorial_expansion' else 'influence' if kind=='political_history' else '',
+            'journey':journey,'map_led':journey or kind in {'migration','trade_network','territorial_expansion','political_history'},
             'timeline_mode':'sequence' if basis=='literary_tradition' else 'historical','auto_persons':True}
 
 
@@ -32,6 +33,8 @@ Per ogni gruppo di scene conserva continuità delle tappe, evitando episodi dupl
         text+='''\nOgni movements geografico usa from e to come ID del catalogo e cue=0 oppure cue=1. La scena deve nominare nel proprio event la destinazione to: non assegnare alla tappa attuale la freccia verso una tappa che verrà raccontata soltanto nella scena successiva. cue=0 accompagna il primo paragrafo narrato, di norma un arrivo; cue=1 accompagna il secondo, di norma una partenza o la prosecuzione del percorso.'''
     if direction.get('timeline_mode')=='sequence':
         text+='\nMostra la successione narrativa degli episodi, senza far scorrere anni inventati. historical_period resta una cornice; historical_range non rappresenta la durata del viaggio.'
+    if direction.get('territory_mode'):
+        text+='''\nREGIA TERRITORIALE: mostra aree colorate con visual_layers e territory_ids, non soltanto frecce. Usa kind=territory per controllo politico, influence per influenza senza sovranità, alliance per alleanze, contested per zone contese. Ogni area richiede label, color, sources, schematic=true, states=[{year,polygons}] e label_pos quando utile. Le coordinate prodotte dal modello sono sempre schematiche: non sono confini verificati. Non sostituire confini antichi con quelli moderni. Mantieni lo stesso ID fra scene e aggiungi stati cronologici: ogni stato contiene l’intera geometria di quella data; polygons=[] indica la perdita completa. territory_ids elenca anche i livelli precedenti da conservare visibili nella scena. Gli intervalli historical_range devono essere continui quando si mostrano trasformazioni continue. transition_years può rendere morbido un passaggio illustrativo, senza farlo passare per una data storica misurata. Se le fonti non consentono di delineare neppure un’area indicativa, usa città e relazioni e spiega la limitazione in event e uncertainties.'''
     return text
 
 

@@ -55,6 +55,18 @@ def validate_document(doc):
     for layer in doc.get('visual_layers',[]):
         refs(layer)
         if layer.get('kind') in ('territory','influence','cultural','linguistic','religious','alliance','contested'):
+            from .history_territories import modern_areas
+            if modern_areas(doc):
+                if not isinstance(layer.get('label'),str) or not layer['label'].strip():raise ValueError('Area senza nome leggibile')
+                if not isinstance(layer.get('schematic',True),bool):raise ValueError('schematic deve essere un booleano')
+                if layer.get('schematic') is False and not layer.get('geometry_source'):raise ValueError('Un confine documentato richiede geometry_source con provenienza dei dati geografici; coordinate illustrative: schematic=true')
+                duration=layer.get('transition_years',0)
+                if isinstance(duration,bool) or not isinstance(duration,(int,float)) or not math.isfinite(duration) or duration<0:raise ValueError('transition_years deve essere un numero finito non negativo')
+                if layer.get('label_pos') is not None:position(layer['label_pos'])
+                years=[state.get('year') for state in layer.get('states',[])]
+                if len(set(years))!=len(years):raise ValueError('Stati territoriali duplicati nello stesso anno')
+                for row in [layer,*layer.get('states',[])]:
+                    if 'color' in row and (not isinstance(row['color'],(list,tuple)) or len(row['color'])!=3 or any(isinstance(x,bool) or not isinstance(x,int) or not 0<=x<=255 for x in row['color'])):raise ValueError('Colore territoriale RGB non valido')
             for state in layer.get('states',[]):
                 historical_value(state['year'])
                 for polygon in state.get('polygons',[]):
@@ -122,7 +134,10 @@ def adapt(doc):
         if 'historical_range' not in s:s['historical_range']=[s.get('year',1)]*2
         s.setdefault('date',year_label(s['historical_range'][0]));s.setdefault('kicker',PROFILES[kind].label)
         s.setdefault('facts',[s.get('note',s['title'])]);s.setdefault('note','');s['map']='campaign'
-        view=s['camera_end'] if s.get('camera_end') else fit([d['places'][p]['pos'] for p in s.get('location_ids',[])])
+        from .history_territories import modern_areas,scene_area_points,area_view
+        area_points=scene_area_points(d,s) if modern_areas(d) else []
+        points=[d['places'][p]['pos'] for p in s.get('location_ids',[])]+area_points
+        view=s['camera_end'] if s.get('camera_end') else area_view(points) if area_points else fit(points)
         s.setdefault('camera_start',previous);s.setdefault('camera_end',view)
         s.setdefault('camera_keys',[{'at':0,'view':s['camera_start']},{'at':.30,'view':view},{'at':1,'view':view}]);previous=view
         s.setdefault('visible_places',s.get('location_ids',[]));s.setdefault('label_offsets',{})

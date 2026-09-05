@@ -155,6 +155,10 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
     from engine.history_profiles import EVENT_TYPES,SCENE_TYPES,MOVEMENTS
     vocabulary=f"\nValori ammessi esatti: scene_type={sorted(SCENE_TYPES)}; event.type={sorted(EVENT_TYPES)}; movement.semantic={sorted(MOVEMENTS)}. Per episodi puramente narrativi che non rientrano negli eventi storici, usa events=[] e raccontali nei campi event delle scene; non inventare tipi come literary_narrative."
     def validate(batch,first,last):
+        # Model-drawn coordinates are illustrative even when it claims precise borders.
+        for layer in batch.get('visual_layers',[]):
+            if layer.get('states') and ('kind' in layer or not any(row['id']==layer.get('id') for row in state['visual_layers'])):
+                layer['schematic']=True
         for scene in batch.get('scenes',[]):normalize_visual_role(scene,shot_role(direction,scene.get('index',first),count))
         batch=movement_endpoints(place_references(batch,catalog['places']),catalog['places'])
         from .movement_sync import prepare_scene,plan_issue

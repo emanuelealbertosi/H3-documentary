@@ -38,6 +38,8 @@ def detect_type(topic):
     rules=[('biography',r'biografi|vita di|napoleone|leonardo da vinci'),('territorial_expansion',r'espansion.*(?:impero|roman|territor)|conquiste.*roman'),('religious_expansion',r'islam|cristianesimo|buddh|religio'),('migration',r'migraz|germanic|barbarich'),('cultural_movement',r'rinasciment|illuminism|romanticism|culturale'),('trade_network',r'via della seta|rotte commercial|commerci.*rete'),('exploration',r'esplora|circumnavig|scopert.*america'),('economic_history',r'industrial|economi|produzione|capitalism'),('technology_history',r'tecnolog|invenz|telegrafo|stampa'),('political_history',r'guerra fredda|geopolit|alleanze'),('battle',r'battaglia|waterloo|stalingrado|austerlitz|gettysburg'),('revolution',r'rivoluzion'),('war',r'guerra')]
     # Explicit battle requests outrank the name of a biographical subject.
     if 'battaglia' in t:return 'battle'
+    if re.search(r'(?:zone|aree|sfere)\s+d[i’\x27 ]*influenza|geopolitic|blocchi contrapposti|alleanze',t):return 'political_history'
+    if re.search(r'confini|annession|perdite territorial|(?:espansion|contrazion|conquist).*territor|espansion.*(?:impero|stati|nazioni)',t):return 'territorial_expansion'
     for kind,pattern in rules:
         if re.search(pattern,t):return kind
     if re.search(r'\bviaggi\w*|\bitinerar\w*|\bperiplo\b|\bodisse[ao]\b|ritorno.*(?:ulisse|itaca)',t):return 'exploration'

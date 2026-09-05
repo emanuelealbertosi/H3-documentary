@@ -2,11 +2,12 @@
 import math
 from functools import lru_cache
 import numpy as np,cv2
-from PIL import Image,ImageDraw,ImageOps,ImageEnhance
+from PIL import Image,ImageDraw,ImageOps,ImageEnhance,ImageChops
 from .common import ROOT
 from .atlas import AtlasVisuals,camera,screen,partial,smooth,progress,label,polyline,W,H,SS,INK,CREAM,GOLD,MUTED
 from .visuals import font,wrap
 from .history_schema import interpolate_year,year_label,historical_value
+from .history_territories import modern_areas,selected_layers,area_style,state_blend
 
 PALETTE={'migration':(72,211,180),'population_transfer':(72,211,180),'trade':(247,186,75),'sea_trade':(68,184,231),'cultural_diffusion':(190,132,241),'religious_diffusion':(102,199,123),'technology_diffusion':(64,205,218),'journey':(244,164,96),'exploration':(74,205,193),'connection':(166,202,211),'influence':(204,139,231),'attack':(239,86,91),'invasion':(239,86,91),'retreat':(239,137,80),'campaign':(239,86,91),'expansion':(247,186,75)}
 SEMANTICS={'migration':'Migrazione','population_transfer':'Trasferimento di popolazione','trade':'Scambi terrestri','sea_trade':'Scambi marittimi','cultural_diffusion':'Circolazione delle idee','religious_diffusion':'Diffusione religiosa','technology_diffusion':'Circolazione tecnica','journey':'Spostamento personale','exploration':'Esplorazione','connection':'Collegamento','influence':'Influenza','attack':'Attacco','invasion':'Invasione','retreat':'Ritirata','campaign':'Campagna','expansion':'Espansione'}
@@ -63,7 +64,10 @@ class HistoryVisuals(AtlasVisuals):
         else:
             im=self.map_background(cam)
             overlay=Image.new('RGBA',(W*SS,H*SS));d=ImageDraw.Draw(overlay)
-            self.territories(overlay,d,s,cam,year)
+            if modern_areas(self.data):
+                value=historical_value(a)+(historical_value(b)-historical_value(a))*q
+                self.territories(overlay,d,s,cam,value-1 if value<=0 else value)
+            else:self.territories(overlay,d,s,cam,year)
             for m in s.get('movements',[]):self.movement(overlay,d,m,s,t,cam)
             self.network(overlay,d,s,t,cam)
             self.battle_symbols(overlay,d,s,t,cam)
@@ -71,6 +75,7 @@ class HistoryVisuals(AtlasVisuals):
             im.alpha_composite(Image.fromarray(cv2.resize(np.asarray(overlay),(W,H),interpolation=cv2.INTER_AREA)))
             im.alpha_composite(self.shade)
             self.map_key(im,s)
+            if modern_areas(self.data):self.territory_legend(im,s,year)
         self.directed_overlays(im,s,t)
         self.header(im,s,year)
         self.chronology(im,s,t,year)
@@ -143,6 +148,14 @@ class HistoryVisuals(AtlasVisuals):
             self.movement(im,d,m,s,t,cam)
 
     def territories(self,im,d,s,cam,year):
+        if modern_areas(self.data):
+            for layer in selected_layers(self.data,s):
+                blended=state_blend(layer,year)
+                for state,opacity in blended:self.paint_area(im,state,layer,cam,opacity)
+                if blended and blended[-1][0].get('polygons') and layer.get('label_pos'):
+                    x,y=screen(layer['label_pos'],cam)
+                    if 65<x<W-65 and 170<y<735:label(im,(x,y),blended[-1][0].get('label',layer['label']),24,CREAM)
+            return
         # State comes from absolute historical time, not previously rendered frames.
         # This makes seeking, parallel rendering and out-of-order previews identical.
         selected=s.get('territory_ids',list(self.layers))
@@ -173,6 +186,41 @@ class HistoryVisuals(AtlasVisuals):
             # A soft outer edge separates a changing territory from detailed relief.
             polyline(d,pts+[pts[0]],(*INK,int(115*opacity)),7,False)
             polyline(d,pts+[pts[0]],(*col,int(245*opacity)),3,layer.get('schematic',True) or state.get('contested',False))
+
+    def paint_area(self,im,state,layer,cam,opacity):
+        if opacity<=0 or not state.get('polygons'):return
+        style=area_style(layer,state);col=tuple(state.get('color',layer.get('color',GOLD)))
+        area=Image.new('RGBA',im.size);draw=ImageDraw.Draw(area)
+        mask=Image.new('L',im.size) if style['hatch'] else None
+        for poly in state['polygons']:
+            pts=[screen(p,cam) for p in poly];scaled=[(x*SS,y*SS) for x,y in pts]
+            draw.polygon(scaled,fill=(*col,int(style['fill']*opacity)))
+            if mask:ImageDraw.Draw(mask).polygon(scaled,fill=255)
+            polyline(draw,pts+[pts[0]],(*INK,int(95*opacity)),7,style['dashed'])
+            polyline(draw,pts+[pts[0]],(*col,int(230*opacity)),style['width'],style['dashed'])
+        if mask:
+            # Clip diagonal hatching to contested areas; deterministic at any frame order.
+            hatch=Image.new('RGBA',im.size);hd=ImageDraw.Draw(hatch)
+            for x in range(-im.height,im.width,24*SS):hd.line((x,0,x+im.height,im.height),fill=(*col,int(105*opacity)),width=2*SS)
+            hatch.putalpha(ImageChops.multiply(hatch.getchannel('A'),mask));area.alpha_composite(hatch)
+        im.alpha_composite(area)
+
+    def territory_legend(self,im,s,year):
+        rows=[]
+        for layer in selected_layers(self.data,s):
+            state,_=territory_state(layer,year)
+            if state and state.get('polygons'):rows.append((layer,state,area_style(layer,state)))
+        if not rows:return
+        d=ImageDraw.Draw(im,'RGBA');x=60;y=170;width=435
+        shown=rows[:4];height=24+len(shown)*52+(20 if len(rows)>4 else 0)
+        d.rounded_rectangle((x,y,x+width,y+height),radius=12,fill=(*INK,226),outline=(*CREAM,60),width=1)
+        for i,(layer,state,style) in enumerate(shown):
+            top=y+12+i*52;col=tuple(state.get('color',layer.get('color',GOLD)))
+            d.rounded_rectangle((x+15,top+5,x+37,top+27),radius=3,fill=(*col,155),outline=col,width=2)
+            if style['hatch']:d.line((x+16,top+25,x+35,top+6),fill=CREAM,width=2)
+            textblock(d,(x+50,top),state.get('label',layer['label']),width-65,20,CREAM,maxlines=1)
+            d.text((x+50,top+27),style['label']+' · '+style['boundary'],font=font(12),fill=MUTED)
+        if len(rows)>4:d.text((x+15,y+height-23),f'+ {len(rows)-4} altre aree sulla mappa',font=font(12),fill=MUTED)
 
     def semantic_marker(self,d,xy,angle,semantic,col,scale=1):
         """Draw a distinct endpoint glyph so a route does not always mean attack."""
@@ -268,7 +316,8 @@ class HistoryVisuals(AtlasVisuals):
             d.line((1050,y+12,1094,y+12),fill=col,width=6)
             self.semantic_marker(d,(1097,y+12),0,sem,col,.48)
             d.text((1115,y),SEMANTICS[sem],font=font(19),fill=CREAM)
-        notice=s.get('map_note','Collegamenti schematici · nessuna quantità implicita')
+        default_note='Aree e confini: significato e precisione nella legenda' if modern_areas(self.data) and selected_layers(self.data,s) else 'Collegamenti schematici · nessuna quantità implicita'
+        notice=s.get('map_note',default_note)
         d.text((1858,904),notice[:100],font=font(13),fill=MUTED,anchor='ra')
 
     def chronology(self,im,s,t,year):
