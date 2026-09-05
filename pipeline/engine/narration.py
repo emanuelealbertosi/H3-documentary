@@ -5,6 +5,7 @@ import numpy as np
 from scipy.io import wavfile
 from piper import PiperVoice,SynthesisConfig
 from .common import ROOT,write_json,read_json,fingerprint,run_ff
+from .voice_delivery import delivery_options
 
 def pronounce(text, replacements):
     for a,b in sorted(replacements.items(),key=lambda kv:-len(kv[0])):
@@ -31,6 +32,9 @@ def synthesis_key(pack,scene_id,index,spoken):
 
 def select_voice_tempo(pack,backend,natural,gaps):
     """Fit narration to the requested duration without penalising slow external voices."""
+    delivery=delivery_options(pack)
+    if delivery:return delivery['speed']
+    if pack.get('_voice_preview'):return 1.0
     target=float(pack['target_minutes'])*60
     available=max(1.,target-gaps)
     required=natural/available
@@ -148,7 +152,9 @@ def synthesize(pack,keep_timing=False):
             enrich_timeline(previous)
         write_json(ROOT/'build'/pack['slug']/'timeline.json',previous);write_json(ROOT/'timeline.json',previous)
         return previous
-    gaps=len(pack['scenes'])*1.5+len(raw)*.18
+    delivery=delivery_options(pack)
+    pause=delivery['pause_seconds'] if delivery else .18
+    gaps=len(pack['scenes'])*1.5+len(raw)*pause
     target=pack['target_minutes']*60
     tempo=select_voice_tempo(pack,backend,natural,gaps)
     print(f'Natural voice {natural:.1f}s. Tempo factor {tempo:.3f}.',flush=True)
@@ -168,7 +174,7 @@ def synthesize(pack,keep_timing=False):
                 gain=min(.115/rms,.86/(np.max(np.abs(y.astype(float)))/32768))
                 y=np.clip(y.astype(float)*gain,-32767,32767).astype(np.int16)
             cues.append(dict(index=line['index'],start=round(offset,6),end=round(offset+len(y)/sr,6),text=line['text'],spoken=line['spoken']))
-            audio.extend([y,np.zeros(int(sr*.18),dtype=np.int16)]); offset+=len(y)/sr+.18
+            audio.extend([y,np.zeros(round(sr*pause),dtype=np.int16)]); offset+=len(y)/sr+pause
         duration=math.ceil((offset+.85)*fps)/fps
         tail=round(duration*sr)-sum(len(x) for x in audio)
         audio.append(np.zeros(tail,dtype=np.int16))
@@ -182,7 +188,10 @@ def synthesize(pack,keep_timing=False):
     maximum=pack.get('max_minutes',pack['target_minutes']*1.12)*60
     if backend in ('chatterbox','tts_api'):
         maximum=max(maximum,pack['target_minutes']*1.5*60)
-    if not minimum<=cursor<=maximum:
+    if delivery:
+        timeline['voice_tempo_mode']='user delivery; duration follows measured narration'
+        print(f'Lettura personalizzata: durata misurata {cursor/60:.2f} minuti; obiettivo indicativo {target/60:.2f}.',flush=True)
+    elif not minimum<=cursor<=maximum:
         raise ValueError(f'Duration {cursor:.1f}s outside requested {minimum/60:.1f}–{maximum/60:.1f} minutes. Adjust the narration or target duration.')
     if timeline.get('documentary_schema_version')==2:
         from .history_schema import enrich_timeline

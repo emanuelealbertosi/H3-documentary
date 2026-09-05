@@ -4,3 +4,5 @@
 scipy==1.18.1
 piper-tts==1.7.0
 pathvalidate==3.3.1
+reportlab==5.0.1
+opencv-python-headless==5.0.0.93

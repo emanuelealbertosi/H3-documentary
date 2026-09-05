@@ -1,7 +1,7 @@
 import json, sqlite3, secrets, threading, datetime, ctypes, base64, os, hashlib, shutil, time
 from pathlib import Path
 from .paths import DATA, JOBS, DEFAULT_PIPELINE
-from .models import Settings
+from .models import Settings,VoiceDelivery
 
 LOCK=threading.RLock()
 def now(): return datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -34,6 +34,8 @@ def init():
             c.execute("ALTER TABLE projects ADD COLUMN tts_profile_id TEXT DEFAULT ''")
         if "tts_config" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN tts_config TEXT DEFAULT '{}'")
+        if "tts_delivery" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
+            c.execute("ALTER TABLE projects ADD COLUMN tts_delivery TEXT DEFAULT '{}'")
         if "use_documents" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN use_documents INTEGER DEFAULT 0")
         if "document_ids" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
@@ -78,6 +80,7 @@ def project(pid):
     obj=dict(row);obj["source_urls"]=json.loads(obj["source_urls"]);obj["result"]=json.loads(obj["result"])
     obj["document_ids"]=json.loads(obj.get("document_ids") or "[]")
     obj["tts_config"]=json.loads(obj.get("tts_config") or "{}")
+    obj["tts_delivery"]=VoiceDelivery.model_validate(json.loads(obj.get("tts_delivery") or "{}")).model_dump()
     return obj
 def projects():
     with connect() as c: ids=[r["id"] for r in c.execute("SELECT id FROM projects ORDER BY created DESC")]
@@ -92,10 +95,11 @@ def request_fields(req):
         if not profile:raise ValueError('Seleziona un server TTS salvato.')
         tts_config=snapshot(profile)
     reference=req.tts_reference_id or (cfg.get('tts_reference_id','') if req.tts_engine=='default' and engine in ('chatterbox','api') else '')
+    delivery=req.tts_delivery.model_dump() if req.tts_delivery is not None else VoiceDelivery.model_validate(cfg.get('tts_delivery',{})).model_dump()
     return {'topic':req.topic,'minutes':req.minutes,'notes':req.notes,'source_urls':req.source_urls,
             'documentary_type':req.documentary_type,'use_media':req.use_media,'review_visuals':req.review_visuals,
             'use_documents':req.use_documents,'document_ids':req.document_ids,'tts_engine':engine,
-            'tts_reference_id':reference,'tts_profile_id':profile,'tts_config':tts_config}
+            'tts_reference_id':reference,'tts_profile_id':profile,'tts_config':tts_config,'tts_delivery':delivery}
 
 def create(req,*,family_id='',version=1,parent_id=''):
     pid=secrets.token_hex(8);ts=now();fields=request_fields(req)
@@ -104,15 +108,15 @@ def create(req,*,family_id='',version=1,parent_id=''):
           (pid,fields['topic'],fields['minutes'],fields['notes'],json.dumps(fields['source_urls']),ts,ts))
         c.execute("UPDATE projects SET documentary_type=?,use_media=?,review_visuals=?,use_documents=?,document_ids=? WHERE id=?",
                   (fields['documentary_type'],fields['use_media'],fields['review_visuals'],fields['use_documents'],json.dumps(fields['document_ids']),pid))
-        c.execute("UPDATE projects SET tts_engine=?,tts_reference_id=?,tts_profile_id=?,tts_config=? WHERE id=?",
-                  (fields['tts_engine'],fields['tts_reference_id'],fields['tts_profile_id'],json.dumps(fields['tts_config'],ensure_ascii=False),pid))
+        c.execute("UPDATE projects SET tts_engine=?,tts_reference_id=?,tts_profile_id=?,tts_config=?,tts_delivery=? WHERE id=?",
+                  (fields['tts_engine'],fields['tts_reference_id'],fields['tts_profile_id'],json.dumps(fields['tts_config'],ensure_ascii=False),json.dumps(fields['tts_delivery']),pid))
         c.execute("UPDATE projects SET family_id=?,version=?,parent_id=? WHERE id=?",(family_id or pid,max(1,int(version)),parent_id,pid))
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
-    allowed={"topic","minutes","documentary_type","status","stage","progress","error","result","notes","source_urls","use_media","review_visuals","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config","processing_started","processing_seconds"}
+    allowed={"topic","minutes","documentary_type","status","stage","progress","error","result","notes","source_urls","use_media","review_visuals","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config","tts_delivery","processing_started","processing_seconds"}
     if not fields.keys()<=allowed: raise ValueError("Campi non consentiti")
     fields["updated"]=now()
-    fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls","document_ids","tts_config") else v for k,v in fields.items()}
+    fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls","document_ids","tts_config","tts_delivery") else v for k,v in fields.items()}
     with connect() as c:c.execute("UPDATE projects SET "+",".join(k+"=?" for k in fields)+" WHERE id=?",(*fields.values(),pid))
 
 def begin_processing(pid,at=None):
@@ -164,7 +168,7 @@ def clone_completed(pid, request=None):
         new=create(request,family_id=family,version=version,parent_id=old['id'])
         if not supplied:
             update(new['id'],tts_engine=old.get('tts_engine','kokoro'),tts_reference_id=old.get('tts_reference_id',''),
-                   tts_profile_id=old.get('tts_profile_id',''),tts_config=old.get('tts_config',{}),use_media=old.get('use_media',1))
+                   tts_profile_id=old.get('tts_profile_id',''),tts_config=old.get('tts_config',{}),tts_delivery=old.get('tts_delivery',{}),use_media=old.get('use_media',1))
         new=project(new['id'])
         event(pid,f'Creata la versione V{version}: {new["id"]}.')
         event(new['id'],f'Nuova versione V{version} del progetto {old["id"]}.')

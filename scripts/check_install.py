@@ -22,7 +22,7 @@ def check(quick=False,write=False):
     ensure_model(False)
     code="""import json,sys,subprocess
 from pathlib import Path
-import av,numpy,scipy,PIL,cv2,imageio_ffmpeg,piper
+import av,numpy,scipy,PIL,cv2,imageio_ffmpeg,piper,reportlab
 from kokoro_onnx import Kokoro
 from misaki.espeak import EspeakG2P
 root=Path.cwd()

@@ -46,6 +46,10 @@ def enqueue(pid):
     tts.ensure_available(p.get('tts_engine') or 'kokoro',p.get('tts_reference_id') or '',cfg['pipeline_path'],p.get('tts_profile_id') or '',p.get('tts_config') or None)
     with LOCK:
         if pid in FUTURES and not FUTURES[pid].done():raise ValueError("Questo progetto è già in coda o in esecuzione.")
+        from .voice_delivery import preview_active
+        if preview_active():raise ValueError('Attendi la fine della prova vocale prima di avviare la produzione.')
+        from .presentations import ensure_idle
+        ensure_idle(pid)
         if p["status"]=="completed":raise ValueError("Il documentario è già completato.")
         from .media import freeze
         freeze(pid,bool(p.get('use_media')))
@@ -147,6 +151,14 @@ def produce(pid,cfg):
             store.write_json(cp/"outline.json",obj)
         stage("outline",do_outline)
         outline=store.read_json(cp/"outline.json")
+        warnings=outline.get('visual_warnings') or []
+        if warnings:
+            public=[{k:w[k] for k in ('scene_index','scene_id','scene_title','element','reason','placeholder') if k in w} for w in warnings]
+            store.update(pid,result={**store.project(pid)['result'],'visual_warnings':public})
+            store.write_json(cp/'visual-recovery.json',{'warnings':public})
+            if any(w.get('placeholder') for w in warnings):
+                p['review_visuals']=True;store.update(pid,review_visuals=True)
+                log('Alcune visuali non sono coerenti con il racconto: preparo schede da completare. Prima della voce potrai caricare una mappa o un’immagine, oppure continuare con i segnaposto.')
         if kind=='battle':outline=enrich_battle_outline(llm,system,outline,cp,log,cancel)
         if outline.get('narrative_basis')=='literary_tradition':
             system+='\nIl documentario racconta una tradizione letteraria o mitologica. Dichiara questa cornice, distingui luoghi accertati e localizzazioni leggendarie e non trasformare episodi narrativi in fatti storici verificati.'
@@ -247,7 +259,7 @@ def produce(pid,cfg):
             state=visual_slots.status(pid)
             elapsed=store.pause_processing(pid)
             store.update(pid,status='review',stage='Revisione immagini e sfondi',progress=round(6/len(STAGES)*100,1),error='',processing_seconds=elapsed)
-            log(f'Pausa visuale: {state["blank_count"]} immagini da completare e {state.get("empty_background_count",0)} sfondi facoltativi. Apri Immagini e riquadri; quando sei soddisfatto premi Continua produzione.')
+            log(f'Pausa visuale: {state["blank_count"]} immagini da completare e {state.get("empty_background_count",0)} sfondi facoltativi. Apri Immagini e riquadri; puoi completare le schede oppure premere Continua produzione per mantenere i segnaposto.')
             return
         def voice():
             if pack.get('voice_engine')=='chatterbox':
@@ -336,6 +348,10 @@ def enqueue_visual_refresh(pid):
     if original['status']!='completed':raise ValueError('L’aggiornamento parziale è disponibile dopo il completamento del film.')
     with LOCK:
         if active():raise ValueError('Attendi che la produzione in corso termini.')
+        from .voice_delivery import preview_active
+        if preview_active():raise ValueError('Attendi la fine della prova vocale prima di avviare la produzione.')
+        from .presentations import ensure_idle
+        ensure_idle(pid)
         state=visual_slots.status(pid)
         if not state['change_count']:raise ValueError('Collega, attiva o escludi prima almeno un elemento visuale del film.')
         target=store.clone_completed(pid)
@@ -355,7 +371,7 @@ def refresh_visuals(pid,cfg):
     try:
         cancel();store.update(pid,status='running',stage='Applicazione delle immagini',progress=82)
         source=verify_pipeline(cfg['pipeline_path']);python=source/'.venv/Scripts/python.exe'
-        for rel in ('documentary.py','engine/render.py','engine/image_insets.py','engine/visuals.py','engine/history_visuals.py','engine/export.py','engine/history_export.py'):
+        for rel in ('documentary.py','engine/render.py','engine/image_insets.py','engine/visuals.py','engine/history_visuals.py','engine/history_direction.py','engine/export.py','engine/history_export.py'):
             src=source/rel;dst=work/rel
             if src.is_file():dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst)
         packpath=visual_slots.project_pack(pid);pack=store.read_json(packpath)

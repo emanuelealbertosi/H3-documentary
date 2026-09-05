@@ -1,0 +1,12 @@
+.voice-delivery{margin:18px 0;border:1px solid var(--line,#dbe1d8);border-radius:12px;padding:13px 16px;background:rgba(240,243,236,.45)}
+.voice-delivery>summary{font-weight:650;cursor:pointer}
+.voice-delivery[open]>summary{margin-bottom:18px}
+.voice-delivery .field{min-width:0}
+.voice-delivery output{font-variant-numeric:tabular-nums;float:right;color:var(--green,#446c58)}
+.voice-delivery input[type=range]{width:100%;padding:10px 0;accent-color:#4e735f}
+.voice-delivery .voice-preview{margin-top:16px;border-top:1px solid var(--line,#dbe1d8);padding-top:12px}
+.voice-delivery .voice-preview>summary{cursor:pointer}
+.voice-delivery .voice-preview[open]>summary{margin-bottom:14px}
+.voice-delivery audio{width:100%;max-width:520px;margin-top:8px}
+.voice-delivery .actions{flex-wrap:wrap}
+@media(max-width:640px){.voice-delivery-sliders{grid-template-columns:minmax(0,1fr)}}

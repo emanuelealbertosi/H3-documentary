@@ -44,6 +44,9 @@ def request_rows(llm,system,outline,rows,sources,target,log,attempts,prior=None)
     low=math.ceil(target*.90);high=math.floor(target*1.10);line_low=max(25,math.floor(low/2));line_high=math.ceil(high/2)
     one=len(rows)==1
     places=outline.get('places',outline.get('locations',[]));sync=outline.get('visual_direction',{}).get('movement_sync')==1
+    # Deferred visual proposals are an audit for the user, not historical
+    # evidence or instructions to restore a rejected journey in the narration.
+    narrative_rows=[{key:value for key,value in row.items() if key not in ('visual_recovery','visual_warnings')} for row in rows]
     base='Titolo: '+outline['title']+'\nScaletta generale: '+json.dumps([s['title'] for s in outline['scenes']],ensure_ascii=False)
     if prior:base+='\nTESTO GIÀ SCRITTO, DA NON RIPETERE:\n'+json.dumps([{'index':r['index'],'lines':r['lines']} for r in prior],ensure_ascii=False)
     base+=f'''\nScrivi SOLO {'UNA SOLA SCENA' if one else 'le scene indicate'}, con gli indici esatti {expected}.
@@ -51,9 +54,10 @@ Per ogni scena, lines contiene esattamente DUE PARAGRAFI narrati, ciascuno di ci
 Il campo event in ingresso è soltanto una sintesi breve: NON copiarlo come intera narrazione e NON applicare alla voce il suo limite di 35 parole.
 Primo paragrafo: contesto e situazione visibile. Secondo: sviluppo, significato e collegamento cronologico. Periodi chiari, ritmo documentaristico, nessuna indicazione di regia nella voce. Numeri e anni in lettere nella narrazione. Evita ripetizioni con le altre scene. fact è un cartello sintetico; kicker è un breve sottotitolo.
 Quando una scena contiene movements, ogni movimento ha cue 0 o 1: lines[cue] deve descrivere QUEL movimento e nominare esplicitamente la destinazione to con il nome del catalogo. Non narrare l’arrivo in un luogo mentre la freccia parte già verso la tappa successiva. Mantieni la direzione from → to.
+Alcune immagini potranno essere completate manualmente. Segui il racconto e le fonti: non aggiungere spostamenti, arrivi o fatti per compensare un elemento grafico mancante. Non leggere nella voce avvisi tecnici o indicazioni per completare le immagini.
 CATALOGO LUOGHI:
 '''+json.dumps([{'id':p['id'],'name':p['name']} for p in places],ensure_ascii=False)+'''
-SCENE:\n'''+json.dumps(rows,ensure_ascii=False)+'\nFONTI:\n'+local
+SCENE:\n'''+json.dumps(narrative_rows,ensure_ascii=False)+'\nFONTI:\n'+local
     prompt=base
     last=''
     for attempt in range(attempts):

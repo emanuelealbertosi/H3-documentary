@@ -53,6 +53,8 @@ class HistoryVisuals(AtlasVisuals):
 
     def uses_map(self,s):
         """Keep geographic continuity for map-led stories without inventing a location."""
+        from .history_direction import recovered_placeholder
+        if recovered_placeholder(s):return False
         direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
         return s['scene_type'] not in NONMAP or (direction.get('map_led') and s['scene_type'] in {'event_focus','summary'})
 
@@ -84,6 +86,8 @@ class HistoryVisuals(AtlasVisuals):
 
     def directed_overlays(self,im,s,t):
         """Opt-in map storytelling. Existing packs render byte-for-byte as before."""
+        from .history_direction import recovered_placeholder
+        if recovered_placeholder(s):return
         direction=self.data.get('visual_direction') or self.data.get('metadata',{}).get('visual_direction',{})
         if direction.get('version')!=1:return
         journey=s.get('schematic_journey')
@@ -267,7 +271,7 @@ class HistoryVisuals(AtlasVisuals):
             d.polygon([tip,left,right],fill=dark)
 
     def movement(self,im,d,m,s,t,cam):
-        p=1 if m.get('complete') else progress(s,m,t)
+        p=progress(s,m,t) if s.get('_still') else 1 if m.get('complete') else progress(s,m,t)
         if p<=0:return
         semantic=m['semantic'];col=tuple(m.get('color',PALETTE[semantic]));points=[screen(x,cam) for x in m['points']]
         pts=partial(points,p);w=min(14,max(5,m.get('width',7)))
@@ -405,7 +409,7 @@ class HistoryVisuals(AtlasVisuals):
                     x=120+i*575;d.line((x,679,x+480,679),fill=GOLD,width=2);textblock(d,(x,716),c,490,27,MUTED,maxlines=5)
             self.static_cards[key]=im
         im=self.static_cards[key].copy()
-        if s['scene_type'] in ('artwork','document') and any(ident not in self.disabled_assets for ident in s.get('asset_ids',[])):
+        if not s.get('_still') and s['scene_type'] in ('artwork','document') and any(ident not in self.disabled_assets for ident in s.get('asset_ids',[])):
             # A gentle camera push on the artwork alone; typography stays registered.
             region=self.static_cards[key].crop((60,177,1140,887))
             zoom=1+.025*smooth(t/s['duration']);w,h=region.size
@@ -431,7 +435,7 @@ class HistoryVisuals(AtlasVisuals):
         if not spec:
             textblock(d,(140,320),'Non sono disponibili dati quantitativi confrontabili.',1600,55,CREAM,'serif');return
         rows=spec['values'];values=[r['value'] for r in rows];lo=min(0,min(values));hi=max(values)
-        span=max(1,hi-lo);p=smooth(t/min(5,s['duration']*.25));left=530;right=1730;top=285;bottom=800
+        span=max(1,hi-lo);p=1 if s.get('_still') else smooth(t/min(5,s['duration']*.25));left=530;right=1730;top=285;bottom=800
         textblock(d,(120,190),spec.get('title',s['title']),1600,37,CREAM,'serif',1)
         if spec['kind']=='line':
             xs=[r.get('x',i) for i,r in enumerate(rows)];xmin=min(xs);xmax=max(xs);pts=[]

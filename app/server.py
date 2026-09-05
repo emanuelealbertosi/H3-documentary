@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import urlsplit
 import os,time,json,zipfile
-from fastapi import FastAPI,HTTPException,Request
+from fastapi import FastAPI,HTTPException,Request,Body
 from fastapi.responses import FileResponse,JSONResponse
 from fastapi.staticfiles import StaticFiles
 from .paths import ROOT,DATA,JOBS
@@ -12,7 +12,8 @@ from .llm import LLM,ModelError
 from .library import library
 from .media_routes import router as media_router
 from .document_routes import router as document_router
-from .tts_routes import router as tts_router
+from .tts_routes import router as tts_router,preview_router
+from .presentations import router as presentation_router,project_mutation
 
 @asynccontextmanager
 async def lifespan(app):
@@ -20,10 +21,14 @@ async def lifespan(app):
     yield
     from .runner import shutdown
     shutdown()
+    from .presentations import shutdown as stop_presentations
+    stop_presentations()
 app=FastAPI(title="H3-documentary",docs_url=None,redoc_url=None,lifespan=lifespan)
 app.include_router(media_router)
 app.include_router(document_router)
 app.include_router(tts_router)
+app.include_router(preview_router)
+app.include_router(presentation_router)
 
 @app.middleware("http")
 async def local_boundary(request:Request,call_next):
@@ -34,6 +39,10 @@ async def local_boundary(request:Request,call_next):
         origin=request.headers.get("origin")
         if request.headers.get("x-documentariai")!="studio" or (origin and urlsplit(origin).netloc!=request.headers.get("host")):
             return JSONResponse({"detail":"Richiesta non autorizzata da questa interfaccia."},status_code=403)
+        parts=request.url.path.strip('/').split('/')
+        if len(parts)>=3 and parts[:2]==['api','projects'] and (len(parts)==3 or parts[3]!='presentation'):
+            from .presentations import active as exporting
+            if exporting(parts[2]):return JSONResponse({'detail':'Attendi la fine dell’esportazione PDF prima di modificare il progetto.'},status_code=409)
     response=await call_next(request)
     response.headers["X-Content-Type-Options"]="nosniff"
     response.headers["Referrer-Policy"]="no-referrer"
@@ -122,6 +131,7 @@ def get_project(pid:str):return store.project(pid)
 def get_events(pid:str,after:int=0):
     store.project(pid);return store.events(pid,after)
 @app.post("/api/projects/{pid}/start")
+@project_mutation
 def start_project(pid:str):
     from .runner import enqueue
     enqueue(pid);return store.project(pid)
@@ -130,6 +140,7 @@ def cancel_project(pid:str):
     from .runner import cancel
     cancel(pid);return store.project(pid)
 @app.post('/api/projects/{pid}/regenerate')
+@project_mutation
 def regenerate_project(pid:str,value:ProjectRequest|None=None):
     from .runner import active
     current=store.project(pid)
@@ -153,6 +164,7 @@ def regenerate_project(pid:str,value:ProjectRequest|None=None):
         enqueue(project['id'])
     return {'mode':mode,'project':store.project(project['id'])}
 @app.delete('/api/projects/{pid}')
+@project_mutation
 def delete_project(pid:str):
     from .runner import active
     project=store.project(pid)
@@ -161,14 +173,15 @@ def delete_project(pid:str):
     store.delete_project(pid)
     return {'deleted':True,'id':pid}
 @app.put('/api/projects/{pid}/voice')
+@project_mutation
 def project_voice(pid:str,value:VoiceChoice):
     from .tts import change_project_voice
     return change_project_voice(pid,value)
 @app.patch("/api/projects/{pid}")
-async def revise_project(pid:str,request:Request):
+@project_mutation
+def revise_project(pid:str,data:dict=Body(...)):
     p=store.project(pid)
     if p["status"] in ("running","queued","cancelling","completed"):raise HTTPException(409,"Questo progetto non è modificabile mentre è in corso o completato.")
-    data=await request.json()
     validated=ProjectRequest(topic=p["topic"],minutes=p["minutes"],notes=data.get("notes",p["notes"]),source_urls=data.get("source_urls",p["source_urls"]),
                              use_documents=p.get("use_documents",False),document_ids=p.get("document_ids",[]))
     store.update(pid,notes=validated.notes,source_urls=validated.source_urls)
@@ -206,6 +219,7 @@ def output_files(pid):
         if not root.exists():continue
         for f in sorted(root.rglob("*")):
             if not f.is_file() or f.suffix not in (PUBLIC_EXT|({'.webp'} if root==work/'assets/user' else set())):continue
+            if '.frames' in f.relative_to(work.parent).parts or f.name.endswith('.rendering.pdf'):continue
             if not f.resolve().is_relative_to((JOBS/pid).resolve()):continue
             if root.name=="checkpoints" and f.name not in ("sources.json","outline.json","review.json","research.json","boundary-report.json"):continue
             rel=f.relative_to(JOBS/pid).as_posix()

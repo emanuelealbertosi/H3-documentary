@@ -37,6 +37,7 @@ def ease(t):
 def cue_time(s,index): return s['cues'][min(index,len(s['cues'])-1)]['start']
 
 def cue_progress(s,item,t):
+    if s.get('_still'):return item.get('_still_progress',1)
     start=cue_time(s,item.get('cue',0)); end=cue_time(s,item['end_cue']) if item.get('end_cue') is not None else min(s['duration']-.8,start+max(5,s['cues'][item.get('cue',0)]['end']-start))
     return ease((t-start)/max(1,end-start))
 
@@ -74,7 +75,11 @@ class Visuals:
         return super().__new__(cls)
 
     def __init__(self,timeline):
-        self.data=timeline; self.maps={k:Cartography(v,timeline['slug'],k) for k,v in timeline['maps'].items()}
+        self.data=timeline
+        if timeline.get('_still'):
+            from .still_render import static_cartography
+            self.maps={k:static_cartography(v,timeline['slug'],k,timeline['_still_cache']) for k,v in timeline['maps'].items()}
+        else:self.maps={k:Cartography(v,timeline['slug'],k) for k,v in timeline['maps'].items()}
         for faction in timeline.get('factions',[]):COLORS[faction['id']]=tuple(faction['color'])
         self.total=timeline['duration']; self.static={}; self.cards={}; self.overlay=self.make_overlay()
         self.grids=[]
@@ -289,7 +294,7 @@ class Visuals:
             if t>=cue_time(s,c['cue']):selected=c
         if selected:
             card=self.commander_card(selected['id'])
-            age=t-cue_time(s,selected['cue']); opacity=ease(age/.65)
+            age=t-cue_time(s,selected['cue']); opacity=1 if s.get('_still') else ease(age/.65)
             if opacity<1:
                 card=card.copy(); card.putalpha(card.getchannel('A').point(lambda x:int(x*opacity)))
             im.paste(card,(64,285),card)
@@ -313,7 +318,7 @@ class Visuals:
         elapsed=s['start']+t
         txt(d,(1856,990),f'{stamp(elapsed)[3:]} / {stamp(self.total)[3:]}',17,CREAM,anchor='ra')
         d.rectangle((64,1042,64+1792*elapsed/self.total,1045),fill=GOLD)
-        if s.get('mode')=='opening' and t<5.7:
+        if not s.get('_still') and s.get('mode')=='opening' and t<5.7:
             opacity=1-ease((t-4.0)/1.7)
             hero=Image.new('RGBA',(W,H)); hd=ImageDraw.Draw(hero)
             hd.rectangle((0,0,W,H),fill=(*INK,210))
@@ -325,7 +330,7 @@ class Visuals:
             txt(hd,(960,902),'UN DOCUMENTARIO STORICO ATTRAVERSO LE MAPPE',18,MUTED,anchor='mm')
             hero.putalpha(hero.getchannel('A').point(lambda x:int(x*opacity)))
             im.paste(hero,(0,0),hero)
-        if s.get('mode')=='ending' and t>s['duration']-5:
+        if not s.get('_still') and s.get('mode')=='ending' and t>s['duration']-5:
             age=t-(s['duration']-5)
             end=Image.new('RGBA',(W,H)); ed=ImageDraw.Draw(end)
             ed.rectangle((0,0,W,H),fill=(*INK,int(220*ease(age/2))))
@@ -336,6 +341,6 @@ class Visuals:
                 txt(ed,(960,675),'Fonti, licenze e progetto riproducibile nei file allegati',21,MUTED,anchor='mm')
             im.paste(end,(0,0),end)
         # Fade through the same ink colour at each chapter cut, without touching narration.
-        fade=min(ease(t/.32),ease((s['duration']-t)/.40))
+        fade=1 if s.get('_still') else min(ease(t/.32),ease((s['duration']-t)/.40))
         if fade<1:im=Image.blend(Image.new('RGB',(W,H),INK),im,fade)
         return im.convert('RGB')

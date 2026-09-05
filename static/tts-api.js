@@ -1,3 +1,4 @@
+import {normalizeDelivery,previewText} from './voice-delivery.js?v=1.14.0';
 const providers={
  openai:{name:'OpenAI compatibile',base_url:'http://localhost:8000/v1',model:'tts-1',voice:'',format:'mp3',timeout:180,hint:'Per server locali che espongono POST /v1/audio/speech.'},
  higgs:{name:'Higgs TTS remoto',base_url:'http://localhost:8095/v1',model:'',voice:'',format:'wav',timeout:900,hint:'Contratto Higgs Audio v3: H3 carica il modello prima della sintesi e lo scarica al termine. Il server HTTP resta attivo.'},
@@ -33,7 +34,7 @@ function formValue(){
   base_url:q('#tts-api-url').value.trim(),model:q('#tts-api-model').value.trim(),voice:q('#tts-api-voice').value.trim(),
   language:q('#tts-api-language').value.trim(),response_format:q('#tts-api-format').value,timeout:number('tts-api-timeout',180),
   temperature:number('tts-api-temperature',1),top_p:number('tts-api-top-p',.95),top_k:number('tts-api-top-k',50),
-  seed:number('tts-api-seed',-1),max_new_tokens:number('tts-api-max-tokens',2048),
+  seed:number('tts-api-seed',-1),max_new_tokens:number('tts-api-max-tokens',2048),style_protocol:provider==='higgs'&&q('#tts-api-style-protocol').checked?'higgs_tags':'none',
   api_key:q('#tts-api-key').value,clear_api_key:q('#tts-api-clear').checked
  };
 }
@@ -45,7 +46,7 @@ function referenceOptions(voices){
  return '<option value="">Nessun campione · usa la voce configurata</option>'+voices.map(v=>'<option value="'+safe(v.id)+'">'+safe(v.name)+' · '+safe(v.duration_seconds)+' s'+(v.reference_text?' · trascritto':'')+'</option>').join('');
 }
 
-export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedProfileId=''}){
+export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedProfileId='',getDelivery=()=>normalizeDelivery()}){
  let profiles=initial||[];
  target.innerHTML=`<section class="card tts-api-card">
   <div class="card-head"><span class="step-no">TTS</span><h2>Server per la voce</h2></div>
@@ -71,12 +72,14 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
    <div class="field"><label for="tts-api-key">Chiave o credenziale · se richiesta</label><input id="tts-api-key" type="password" autocomplete="new-password"><span class="hint" id="tts-api-key-hint">Lascia vuoto sulla LAN privata se il server non richiede autenticazione.</span></div>
   </div>
   <details id="tts-higgs-options"><summary>Parametri di generazione Higgs</summary>
+   <label class="check"><input id="tts-api-style-protocol" type="checkbox"> Indicazioni espressive Higgs 3</label><p class="tiny muted">Attiva solo se il tuo server riconosce le indicazioni espressive. Verifica con la prova d’ascolto. Il testo del documentario resta invariato.</p>
    <div class="form-grid"><div class="field"><label for="tts-api-temperature">Temperature</label><input id="tts-api-temperature" type="number" min="0" max="2" step="0.05"></div><div class="field"><label for="tts-api-top-p">Top P</label><input id="tts-api-top-p" type="number" min="0" max="1" step="0.01"></div></div>
    <div class="form-grid"><div class="field"><label for="tts-api-top-k">Top K</label><input id="tts-api-top-k" type="number" min="0" max="1000"></div><div class="field"><label for="tts-api-seed">Seed</label><input id="tts-api-seed" type="number" min="-1"><span class="hint">-1 lascia il risultato casuale.</span></div></div>
    <div class="field"><label for="tts-api-max-tokens">Token audio massimi</label><input id="tts-api-max-tokens" type="number" min="64" max="32768"></div>
   </details>
   <label class="check"><input id="tts-api-clear" type="checkbox"> Rimuovi la credenziale salvata</label>
   <p id="tts-api-hint" class="tiny muted"></p>
+  <details class="tts-profile-preview"><summary>Testo e impostazioni della prova</summary><div class="field"><label for="tts-api-preview-text">Testo della prova</label><textarea id="tts-api-preview-text" rows="3" maxlength="500">${safe(previewText)}</textarea><span class="hint">La prova usa ritmo e interpretazione scelti in «Voce e cloning one-shot» qui sopra, insieme ai parametri di questo server. Non avvia un documentario.</span></div></details>
   <div class="actions"><button type="button" class="primary" id="tts-api-save">Salva server TTS</button><button type="button" class="secondary" id="tts-api-test">Ascolta una prova</button><button type="button" class="danger hidden" id="tts-api-delete">Elimina profilo</button></div>
   <p id="tts-api-result" class="connection-result" role="status"></p><audio id="tts-api-player" class="hidden" controls></audio>
   <div id="tts-higgs-controls" class="higgs-panel hidden">
@@ -103,6 +106,7 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
   q('#tts-api-name').value=profile?.name||'';q('#tts-api-url').value=preset.base_url;q('#tts-api-model').value=preset.model||'';q('#tts-api-voice').value=preset.voice||'';
   q('#tts-api-language').value=profile?.language||'it-IT';q('#tts-api-format').value=profile?.response_format||preset.format||'mp3';q('#tts-api-timeout').value=profile?.timeout||preset.timeout||180;
   q('#tts-api-temperature').value=profile?.temperature??1;q('#tts-api-top-p').value=profile?.top_p??.95;q('#tts-api-top-k').value=profile?.top_k??50;q('#tts-api-seed').value=profile?.seed??-1;q('#tts-api-max-tokens').value=profile?.max_new_tokens??2048;
+  q('#tts-api-style-protocol').checked=profile?.style_protocol==='higgs_tags';
   q('#tts-api-key').value='';q('#tts-api-clear').checked=false;
   q('#tts-api-key-hint').textContent=profile?.has_api_key?'Credenziale salvata e cifrata. Lascia vuoto per conservarla.':'Lascia vuoto sulla LAN privata se il server non richiede autenticazione.';
   q('#tts-api-hint').textContent=providers[q('#tts-api-provider').value].hint;q('#tts-api-delete').classList.toggle('hidden',!profile);showHiggs();
@@ -118,10 +122,12 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
  }catch(error){q('#tts-api-result').textContent=error.message;q('#tts-api-result').className='connection-result bad'}finally{e.target.disabled=false}};
 
  q('#tts-api-test').onclick=async e=>{e.target.disabled=true;const result=q('#tts-api-result');result.className='connection-result';result.textContent='Carico il modello e genero una breve prova…';try{
-  const payload={...formValue(),reference_id:q('#tts-api-provider').value==='higgs'?q('#tts-api-reference').value:''};
+  const text=q('#tts-api-preview-text').value.trim();if(!text||text.length>500)throw Error('Scrivi una breve prova, fino a 500 caratteri.');
+  const payload={...formValue(),reference_id:q('#tts-api-provider').value==='higgs'?q('#tts-api-reference').value:'',text,tts_delivery:getDelivery()};
   const response=await fetch('/api/tts/profiles/test',{method:'POST',headers:{'Content-Type':'application/json','X-DocumentariAI':'studio'},body:JSON.stringify(payload)});
   if(!response.ok)throw Error(await errorOf(response));const blob=await response.blob(),player=q('#tts-api-player');if(player.dataset.url)URL.revokeObjectURL(player.dataset.url);
-  player.dataset.url=URL.createObjectURL(blob);player.src=player.dataset.url;player.classList.remove('hidden');result.textContent=q('#tts-api-provider').value==='higgs'?'Prova ricevuta; il modello Higgs è stato scaricato.':'Prova ricevuta. Riproduzione in corso.';result.className='connection-result good';await player.play();
+  const styleFallback=response.headers?.get('X-Voice-Style-Fallback')==='true';
+  player.dataset.url=URL.createObjectURL(blob);player.src=player.dataset.url;player.classList.remove('hidden');result.textContent=styleFallback?'Il server non ha accettato le indicazioni espressive: la prova usa l’interpretazione originale, con velocità e pause scelte. Il modello Higgs è stato scaricato.':q('#tts-api-provider').value==='higgs'?'Prova ricevuta; il modello Higgs è stato scaricato.':'Prova ricevuta. Riproduzione in corso.';result.className='connection-result'+(styleFallback?'':' good');await player.play();
  }catch(error){result.textContent=error.message;result.className='connection-result bad'}finally{e.target.disabled=false}};
 
  q('#tts-api-delete').onclick=async e=>{const id=q('#tts-api-profile').value;if(!id)return;e.target.disabled=true;try{

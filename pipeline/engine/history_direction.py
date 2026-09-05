@@ -39,6 +39,14 @@ Per ogni gruppo di scene conserva continuità delle tappe, evitando episodi dupl
     return text
 
 
+def recovered_placeholder(scene):
+    recovery=scene.get('visual_recovery') or {}
+    return bool(isinstance(recovery,dict) and recovery.get('version')==1 and recovery.get('placeholder') is True
+                and recovery.get('reason') and scene.get('scene_type')=='event_focus'
+                and not scene.get('movements') and not scene.get('schematic_journey')
+                and not (scene.get('network') or {}).get('edges'))
+
+
 def scene_issues(scene,direction,role=None):
     kind=scene.get('scene_type');issues=[]
     focus=scene.get('location_ids',scene.get('focus',[]))
@@ -63,8 +71,11 @@ def scene_issues(scene,direction,role=None):
     if kind=='network_map' and not net.get('edges'):issues.append('rete senza collegamenti')
     if kind=='territorial_change' and not scene.get('territory_ids'):issues.append('cambiamento territoriale senza livello territoriale')
     if kind=='data_visualization' and not scene.get('chart'):issues.append('grafico senza dati')
-    if role=='geographic_anchor' and (kind not in MAP_SCENES or not focus):issues.append('partenza/arrivo devono essere mostrati su una mappa con focus pertinente')
-    if role=='journey_progress' and (kind!='animated_route' or not route):issues.append('questa scena deve fare avanzare il viaggio: animated_route con percorso o sequenza di tappe')
+    # A declared manual placeholder is a visible editorial exception, not an
+    # excuse to draw invented routes to satisfy the automatic shot assignment.
+    if not recovered_placeholder(scene):
+        if role=='geographic_anchor' and (kind not in MAP_SCENES or not focus):issues.append('partenza/arrivo devono essere mostrati su una mappa con focus pertinente')
+        if role=='journey_progress' and (kind!='animated_route' or not route):issues.append('questa scena deve fare avanzare il viaggio: animated_route con percorso o sequenza di tappe')
     return issues
 
 

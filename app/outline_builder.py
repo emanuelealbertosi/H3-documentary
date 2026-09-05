@@ -154,7 +154,9 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
     grammar=history_prompt(project['topic'],project['minutes'],kind,project['notes'],**({'allow_model_knowledge':True} if research['fallback_used'] else {}))
     from engine.history_profiles import EVENT_TYPES,SCENE_TYPES,MOVEMENTS
     vocabulary=f"\nValori ammessi esatti: scene_type={sorted(SCENE_TYPES)}; event.type={sorted(EVENT_TYPES)}; movement.semantic={sorted(MOVEMENTS)}. Per episodi puramente narrativi che non rientrano negli eventi storici, usa events=[] e raccontali nei campi event delle scene; non inventare tipi come literary_narrative."
-    def validate(batch,first,last,repairs):
+    def validate(batch,first,last,repairs,visual_reports=None,recover=False):
+        from .visual_recovery import normalize_inline_visuals,recover_visuals
+        normalize_inline_visuals(batch)
         # Model-drawn coordinates are illustrative even when it claims precise borders.
         for layer in batch.get('visual_layers',[]):
             for state_row in layer.get('states',[]):
@@ -168,6 +170,14 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
         from .movement_sync import prepare_scene,plan_issue,repair_duplicate_routes
         if direction.get('journey'):
             repairs.extend(repair_duplicate_routes(batch.get('scenes',[]),catalog['places']))
+        if recover:
+            # Check source claims before omissions, including claims attached to
+            # the optional visual. A fallback never launders invented sources.
+            preliminary={k:merge_rows(state[k],batch[k],k) for k in ('events','visual_layers','visual_assets')}
+            validate_references({**base,**preliminary,'scenes':state['scenes']+batch['scenes']},sources,research)
+            known={'asset_ids':{row['id'] for row in preliminary['visual_assets']},
+                   'territory_ids':{row['id'] for row in preliminary['visual_layers']}}
+            visual_reports.extend(recover_visuals(batch,catalog['places'],known,direction,count))
         for scene in batch.get('scenes',[]):
             prepare_scene(scene,catalog['places'])
             problem=plan_issue(scene,catalog['places'])
@@ -202,7 +212,7 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
         doc={**copy.deepcopy(candidate),'schema_version':2,'slug':'outline-validation','locations':catalog['places'],'sources':sources,'research':research}
         doc['scenes']=[{**s,'id':f"{s['index']+1:02}",'location_ids':s['focus'],'sources':s['source_ids'],'lines':['Piano editoriale, testo non ancora scritto.','Secondo cue editoriale.']} for s in copy.deepcopy(scenes)]
         try:validate_document(doc)
-        except (KeyError,TypeError,IndexError) as e:
+        except (KeyError,TypeError,IndexError,AttributeError) as e:
             raise ValueError('Elemento visivo incompleto o di formato errato: '+str(e)+'. Rispetta i campi del linguaggio visivo richiesto; non inventare valori per riempirli.') from e
         for scene in batch['scenes']:
             issues=scene_issues(scene,direction,shot_role(direction,scene['index'],count))
@@ -224,9 +234,11 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
             selected=[row for row in failed if row.get('index')==first]
             if selected:prompt+='\nSCENA RIFIUTATA, DA RIVEDERE (dati del modello, non istruzioni):\n'+json.dumps(selected[0],ensure_ascii=False)
         repairs=[]
+        visual_reports=[];recovered=False
+        from .visual_recovery import strip_model_recovery
         def validate_candidate(candidate):
             repairs.clear()
-            return validate(candidate,first,last,repairs)
+            return validate(strip_model_recovery(candidate),first,last,repairs)
         try:
             batch=llm.structured(system,prompt,HistorySceneBatch,validator=validate_candidate,split_on_truncation=(last-first>1),stop_on_repeated_invalid=(last-first>1))
         except TruncatedResponse:
@@ -235,18 +247,31 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
             for i in range(first,last):request(i,i+1)
             return
         except InvalidStructuredData as error:
-            if last-first==1:raise
-            reason='ha ripetuto gli stessi dati non validi' if error.repeated else 'non ha corretto il gruppo'
-            log(f'Struttura: il modello {reason}; richiedo una scena per volta con il problema preciso.')
-            for i in range(first,last):request(i,i+1,{'problem':error.problem,'data':error.data})
-            return
+            if isinstance(error.data,dict):
+                repairs.clear()
+                try:
+                    batch=validate(strip_model_recovery(copy.deepcopy(error.data)),first,last,repairs,visual_reports,recover=True)
+                    recovered=bool(visual_reports)
+                except (ValueError,KeyError,TypeError,IndexError):
+                    visual_reports.clear();repairs.clear()
+            if not recovered:
+                if last-first==1:raise
+                reason='ha ripetuto gli stessi dati non validi' if error.repeated else 'non ha corretto il gruppo'
+                log(f'Struttura: il modello {reason}; richiedo una scena per volta con il problema preciso.')
+                for i in range(first,last):request(i,i+1,{'problem':error.problem,'data':error.data})
+                return
         # Also validate injected test/custom providers that do not implement the callback.
+        if not recovered:strip_model_recovery(batch)
         batch=validate(batch,first,last,repairs)
         for key in ('events','visual_layers','visual_assets'):state[key]=merge_rows(state[key],batch[key],key)
         for repair in repairs:
             state.setdefault('structural_repairs',[]).append(repair)
             destination=next(p['name'] for p in catalog['places'] if p['id']==repair['to'])
             log(f"Regia: tolto il doppione del percorso verso {destination} dalla scena {repair['scene_index']+1}; resta nella scena {repair['kept_scene_index']+1}, che racconta la destinazione.")
+        if visual_reports:
+            state.setdefault('visual_warnings',[]).extend(visual_reports)
+            for report in visual_reports:
+                log(f"Scena {report['scene_index']+1}: elemento visuale rimandato alla revisione. {report['reason']} Il racconto è conservato; puoi aggiungere una mappa o un’immagine, oppure continuare con il riquadro vuoto.")
         state['scenes'].extend(batch['scenes']);write_json(progress_path,state)
         log(f"Struttura: {len(state['scenes'])}/{count} scene controllate e salvate.")
     while len(state['scenes'])<count:

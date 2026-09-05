@@ -83,6 +83,8 @@ def compile_outline(outline,narration,sources,project,settings):
           'Fonte web recuperata; evidenza testuale e data di consultazione nel progetto.')) for s in sources],
       editorial_notes=o.get('uncertainties',[]),source_method=source_method(sources),map_notice='Base fisica moderna. Percorsi e aree schematici se non documentati con maggiore precisione.')
     words=sum(len(l.split()) for s in scenes for l in s['lines']);wpm=project.get('narration_wpm',170)
+    if o.get('visual_warnings'):
+        d['metadata']['visual_warnings']=copy.deepcopy(o['visual_warnings'])
     if o.get('boundary_report'):
         from .boundary_credits import attach_credits
         attach_credits(d,o['boundary_report'])

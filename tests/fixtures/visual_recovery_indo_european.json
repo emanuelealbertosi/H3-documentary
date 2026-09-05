@@ -1,0 +1,397 @@
+{
+  "note": "Archived complete model scene batches for a technical regression test, not a historical source. No source documents or server configuration included.",
+  "catalog": {
+    "places": [
+      {
+        "id": "pontic-steppe",
+        "name": "Steppa Pontica",
+        "pos": [
+          38.0,
+          45.0
+        ],
+        "uncertain": true,
+        "note": "Ipotesi accademica sulla 'Patria' Proto-Indoeuropea (Kurgan hypothesis)."
+      },
+      {
+        "id": "central-europe",
+        "name": "Europa Centrale",
+        "pos": [
+          15.0,
+          48.0
+        ],
+        "uncertain": false,
+        "note": "Area di espansione e frammentazione dei primi gruppi indoeuropei."
+      },
+      {
+        "id": "mediterranean-basin",
+        "name": "Bacino del Mediterraneo",
+        "pos": [
+          18.0,
+          35.0
+        ],
+        "uncertain": false,
+        "note": "Area di sviluppo delle lingue italiche e greche."
+      },
+      {
+        "id": "central-asia",
+        "name": "Asia Centrale",
+        "pos": [
+          73.0,
+          40.0
+        ],
+        "uncertain": false,
+        "note": "Area di diffusione delle lingue indoeuropee verso est (es. persiano, sarmatico)."
+      }
+    ],
+    "persons": [
+      {
+        "id": "noam-chomsky",
+        "name": "Noam Chomsky",
+        "role": "Linguista",
+        "period": "XX-XXI secolo",
+        "wikipedia_page": "Noam Chomsky"
+      }
+    ],
+    "entities": [
+      {
+        "id": "proto-indo-european",
+        "name": "Proto-Indoeuropeo"
+      },
+      {
+        "id": "latin",
+        "name": "Latino"
+      },
+      {
+        "id": "greek",
+        "name": "Greco"
+      },
+      {
+        "id": "germanic-languages",
+        "name": "Lingue Germaniche"
+      }
+    ]
+  },
+  "batches": [
+    {
+      "scenes": [
+        {
+          "title": "La Radice Comune: Il Proto-Indoeuropeo",
+          "date": "Circa -4000 a.C.",
+          "historical_range": [
+            -4000,
+            -3000
+          ],
+          "scene_type": "comparison",
+          "focus": [
+            "pontic-steppe"
+          ],
+          "event": "Ricostruzione teorica della lingua Proto-Indoeuropea come madre comune di centinaia di lingue moderne.",
+          "source_ids": [],
+          "person_ids": [],
+          "event_ids": [],
+          "asset_ids": [],
+          "territory_ids": [],
+          "movements": {},
+          "comparison": [
+            {
+              "title": "Esempio di Cognati",
+              "text": "Madre (PIE): *méh₂tēr | Latino: mater | Greco: mētēr | Inglese: mother"
+            }
+          ],
+          "index": 0
+        },
+        {
+          "title": "L'Ipotesi Kurgan e la Steppa",
+          "date": "Circa -3500 a.C.",
+          "historical_range": [
+            -3500,
+            -2500
+          ],
+          "scene_type": "map_overview",
+          "focus": [
+            "pontic-steppe"
+          ],
+          "event": "Ipotesi della diffusione linguistica legata alle popolazioni della steppa e all'uso della tecnologia dei carri.",
+          "source_ids": [],
+          "person_ids": [],
+          "event_ids": [],
+          "asset_ids": [],
+          "territory_ids": [
+            "pontic-steppe"
+          ],
+          "movements": {
+            "m1": {
+              "from": "pontic-steppe",
+              "to": "central-europe",
+              "semantic": "migration",
+              "uncertain": true
+            }
+          },
+          "visual_layers": [
+            {
+              "id": "layer_01",
+              "kind": "territory",
+              "label": "Area di influenza Proto-Indoeuropea",
+              "color": [
+                200,
+                150,
+                50
+              ],
+              "schematic": true,
+              "sources": [],
+              "states": [
+                {
+                  "year": -3500,
+                  "polygons": [],
+                  "contested": true
+                }
+              ]
+            }
+          ],
+          "index": 1
+        }
+      ],
+      "events": {
+        "e01": {
+          "id": "e01",
+          "year": -4000,
+          "title": "Emergenza del Proto-Indoeuropeo",
+          "description": "Sviluppo di una lingua comune in un'area non ancora definita con precisione.",
+          "type": "cultural_event",
+          "sources": [],
+          "certainty": "interpretation",
+          "scene_id": "01"
+        },
+        "e02": {
+          "id": "e02",
+          "year": -3500,
+          "title": "Inizio delle migrazioni steppiche",
+          "description": "Movimenti di popolazioni che portano alla dispersione dei dialetti indoeuropei.",
+          "type": "migration",
+          "sources": [],
+          "certainty": "estimate",
+          "scene_id": "02"
+        }
+      },
+      "visual_layers": {},
+      "visual_assets": {}
+    },
+    {
+      "scenes": [
+        {
+          "title": "La Radice Comune: Il Proto-Indoeuropeo",
+          "date": "Circa -4000 a.C.",
+          "historical_range": [
+            -4000,
+            -3000
+          ],
+          "scene_type": "comparison",
+          "focus": [
+            "pontic-steppe"
+          ],
+          "event": "Ricostruzione teorica della lingua Proto-Indoeuropea come madre comune di centinaia di lingue moderne.",
+          "source_ids": [],
+          "person_ids": [],
+          "event_ids": [
+            "e01"
+          ],
+          "asset_ids": [],
+          "territory_ids": [],
+          "movements": {},
+          "comparison": [
+            {
+              "title": "Esempio di Cognati",
+              "text": "Madre (PIE): *méh₂tēr | Latino: mater | Greco: mētēr | Inglese: mother"
+            }
+          ],
+          "index": 0
+        },
+        {
+          "title": "L'Ipotesi Kurgan e la Steppa",
+          "date": "Circa -3500 a.C.",
+          "historical_range": [
+            -3500,
+            -2500
+          ],
+          "scene_type": "map_overview",
+          "focus": [
+            "pontic-steppe"
+          ],
+          "event": "Ipotesi della diffusione linguistica legata alle popolazioni della steppa e all'uso della tecnologia dei carri.",
+          "source_ids": [],
+          "person_ids": [],
+          "event_ids": [
+            "e02"
+          ],
+          "asset_ids": [],
+          "territory_ids": [
+            "pontic-steppe"
+          ],
+          "movements": {
+            "m1": {
+              "from": "pontic-steppe",
+              "to": "pontic-steppe",
+              "semantic": "migration",
+              "uncertain": true
+            }
+          },
+          "visual_layers": [
+            {
+              "id": "layer_01",
+              "kind": "territory",
+              "label": "Area di influenza Proto-Indoeuropea",
+              "color": [
+                200,
+                150,
+                50
+              ],
+              "schematic": true,
+              "sources": [],
+              "states": [
+                {
+                  "year": -3500,
+                  "polygons": [],
+                  "contested": true
+                }
+              ]
+            }
+          ],
+          "index": 1
+        }
+      ],
+      "events": {
+        "e01": {
+          "id": "e01",
+          "year": -4000,
+          "title": "Emergenza del Proto-Indoeuropeo",
+          "description": "Sviluppo di una lingua comune in un'area non ancora definita con precisione.",
+          "type": "cultural_event",
+          "sources": [],
+          "certainty": "interpretation",
+          "scene_id": "01"
+        },
+        "e02": {
+          "id": "e02",
+          "year": -3500,
+          "title": "Inizio delle migrazioni steppiche",
+          "description": "Movimenti di popolazioni che portano alla dispersione dei dialetti indoeuropei.",
+          "type": "migration",
+          "sources": [],
+          "certainty": "estimate",
+          "scene_id": "02"
+        }
+      },
+      "visual_layers": {},
+      "visual_assets": {}
+    },
+    {
+      "scenes": [
+        {
+          "title": "La Radice Comune: Il Proto-Indoeuropeo",
+          "date": "Circa -4000 a.C.",
+          "historical_range": [
+            -4000,
+            -3000
+          ],
+          "scene_type": "comparison",
+          "focus": [
+            "pontic-steppe"
+          ],
+          "event": "Ricostruzione teorica della lingua Proto-Indoeuropea come madre comune di centinaia di lingue moderne.",
+          "source_ids": [],
+          "person_ids": [],
+          "event_ids": [
+            "e01"
+          ],
+          "asset_ids": [],
+          "territory_ids": [],
+          "movements": {},
+          "comparison": [
+            {
+              "title": "Esempio di Cognati",
+              "text": "Madre (PIE): *méh₂tēr | Latino: mater | Greco: mētēr | Inglese: mother"
+            }
+          ],
+          "index": 0
+        },
+        {
+          "title": "L'Ipotesi Kurgan e la Dispersione",
+          "date": "Circa -3500 a.C.",
+          "historical_range": [
+            -3500,
+            -2500
+          ],
+          "scene_type": "map_overview",
+          "focus": [
+            "pontic-steppe",
+            "central-europe"
+          ],
+          "event": "Inizio delle migrazioni dalle steppe verso l'Europa e l'Asia, portando alla frammentazione dei dialetti primordiali.",
+          "source_ids": [],
+          "person_ids": [],
+          "event_ids": [
+            "e02"
+          ],
+          "asset_ids": [],
+          "territory_ids": [
+            "pontic-steppe"
+          ],
+          "movements": {
+            "m1": {
+              "from": "pontic-steppe",
+              "to": "central-europe",
+              "semantic": "migration",
+              "uncertain": true
+            }
+          },
+          "visual_layers": [
+            {
+              "id": "layer_01",
+              "kind": "territory",
+              "label": "Area di influenza Proto-Indoeuropea",
+              "color": [
+                200,
+                150,
+                50
+              ],
+              "schematic": true,
+              "sources": [],
+              "states": [
+                {
+                  "year": -3500,
+                  "polygons": [],
+                  "contested": true
+                }
+              ]
+            }
+          ],
+          "index": 1
+        }
+      ],
+      "events": {
+        "e01": {
+          "id": "e01",
+          "year": -4000,
+          "title": "Emergenza del Proto-Indoeuropeo",
+          "description": "Sviluppo di una lingua comune in un'area non ancora definita con precisione.",
+          "type": "cultural_event",
+          "sources": [],
+          "certainty": "interpretation",
+          "scene_id": "01"
+        },
+        "e02": {
+          "id": "e02",
+          "year": -3500,
+          "title": "Inizio delle migrazioni steppiche",
+          "description": "Movimenti di popolazioni che portano alla dispersione dei dialetti indoeuropei.",
+          "type": "migration",
+          "sources": [],
+          "certainty": "estimate",
+          "scene_id": "02"
+        }
+      },
+      "visual_layers": {},
+      "visual_assets": {}
+    }
+  ]
+}

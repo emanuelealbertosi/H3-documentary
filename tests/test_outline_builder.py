@@ -165,14 +165,17 @@ def test_truncated_outer_json_does_not_become_a_nested_object():
     assert extract_json('```json\n{"ok":true}\n```')=={'ok':True}
 
 
-def test_geographic_contract_is_checked_before_checkpoint(tmp_path):
+def test_bad_optional_route_is_deferred_without_inventing_coordinates(tmp_path):
     def reply(title,payload,number):
         result=normal_reply(title,payload,number)
         if title=='HistorySceneBatch':result['scenes'][0]['movements']=[{'sources':[],'points':[[999,41],[14,41]],'semantic':'journey'}]
         return result
     llm,audit,logs=model(reply)
-    with pytest.raises(ModelError,match='Coordinate'):build(llm,tmp_path,logs)
-    assert not (tmp_path/'outline-progress.json').exists()
+    result=build(llm,tmp_path,logs)
+    assert all(not scene['movements'] for scene in result['scenes'])
+    assert result['visual_warnings'] and all(scene['scene_type']=='event_focus' for scene in result['scenes'] if scene.get('visual_recovery'))
+    assert result['places']==HistoryCatalog.model_validate(CATALOG).model_dump()['places']
+    assert result['visual_warnings'][0]['omitted_items'][0]['data']['points'][0]==[999,41]
 
 
 def test_unsupported_event_type_gets_actionable_feedback(tmp_path):

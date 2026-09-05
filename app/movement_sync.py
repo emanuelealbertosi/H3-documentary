@@ -114,13 +114,13 @@ def prepare_scene(scene,places):
     for movement in scene.get('movements',[]):
         cue=movement.get('cue');origin=movement.get('from');target=movement.get('to')
         if not isinstance(cue,int) or isinstance(cue,bool) or cue not in (0,1):
-            if target in focus and origin not in focus:cue=0
-            elif origin in focus:cue=1
+            if isinstance(target,str) and target in focus and (not isinstance(origin,str) or origin not in focus):cue=0
+            elif isinstance(origin,str) and origin in focus:cue=1
             else:cue=0
             movement['cue']=cue;changes+=1
         # These labels are only used by validation/prompting; coordinates remain authoritative.
-        if origin in by_id:movement.setdefault('from_label',by_id[origin]['name'])
-        if target in by_id:movement.setdefault('to_label',by_id[target]['name'])
+        if isinstance(origin,str) and origin in by_id:movement.setdefault('from_label',by_id[origin]['name'])
+        if isinstance(target,str) and target in by_id:movement.setdefault('to_label',by_id[target]['name'])
     return changes
 
 
@@ -134,7 +134,7 @@ def plan_issue(scene,places):
     """Reject a route whose destination is absent from the scene it is assigned to."""
     by_id={p['id']:p for p in places};description=scene.get('title','')+' '+scene.get('event','')
     for index,movement in enumerate(scene.get('movements',[]),1):
-        target=by_id.get(movement.get('to'))
+        target=by_id.get(movement.get('to')) if isinstance(movement.get('to'),str) else None
         if target and not mentions(description,target,places):
             return (f"movements[{index}] termina a {target['name']!r}, ma titolo/event della scena non nominano "
                     "questa destinazione. La stessa scena deve raccontare esplicitamente la partenza o l’arrivo; "

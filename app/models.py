@@ -3,6 +3,11 @@ from typing import Literal,Annotated
 from urllib.parse import urlsplit, urlunsplit
 import math,re
 
+class VoiceDelivery(BaseModel):
+    style: Literal['original','documentary','calm','engaging','solemn'] = 'original'
+    speed: float = Field(1.0,ge=0.85,le=1.15,allow_inf_nan=False)
+    pause_seconds: float = Field(0.18,ge=0.0,le=0.8,allow_inf_nan=False)
+
 class Settings(BaseModel):
     provider: Literal["openai","lmstudio","vllm","ollama"] = "lmstudio"
     base_url: str = "http://localhost:1234/v1"
@@ -28,6 +33,7 @@ class Settings(BaseModel):
     tts_engine: Literal["kokoro","chatterbox","api"] = "kokoro"
     tts_profile_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
     tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+    tts_delivery: VoiceDelivery = Field(default_factory=VoiceDelivery)
     chatterbox_threads: int = Field(4, ge=1, le=8)
 
     @field_validator("base_url")
@@ -57,6 +63,7 @@ class ProjectRequest(BaseModel):
     tts_engine: Literal["default","kokoro","chatterbox","api"] = "default"
     tts_profile_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
     tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+    tts_delivery: VoiceDelivery | None = None
 
     @field_validator("document_ids")
     @classmethod
@@ -69,6 +76,7 @@ class VoiceChoice(BaseModel):
     tts_engine: Literal["kokoro","chatterbox","api"]
     tts_profile_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
     tts_reference_id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
+    tts_delivery: VoiceDelivery = Field(default_factory=VoiceDelivery)
 
 class TTSProfile(BaseModel):
     id: str = Field("", pattern=r"^$|^[a-f0-9]{24}$")
@@ -85,8 +93,15 @@ class TTSProfile(BaseModel):
     top_k: int = Field(50,ge=0,le=1000)
     seed: int = Field(-1,ge=-1,le=2147483647)
     max_new_tokens: int = Field(2048,ge=64,le=32768)
+    style_protocol: Literal['none','higgs_tags'] = 'none'
     api_key: str | None = Field(None,max_length=24000)
     clear_api_key: bool = False
+
+    @model_validator(mode='after')
+    def compatible_style_protocol(self):
+        if self.style_protocol=='higgs_tags' and self.provider!='higgs':
+            raise ValueError('Il protocollo dei tag espressivi richiede un server Higgs compatibile.')
+        return self
 
     @field_validator("base_url")
     @classmethod
@@ -107,6 +122,11 @@ class HiggsVoiceUpload(BaseModel):
 
 class TTSTestRequest(TTSProfile):
     reference_id: str = Field("",pattern=r"^$|^[a-f0-9]{24}$")
+    text: str = Field('Questa è una prova della voce italiana per il documentario.',min_length=1,max_length=800)
+    tts_delivery: VoiceDelivery = Field(default_factory=VoiceDelivery)
+
+class TTSPreviewRequest(VoiceChoice):
+    text: str = Field('Questa è una prova della voce italiana per il documentario.',min_length=1,max_length=800)
 
 class GeoPoint(BaseModel):
     model_config = ConfigDict(extra="forbid")

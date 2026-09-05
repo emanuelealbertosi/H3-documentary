@@ -60,6 +60,7 @@ def movement_endpoints(data,places):
     data=copy.deepcopy(data);positions={p['id']:p['pos'] for p in places}
     for scene in data.get('scenes',[]):
         for movement in scene.get('movements',[]):
-            if not movement.get('points') and movement.get('from') in positions and movement.get('to') in positions:
+            if (not movement.get('points') and isinstance(movement.get('from'),str) and isinstance(movement.get('to'),str)
+                    and movement['from'] in positions and movement['to'] in positions):
                 movement['points']=[positions[movement['from']],positions[movement['to']]]
     return data

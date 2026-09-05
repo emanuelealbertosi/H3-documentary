@@ -31,6 +31,7 @@ def screen(pos,cam):
     p=project(pos);k=W/cam[2];return (W/2+(p[0]-cam[0])*k,H/2-(p[1]-cam[1])*k)
 def cue_start(s,i):return s['cues'][min(i,len(s['cues'])-1)]['start']
 def progress(s,item,t):
+    if s.get('_still'):return item.get('_still_progress',1)
     start=cue_start(s,item.get('cue',0));end=cue_start(s,item['end_cue']) if item.get('end_cue') is not None else s['cues'][item.get('cue',0)]['end']
     return smooth((t-start)/max(2,end-start))
 def partial(points,p):
@@ -185,14 +186,14 @@ class AtlasVisuals:
 
     def frame(self,s,t):
         cam=camera(s,t);im=self.map_background(cam)
-        fade=min(smooth(t/.9),smooth((s['duration']-t)/.9))
+        fade=1 if s.get('_still') else min(smooth(t/.9),smooth((s['duration']-t)/.9))
         overlay=Image.new('RGBA',(W*SS,H*SS));d=ImageDraw.Draw(overlay)
         for area in s.get('uncertainty_areas',[]):
             pts=[screen(p,cam) for p in area['points']]
             d.polygon([(x*SS,y*SS) for x,y in pts],fill=(*GOLD,42))
             polyline(d,pts+[pts[0]],(*GOLD,180),2,True)
         for route in s.get('routes',[]):
-            p=1 if route.get('complete') else progress(s,route,t)
+            p=progress(s,route,t) if s.get('_still') else 1 if route.get('complete') else progress(s,route,t)
             if p<=0:continue
             points=[screen(x,cam) for x in route['points']];points=partial(points,p)
             col=self.colors.get(route.get('side','carthage'),GOLD);alpha=route.get('alpha',235)
@@ -248,7 +249,7 @@ class AtlasVisuals:
         for item in s.get('callouts',[]):
             age=t-cue_start(s,item.get('cue',0))
             if age<0:continue
-            x,y=screen(item['pos'],cam);dx,dy=item.get('offset',[0,-56]);op=fade*smooth(age/.8)
+            x,y=screen(item['pos'],cam);dx,dy=item.get('offset',[0,-56]);op=1 if s.get('_still') else fade*smooth(age/.8)
             if 60<x<W-60 and 190<y<H-210:
                 d=ImageDraw.Draw(overlay);d.line((x*SS,y*SS,(x+dx)*SS,(y+dy+18)*SS),fill=(*GOLD,int(180*op)),width=2*SS)
                 label(overlay,(x+dx,y+dy),item['text'],item.get('size',23),GOLD,op)
@@ -270,9 +271,9 @@ class AtlasVisuals:
         for item in s.get('commanders',[]):
             age=t-cue_start(s,item['cue'])
             # BEGIN H3 OPENING LAYOUT
-            if s.get('mode')=='opening':age-=6
+            if s.get('mode')=='opening' and not s.get('_still'):age-=6
             # END H3 OPENING LAYOUT
-            if age<0 or age>13:continue
+            if age<0 or (age>13 and not s.get('_still')):continue
             c=self.data['commanders'][item['id']];card=Image.new('RGBA',(290,388),(*INK,234))
             photo=ImageOps.fit(Image.open(ROOT/c['portrait']).convert('RGB'),(266,267),method=Image.Resampling.LANCZOS,centering=(.5,0))
             card.paste(photo,(12,12));cd=ImageDraw.Draw(card)
@@ -280,9 +281,9 @@ class AtlasVisuals:
             notes=c.get('portrait_note',['Ritratto storico','Provenienza e licenza nei crediti'])
             cd.text((15,330),notes[0],font=font(13),fill=MUTED)
             cd.text((15,351),notes[1],font=font(12),fill=MUTED)
-            op=fade*min(smooth(age/.8),smooth((13-age)/1.2));card.putalpha(card.getchannel('A').point(lambda v:round(v*op)))
+            op=1 if s.get('_still') else fade*min(smooth(age/.8),smooth((13-age)/1.2));card.putalpha(card.getchannel('A').point(lambda v:round(v*op)))
             im.alpha_composite(card,(56,197))
-        if s.get('mode')=='opening' and t<6:
+        if not s.get('_still') and s.get('mode')=='opening' and t<6:
             op=1-smooth((t-3)/3);hero=Image.new('RGBA',(W,H));hd=ImageDraw.Draw(hero)
             hd.rounded_rectangle((55,300,705,621),radius=10,fill=(*INK,210))
             hd.text((85,324),self.data['subtitle'].upper(),font=font(22),fill=GOLD)
@@ -296,7 +297,7 @@ class AtlasVisuals:
     def diagram(self,im,s,t,fade):
         spec=s['tactical_diagram'];start=cue_start(s,spec.get('cue',1));age=t-start
         if age<0:return
-        p=smooth(age/max(4,s['duration']-start-1));x,y,w,h=spec.get('panel',[56,204,710,480])
+        p=1 if s.get('_still') else smooth(age/max(4,s['duration']-start-1));x,y,w,h=spec.get('panel',[56,204,710,480])
         card=Image.new('RGBA',(w*SS,h*SS));d=ImageDraw.Draw(card)
         d.rounded_rectangle((0,0,w*SS-1,h*SS-1),radius=14*SS,fill=(*INK,242),outline=(*GOLD,110),width=SS)
         d.text((26*SS,20*SS),spec['title'],font=font(24*SS,'display'),fill=CREAM)

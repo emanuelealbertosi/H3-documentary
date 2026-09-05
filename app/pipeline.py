@@ -77,8 +77,8 @@ def prepare_bundled_runtime_engine(work,source):
     if source!=(ROOT/'pipeline').resolve():return False
     if not work.is_relative_to(JOBS.resolve()) or work.name!='workspace':raise ValueError('Cartella del progetto non valida.')
     relative_names=(
-        Path('engine/narration.py'),Path('engine/atlas.py'),Path('engine/history_visuals.py'),
-        Path('engine/history_territories.py'),Path('engine/history_schema.py'),
+        Path('engine/narration.py'),Path('engine/voice_delivery.py'),Path('engine/atlas.py'),Path('engine/history_visuals.py'),
+        Path('engine/history_territories.py'),Path('engine/history_schema.py'),Path('engine/history_direction.py'),
         Path('engine/acquire.py'),Path('engine/history_assets.py'),Path('engine/image_insets.py'),Path('engine/render.py'),
         Path('engine/image_rights.py'),Path('engine/image_search.py'),Path('engine/export.py'),
         Path('documentary.py'),

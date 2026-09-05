@@ -178,10 +178,12 @@ def derive(pack):
     direction = pack.get("visual_direction") or pack.get("metadata", {}).get("visual_direction", {})
     for scene in pack.get("scenes", []):
         kind = scene.get("scene_type", "")
+        recovery = scene.get('visual_recovery') or {}
+        manual = isinstance(recovery, dict) and recovery.get('placeholder') is True and recovery.get('version') == 1
         map_led = bool(direction.get("map_led") and kind in {"event_focus", "summary"})
         if pack.get("documentary_schema_version") != 2 and pack.get("schema_version") != 2:
             continue
-        if kind not in NONMAP_SCENES or map_led:
+        if (kind not in NONMAP_SCENES or map_led) and not manual:
             continue
         if kind in {"artwork", "document"} and scene.get("asset_ids"):
             continue
@@ -189,13 +191,16 @@ def derive(pack):
         old = existing.get(ident, {})
         slot = {
             "id": ident, "kind": "scene", "subject_id": scene["id"],
-            "label": "Sfondo · " + scene.get("title", f"Scena {scene['id']}"),
+            "label": ("Visuale da completare · " if manual else "Sfondo · ") + scene.get("title", f"Scena {scene['id']}"),
             "aliases": [],
             "uses": [{"scene_id": scene["id"], "cue": 0}],
             "path": f"assets/user/automatic/{ident}.jpg", "source_path": "",
-            "source_type": "scene_background", "wikipedia_page": "", "optional": True,
-            "required": False, "enabled": bool(old.get("enabled", False)),
+            "source_type": "scene_background", "wikipedia_page": "", "optional": not manual,
+            "required": manual, "enabled": bool(old.get("enabled", manual)),
         }
+        if manual:
+            slot['recovery_reason'] = str(recovery.get('reason', 'Visuale da completare.'))
+            slot['aliases'] = [scene.get('title',str(scene['id']))]
         if old.get("replacement_media_id"):
             slot["replacement_media_id"] = old["replacement_media_id"]
         slots.append(slot)
@@ -644,6 +649,9 @@ def status(pid):
                        "scene_ids": sorted({u["scene_id"] for u in slot["uses"]})})
     return {
         "ready": bool(result), "completed": p["status"] == "completed", "awaiting_review": p["status"] == "review" and bool(p.get("review_visuals")), "slots": result,
+        "visual_warnings": [{**{k:w[k] for k in ('scene_index','scene_id','scene_title','element','reason','placeholder') if k in w},
+                              'slot_id': 'visual-background-'+_safe(str(w.get('scene_id') or f"{w.get('scene_index',0)+1:02}")) if w.get('placeholder') else ''}
+                             for w in pack.get('metadata',{}).get('visual_warnings',[])],
         "available_count": sum(x["state"] == "available" for x in result),
         "user_count": sum(x["state"] == "user" for x in result),
         "blank_count": sum(x["state"] in ("blank", "missing") for x in result),

@@ -15,7 +15,11 @@ from .models import TTSProfile
 MAX_AUDIO_BYTES=25*1024*1024
 PROFILE_FILE='tts-api.json'
 PUBLIC_FIELDS=('id','name','provider','base_url','model','voice','language','response_format','timeout',
-               'temperature','top_p','top_k','seed','max_new_tokens')
+               'temperature','top_p','top_k','seed','max_new_tokens','style_protocol')
+
+class TTSHTTPError(ValueError):
+    def __init__(self,status_code,message):
+        super().__init__(message);self.status_code=status_code
 
 def _path():return store.DATA/PROFILE_FILE
 
@@ -26,7 +30,7 @@ def _raw():
     return value if isinstance(value,dict) and isinstance(value.get('profiles'),dict) else {'profiles':{}}
 
 def _public(row):
-    defaults={'timeout':180,'temperature':1.0,'top_p':.95,'top_k':50,'seed':-1,'max_new_tokens':2048}
+    defaults={'timeout':180,'temperature':1.0,'top_p':.95,'top_k':50,'seed':-1,'max_new_tokens':2048,'style_protocol':'none'}
     value={key:row.get(key,defaults.get(key,'')) for key in PUBLIC_FIELDS}
     for key,default in defaults.items():
         if value.get(key) in ('',None):value[key]=default
@@ -90,7 +94,7 @@ def _error(response):
     try:detail=response.json().get('detail') or response.json().get('error')
     except Exception:detail=response.text[:300]
     if isinstance(detail,dict):detail=detail.get('message') or json.dumps(detail,ensure_ascii=False)
-    raise ValueError(f'Server TTS: HTTP {response.status_code}. {str(detail or "Risposta non valida")[:500]}')
+    raise TTSHTTPError(response.status_code,f'Server TTS: HTTP {response.status_code}. {str(detail or "Risposta non valida")[:500]}')
 
 def _post(url,*,headers=None,json_body=None,data=None,files=None,timeout=180):
     last=None
@@ -198,7 +202,26 @@ def _higgs_fields(config,text,reference_text=''):
     if reference_text:fields['reference_text']=reference_text
     return fields
 
-def synthesize_bytes(config,text,reference_path=None,api_key='',reference_text=''):
+def synthesize_bytes(config,text,reference_path=None,api_key='',reference_text='',delivery=None,log=None,delivery_report=None):
+    """Use supported tags, with one unstyled retry only for format rejection."""
+    from .voice_delivery import synthesis_text,delivery_dict
+    if not text.strip():raise ValueError('Il testo da sintetizzare è vuoto.')
+    selected=delivery_dict(delivery);outbound=synthesis_text(config,text,selected);tagged=outbound!=text
+    report={'requested_style':selected['style'],'effective_style':selected['style'] if tagged else 'original',
+            'style_verified':False,'fallback':False}
+    try:
+        result=_synthesize_bytes(config,outbound,reference_path,api_key,reference_text)
+    except TTSHTTPError as exc:
+        if not tagged or exc.status_code not in (400,422):raise
+        # Keep authentication/network/server failures distinct; a second format
+        # rejection also propagates. Never change the saved server configuration.
+        if log:log('La richiesta con tag espressivi è stata rifiutata: riprovo questa frase con la voce originale, senza stile.')
+        result=_synthesize_bytes(config,text,reference_path,api_key,reference_text)
+        report.update(effective_style='original',fallback=True)
+    if delivery_report is not None:delivery_report.update(report)
+    return result
+
+def _synthesize_bytes(config,text,reference_path=None,api_key='',reference_text=''):
     """Return provider audio bytes and their expected container."""
     provider=config['provider'];base=config['base_url'];timeout=int(config.get('timeout',180));model=config.get('model','');voice=config.get('voice','')
     if not text.strip():raise ValueError('Il testo da sintetizzare è vuoto.')
@@ -264,13 +287,24 @@ def normalize_audio(content,container,target):
         target.unlink(missing_ok=True);raise ValueError('Il server TTS ha restituito un WAV vuoto o non valido.')
     return target
 
-def test_voice(value:TTSProfile,text='Questa è una prova della voce italiana per il documentario.',reference_path=None,reference_text=''):
+def test_voice(value:TTSProfile,text='Questa è una prova della voce italiana per il documentario.',reference_path=None,reference_text='',delivery=None,delivery_report=None):
+    from .voice_delivery import delivery_dict,is_default,preview_lines,combine_preview
     data=connection(value);api_key=data.get('api_key') or ''
-    handle,name=tempfile.mkstemp(prefix='h3-tts-test-',suffix='.wav');os.close(handle);temporary=Path(name)
-    try:
-        with higgs_activity(data,api_key):content,container=synthesize_bytes(data,text,reference_path,api_key,reference_text)
-        return normalize_audio(content,container,temporary).read_bytes()
-    finally:temporary.unlink(missing_ok=True)
+    selected=delivery_dict(delivery);lines=preview_lines(text)
+    # Preserve the old request and exact normalized bytes for default controls.
+    if is_default(selected):lines=[text]
+    with tempfile.TemporaryDirectory(prefix='h3-tts-test-') as temporary:
+        paths=[]
+        with higgs_activity(data,api_key):
+            for index,line in enumerate(lines):
+                kwargs={} if is_default(selected) else {'delivery':selected}
+                report={}
+                if data.get('provider')=='higgs' and data.get('style_protocol')=='higgs_tags' and selected['style']!='original':
+                    kwargs['delivery_report']=report
+                content,container=synthesize_bytes(data,line,reference_path,api_key,reference_text,**kwargs)
+                target=Path(temporary)/f'{index}.wav';normalize_audio(content,container,target);paths.append(target)
+                if delivery_report is not None and report:delivery_report.append(report)
+        return combine_preview(paths,selected)
 
 def _fingerprint(value):return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
 
@@ -298,12 +332,20 @@ def synthesize_pack(pack,project,work,cancel,log):
     out=Path(work)/'build'/pack['slug']/'voice';out.mkdir(parents=True,exist_ok=True)
     pending=[]
     cache_items={}
+    previous_items={};manifest=out/'external-voice-cache.json'
+    try:
+        previous=json.loads(manifest.read_text(encoding='utf-8')) if manifest.is_file() else {}
+        if isinstance(previous,dict) and isinstance(previous.get('items'),dict):previous_items=previous['items']
+    except (OSError,ValueError):pass
     for scene,index,line in lines:
         spoken=line
         for original,replacement in sorted(pack.get('pronunciation',{}).items(),key=lambda item:-len(item[0])):spoken=spoken.replace(original,replacement)
         target=out/(synthesis_key(pack,scene['id'],index,spoken,work)+'.wav')
         pending.append((scene,index,spoken,target))
         cache_items[f'{scene["id"]}:{index}']={'file':target.name,'spoken_sha256':hashlib.sha256(spoken.encode('utf-8')).hexdigest()}
+        previous=previous_items.get(f'{scene["id"]}:{index}',{})
+        if isinstance(previous,dict) and previous.get('file')==target.name and isinstance(previous.get('delivery'),dict):
+            cache_items[f'{scene["id"]}:{index}']['delivery']=previous['delivery']
     # Repair reusable files produced by streaming servers before deciding that
     # the cache is complete.  This is local and does not call the TTS server.
     for _,_,_,target in pending:
@@ -315,9 +357,19 @@ def synthesize_pack(pack,project,work,cancel,log):
         for done,(scene,index,spoken,target) in enumerate(pending,1):
             cancel()
             if not target.exists():
-                content,container=synthesize_bytes(config,spoken,reference,api_key,pack.get('voice_reference_text',''))
+                kwargs={'delivery':pack['voice_delivery']} if pack.get('voice_delivery') else {}
+                report={}
+                if config.get('provider')=='higgs' and config.get('style_protocol')=='higgs_tags' and pack.get('voice_delivery',{}).get('style','original')!='original':
+                    kwargs.update(delivery_report=report,log=log)
+                content,container=synthesize_bytes(config,spoken,reference,api_key,pack.get('voice_reference_text',''),**kwargs)
                 temporary=target.with_suffix('.part.wav')
-                normalize_audio(content,container,temporary);temporary.replace(target)
+                normalize_audio(content,container,temporary)
+                if report:
+                    cache_items[f'{scene["id"]}:{index}']['delivery']=report
+                    # Persist provenance before publishing the cached WAV, so a
+                    # later interrupted cue does not lose the fallback record.
+                    store.write_json(manifest,{'version':1,'backend':'tts_api','items':cache_items})
+                temporary.replace(target)
             log(f'TTS API: segmento {done}/{len(lines)} pronto.')
     (out/'external-voice-cache.json').write_text(json.dumps({'version':1,'backend':'tts_api','items':cache_items},ensure_ascii=False,indent=2),encoding='utf-8')
     return len(lines)

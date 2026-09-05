@@ -4,7 +4,9 @@
 
 Il progetto riunisce DocumentariAI Studio e il suo motore già funzionante. Il renderer, le animazioni, il TTS e i formati delle battaglie sono conservati. Non richiede una cartella DocumentariAI separata, Python già installato, FFmpeg di sistema o un editor video.
 
-**Novità 1.13.1:** recupero più efficace quando un modello ripete dati non validi. I gruppi problematici diventano richieste mirate a una singola scena; i doppioni certi di un itinerario vengono rimossi dalla scena adiacente che non ne racconta la destinazione. Ogni correzione supera nuovamente tutti i controlli e viene registrata, conservando i checkpoint già approvati. Non vengono inventati luoghi, date o fatti per completare il film. Vedi [Ricerca e recupero](docs/RICERCA.md).
+**Novità 1.14.0:** scegli interpretazione, velocità e pause della voce e confrontale con una prova normale prima di produrre il video. Nel progetto puoi anche creare una **presentazione PDF**, compatta o didattica, con il testo narrato originale facoltativo e fonti e crediti inclusi. L’esportazione usa le scene già preparate e conserva i PDF precedenti. Guide: [voce e server TTS](docs/TTS_API.md) e [presentazioni PDF](docs/PRESENTAZIONI.md).
+
+Resta incluso il recupero dei dati introdotto nella 1.13.1: i gruppi problematici diventano richieste mirate a una singola scena; i doppioni certi di un itinerario vengono rimossi dalla scena adiacente che non ne racconta la destinazione. Ogni correzione supera nuovamente tutti i controlli e viene registrata, conservando i checkpoint già approvati. Non vengono inventati luoghi, date o fatti per completare il film. Vedi [Ricerca e recupero](docs/RICERCA.md).
 
 La scelta **Uso di mappe e immagini** vale anche per le foto scaricate e riutilizzate. L’uso didattico non commerciale ammette anche CC BY-NC e CC BY-NC-SA. Dopo Wikimedia Commons, la ricerca può consultare Openverse, controllando i metadati della singola opera sulla pagina originaria prima del download. Attribuzioni, provenienza e condizioni restano nei crediti. Vedi [Immagini e riquadri](docs/IMMAGINI.md).
 
@@ -136,7 +138,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\pipeline\tools\chatterbox\
 
 Puoi anche salvare più **server TTS esterni** come fai con i server LLM. Sono inclusi adapter per endpoint OpenAI compatibili, Higgs Audio remoto, ElevenLabs e Google Cloud TTS. Con Higgs, H3 gestisce load e unload del modello per l’intera attività, invia campione e trascrizione nel cloning one-shot e può registrare voci persistenti sul server. Le risposte vengono convertite in WAV locale e passano nella stessa timeline misurata, con cache e ripresa automatica. Credenziali e token sono cifrati con Windows DPAPI e non entrano nei progetti. [Configurazione e privacy](docs/TTS_API.md).
 
+Apri **Ritmo e interpretazione della voce** per scegliere fra voce del modello, documentario, calmo, coinvolgente e solenne, regolare la velocità dall’85% al 115% e le pause fino a 0,8 secondi. I preset espressivi regolano Chatterbox o un Higgs 3 compatibile, dopo l’attivazione esplicita nel suo profilo; le altre voci mantengono la propria interpretazione. Velocità e pause sono disponibili per tutti i motori. **Ascolta prima di produrre il video** permette una prova con testo editabile e un confronto con la voce normale. I valori vengono salvati nel progetto e restano modificabili per la rigenerazione; personalizzando la lettura, la durata segue la voce.
+
 Questa versione produce documentari in italiano con una traccia audio e sottotitoli italiani. Doppiaggio multilingua e tracce audio multiple restano estensioni successive.
+
+## Presentazioni PDF per la lezione
+
+Nel progetto apri **Presentazione PDF**, scegli **Compatta** per un’immagine per scena oppure **Didattica** per i passaggi significativi, e premi **Crea PDF**. Puoi includere il testo narrato originale: il testo lungo continua su pagine aggiuntive. Fonti e crediti sono sempre inclusi.
+
+L’esportazione diventa disponibile dopo la preparazione della voce e della timeline, anche se l’MP4 non è ancora stato completato; occorre attendere che la produzione sia ferma. Riusa gli asset e il motore grafico locali, senza interrogare il modello o sintetizzare altra voce. Avanzamento e PDF scaricabili compaiono nella stessa sezione; ogni nuova esportazione conserva quelle precedenti. [Guida alle presentazioni](docs/PRESENTAZIONI.md).
 
 ## Riga di comando
 

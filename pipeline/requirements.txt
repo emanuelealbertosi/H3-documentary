@@ -8,3 +8,4 @@ opencv-python-headless==5.0.0.93
 av==18.1.0
 kokoro-onnx==0.6.1
 misaki==0.7.4
+reportlab==5.0.1

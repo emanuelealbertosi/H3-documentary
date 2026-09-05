@@ -38,17 +38,26 @@
     "visuals.py": "1e2e24a67033963a5d235d7f9848be29c1b55895c1b9005e9255cd25bb4c0a3a",
     "__init__.py": "e30f968d8d2aa6dec40db521982c34e2a33f768ebf9b863339e85d5b820e8918"
   },
-  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval; 1.4.0: API-TTS asset bypass; 1.6.0: modern deterministic cartography and explicit external-TTS cache manifest; 1.6.1: persistent TTS profile selection and compact map-led journey overlays; 1.7.1: voice-aware script length and natural external-TTS tempo ceiling; 1.8.0: licensed visual slots for every cited person/place and neutral offline fallback; 1.9.0: suppressible authored artwork and optional scene backgrounds; 1.9.1: partial-plan scene counts and deterministic visual-role adaptation. Original hashes are retained above for audit; compatible extensions are fingerprinted here. 1.11.0: opt-in territory style, semantic areas and polygon-aware cameras; legacy drawing and battle renderer preserved. 1.12.0: pinned dated boundary acquisition, provenance, inner rings, fractional-year states and historical-period list adapter; existing battle rendering and TTS unchanged. 1.12.1: calendar year labels follow sourced geometry without rounding into the next year; legacy interpolation preserved. 1.13.0: shared commercial/noncommercial image rights, bounded Openverse fallback with source-page licence evidence, cached image gating and actual artwork credit synchronization. Existing renderer and TTS unchanged.",
+  "hybrid_extensions_note": "1.1.2: research provenance; 1.1.4: focus/place adapter; 1.1.5: provider-neutral directed visual plans, detailed geography requests and general-history overlays; 1.2.2: Chatterbox-aware asset acquisition; 1.3.0: provenance wording for local document retrieval; 1.4.0: API-TTS asset bypass; 1.6.0: modern deterministic cartography and explicit external-TTS cache manifest; 1.6.1: persistent TTS profile selection and compact map-led journey overlays; 1.7.1: voice-aware script length and natural external-TTS tempo ceiling; 1.8.0: licensed visual slots for every cited person/place and neutral offline fallback; 1.9.0: suppressible authored artwork and optional scene backgrounds; 1.9.1: partial-plan scene counts and deterministic visual-role adaptation. Original hashes are retained above for audit; compatible extensions are fingerprinted here. 1.11.0: opt-in territory style, semantic areas and polygon-aware cameras; legacy drawing and battle renderer preserved. 1.12.0: pinned dated boundary acquisition, provenance, inner rings, fractional-year states and historical-period list adapter; existing battle rendering and TTS unchanged. 1.12.1: calendar year labels follow sourced geometry without rounding into the next year; legacy interpolation preserved. 1.13.0: shared commercial/noncommercial image rights, bounded Openverse fallback with source-page licence evidence, cached image gating and actual artwork credit synchronization. Existing renderer and TTS unchanged. 1.14.0: opt-in still rendering and manual visual recovery, explicit voice delivery with measured cues. Ten ordinary frames from legacy Waterloo, atlas Hannibal and general-history Odysseus matched the preceding release pixel-for-pixel; 98 referenced inputs remained unchanged. Original voice settings preserve the prior tempo/pause path.",
   "hybrid_extensions_sha256": {
     "acquire.py": "7e7b416dd85500c20f9454a9c9ca3fe900daa797d9bf2c5b02785aa75cc15535",
-    "history_authoring.py": "1bd1335e84bbdae4fcfadb8b5a4c72cb0d8c59d7344255db31e70dc75a610afa",
+    "history_authoring.py": "71cbb35b6b4e9a7a79fcdb53a9e5884bf80e7726f0406791367e4f01e19244a9",
     "history_schema.py": "bb9f34a17018451262e0b029bdee44214d900ea74c88fb0eb57c91c9c27c32d1",
     "history_profiles.py": "d2617eb355805d5a5b8431339889a3b97aa8e0197fa2b68a0fd5a12e65076948",
-    "history_visuals.py": "928d3d2f9e3e68fa6a69276a4a6d2e5478a2a15b7dda325705e76bd7efdc23d4",
+    "history_visuals.py": "1c0422f87e465accde7f06f164e437dfbbfc5ef732c27180135daad4c0811e87",
     "history_assets.py": "52fa9f40b1b32db0cdacc9b7a6b44f78eb149fdd2deb2539b3a65249c5239887",
-    "atlas.py": "2066ace1795c4ddf56bd8d000c8ecefe4e0c2bd9b45cd1b53229e651a8aaffcd",
-    "narration.py": "2087ee474f57bf1391e175109aee259bb7399b049808fe7b8f691e5d2564f784",
-    "history_direction.py": "cbd2ec8d6d6e563e79338c1337acb2a0912c1db85e5cd11fbef98bfca0fec9a4",
-    "history_territories.py": "98e51271cf188df770b205282b3a18daa2a49093e2b53b6ef1a34bce59b82256"
+    "atlas.py": "5e7c84efbc67e8eba7541db3d002c880f3a10910501bbc6249559aa9c2146000",
+    "narration.py": "ba25d0a74889378f0341a718b691adfa442d653d5f10753eca5c39d64d76da9c",
+    "history_direction.py": "6ad19df7f6f1e79b2efa7aeaed20e8d046effbeb05a5b012b15d5d984fa17aae",
+    "history_territories.py": "98e51271cf188df770b205282b3a18daa2a49093e2b53b6ef1a34bce59b82256",
+    "visuals.py": "70c8fd80dd7f3dc9b5ecc29f8f46e9076bd71f82f991976bf2d50293a9948cec",
+    "image_insets.py": "41809ba481f16286c23b0fcda84d39bf6dad57bd12004b9853df4d252dfd5275"
+  },
+  "compatibility_checks_1_14_0": {
+    "previous_commit": "a3ab2ec47051341f04ca3f16bcfac777035fc296",
+    "ordinary_frames_compared": 10,
+    "identical_pixels": true,
+    "immutable_inputs_checked": 98,
+    "legacy_stills_checked": 2
   }
 }

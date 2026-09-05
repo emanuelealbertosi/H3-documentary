@@ -46,6 +46,16 @@ Gli sfondi vuoti conservano la composizione scura predefinita e non sono errori.
 
 Dopo le modifiche premi **Continua produzione** dalla pagina del progetto o dall’archivio visuale. Associazioni, esclusioni e attivazioni vengono copiate nel pack, poi la pipeline riparte da TTS, timeline definitiva, anteprime definitive, rendering, montaggio e verifica. Ricerca, sceneggiatura, mappe e download degli asset mantengono i checkpoint già completati. Puoi continuare anche lasciando placeholder oppure suggerimenti disattivati.
 
+## Scene da completare a mano
+
+Se un elemento della regia visuale non è utilizzabile, per esempio un percorso con una destinazione inesistente, il controllo della struttura può omettere quell’elemento conservando gli altri elementi validi della scena. Il progetto mostra **Elementi visuali da controllare**, con il titolo della scena e il motivo dell’esclusione. Un’immagine collegata manualmente non ricostruisce il percorso omesso: può rappresentarlo con una mappa già preparata oppure illustrare il racconto.
+
+Quando la scena deve essere sostituita da una scheda, viene aggiunto uno sfondo **obbligatorio** e la produzione si ferma per la revisione visuale, anche se non avevi selezionato la spunta iniziale. Il pannello **Scene da completare a mano** permette di aprire **Gestisci** direttamente sullo sfondo interessato. Trascina la tua mappa o un’immagine dal PC, oppure apri il selettore dei file. Le normali schede facoltative restano disponibili negli altri punti del racconto.
+
+Il pannello distingue **Da completare**, **Immagine collegata**, **Scheda esclusa** ed **Elemento omesso**. Dopo aver collegato un’immagine, il motivo originale rimane consultabile: il caricamento non certifica la correttezza storica del materiale. Puoi controllare gli altri riferimenti e premere **Continua produzione**; se lasci una scheda attiva senza immagine verrà utilizzato il placeholder. La scelta **Escludi** resta disponibile per il singolo riferimento.
+
+Gli avvisi possono comparire già dopo la struttura del racconto. I collegamenti per modificarli diventano disponibili con la preparazione dei materiali. Gli errori che impediscono di ottenere un progetto utilizzabile rimangono errori della produzione: il pannello non aggiunge un comando per ignorare tutti i controlli.
+
 ## Uso nell’app
 
 1. Apri **Immagini e riquadri**. Trascina uno o più JPG, PNG o WebP, oppure scegli **Aggiungi immagini**. Sono accettate immagini fisse fino a 20 MB e 32 megapixel.

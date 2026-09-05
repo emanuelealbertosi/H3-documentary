@@ -52,16 +52,17 @@ def chatterbox_installed(pipeline_path):
 
 def status(cfg):
     from .tts_api import profiles
+    from .voice_delivery import capabilities,delivery_dict
     remote=profiles();selected=cfg.get('tts_profile_id','')
     default='api:'+selected if cfg.get('tts_engine')=='api' and selected else cfg.get('tts_engine','kokoro')
-    engines=[{'id':'kokoro','name':'Kokoro · veloce, voce italiana if_sara','engine':'kokoro','supports_reference':False},
-             {'id':'chatterbox','name':'Chatterbox Multilingual V3 · locale, cloning one-shot','engine':'chatterbox','supports_reference':True}]
+    engines=[{'id':'kokoro','name':'Kokoro · veloce, voce italiana if_sara','engine':'kokoro','supports_reference':False,'delivery_capabilities':capabilities('kokoro')},
+             {'id':'chatterbox','name':'Chatterbox Multilingual V3 · locale, cloning one-shot','engine':'chatterbox','supports_reference':True,'delivery_capabilities':capabilities('chatterbox')}]
     for item in remote:
         provider_name={'openai':'OpenAI compatibile','higgs':'Higgs','elevenlabs':'ElevenLabs','google':'Google Cloud'}.get(item['provider'],item['provider'])
         engines.append({'id':'api:'+item['id'],'name':item['name']+' · '+provider_name,'engine':'api','profile_id':item['id'],
-                        'provider':item['provider'],'supports_reference':item['provider']=='higgs'})
+                        'provider':item['provider'],'supports_reference':item['provider']=='higgs','delivery_capabilities':capabilities('api',item)})
     return {'default_engine':default,'default_selection':default,'default_reference_id':cfg.get('tts_reference_id',''),
-            'chatterbox_installed':chatterbox_installed(cfg['pipeline_path']),'voices':voices(),
+            'default_delivery':delivery_dict(cfg.get('tts_delivery')),'chatterbox_installed':chatterbox_installed(cfg['pipeline_path']),'voices':voices(),
             'profiles':remote,'engines':engines}
 
 def ensure_available(engine,reference_id,pipeline_path,profile_id='',config=None):
@@ -83,9 +84,13 @@ def _copy_reference(reference_id,work):
     return destination.relative_to(work).as_posix(),record
 
 def configure_pack(pack,project,work,pipeline_path):
+    from .voice_delivery import delivery_dict,is_default,CHATTERBOX_STYLES
     engine=project.get('tts_engine') or 'kokoro';reference_id=project.get('tts_reference_id') or '';profile_id=project.get('tts_profile_id') or ''
     config=project.get('tts_config') or None
     ensure_available(engine,reference_id,pipeline_path,profile_id,config)
+    delivery=delivery_dict(project.get('tts_delivery'))
+    if is_default(delivery):pack.pop('voice_delivery',None)
+    else:pack['voice_delivery']=delivery
     if engine=='kokoro':
         # Schema-v2 packs may intentionally omit voice fields because their
         # backward-compatible adapter supplies these defaults at load time.
@@ -101,6 +106,9 @@ def configure_pack(pack,project,work,pipeline_path):
             from .tts_api import snapshot
             config=snapshot(profile_id)
         stable={key:config.get(key) for key in ('id','provider','base_url','model','voice','language','response_format','temperature','top_p','top_k','seed','max_new_tokens')}
+        if config.get('provider')=='higgs' and config.get('style_protocol')=='higgs_tags':
+            stable['style_protocol']='higgs_tags'
+            if delivery['style']!='original':stable.update(delivery_style=delivery['style'],delivery_style_revision=1)
         fingerprint=hashlib.sha256(json.dumps(stable,sort_keys=True,ensure_ascii=False).encode()).hexdigest()[:20]
         provider=config['provider'];label=config.get('name') or provider.title()
         credit=f'Sintesi vocale tramite {label} ({provider}); configurazione e provenienza registrate nel progetto. Audio ricevuto dal server e normalizzato localmente.'
@@ -113,6 +121,11 @@ def configure_pack(pack,project,work,pipeline_path):
                 voice_reference=reference_path,chatterbox_exaggeration=.35,chatterbox_cfg_weight=.5,chatterbox_temperature=.7,
                 chatterbox_repetition_penalty=1.2,
                 voice_credit='Chatterbox Multilingual V3, sintesi locale. Codice e pesi MIT; watermark audio del modello.',external_max_voice_tempo=1.15)
+    if delivery['style']!='original':
+        exaggeration,cfg_weight,temperature,repetition=CHATTERBOX_STYLES[delivery['style']]
+        pack.update(chatterbox_exaggeration=exaggeration,chatterbox_cfg_weight=cfg_weight,
+                    chatterbox_temperature=temperature,chatterbox_repetition_penalty=repetition,
+                    voice=f'chatterbox-multilingual-v3@5bb1f6e;e={exaggeration:g};c={cfg_weight:g};t={temperature:g};r={repetition:g}')
     pack.pop('voice_api',None)
     return pack
 
@@ -133,7 +146,7 @@ def change_project_voice(pid,choice):
     if build.exists():build.rename(work/f'build-before-voice-{stamp}')
     timeline=work/'timeline.json'
     if timeline.exists():timeline.rename(work/f'timeline.before-voice-{stamp}.json')
-    store.update(pid,tts_engine=choice.tts_engine,tts_reference_id=choice.tts_reference_id,tts_profile_id=choice.tts_profile_id,tts_config=config,status='cancelled',stage='Voce da rigenerare',error='La nuova voce sarà applicata alla ripresa.')
+    store.update(pid,tts_engine=choice.tts_engine,tts_reference_id=choice.tts_reference_id,tts_profile_id=choice.tts_profile_id,tts_config=config,tts_delivery=choice.tts_delivery.model_dump(),status='cancelled',stage='Voce da rigenerare',error='La nuova voce sarà applicata alla ripresa.')
     name=config.get('name') if config else ('Chatterbox Multilingual V3' if choice.tts_engine=='chatterbox' else 'Kokoro if_sara')
     store.event(pid,'Voce selezionata: '+name+'.')
     return store.project(pid)

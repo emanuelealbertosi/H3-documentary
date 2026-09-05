@@ -86,6 +86,12 @@ class InsetVisuals:
         """Blend an optional user image into a non-map card without hiding text."""
         ident=scene.get('background_asset_id');item=self.items.get(ident)
         if not item:return image
+        from .history_direction import recovered_placeholder
+        if recovered_placeholder(scene):
+            # A generated blank is only an editing aid. Preserve the authored
+            # editorial card until it is replaced by an actual illustration.
+            if item.get('visual_state')=='blank' or item.get('placeholder') is True:return image
+            return self.recovery_backdrop(image,scene,item)
         with Image.open(asset_path(item)) as original:
             photo=ImageOps.fit(original.convert('RGB'),(1820,765),Image.Resampling.LANCZOS)
         photo=ImageEnhance.Color(photo).enhance(.82)
@@ -98,6 +104,33 @@ class InsetVisuals:
         mixed.paste(body,(0,0),mask)
         result=image.copy();result.paste(mixed,(50,170));return result
 
+    def recovery_backdrop(self,image,scene,item):
+        """Show the whole replacement in a recovered scene, preserving the frame."""
+        from .visuals import font,wrap
+        facts=scene.get('facts') or []
+        text=str(facts[0]).strip() if facts else ''
+        measure=ImageDraw.Draw(image)
+        lines=wrap(measure,text,1740,27) if text else []
+        # The narration remains in full in the timeline. A long fact must not
+        # become an unreadable caption or displace a detailed uploaded map.
+        if len(lines)>2:lines=[]
+        key=('recovery-backdrop',item['id'],tuple(lines))
+        if key not in self.cards:
+            body=Image.new('RGB',(1820,765),(13,31,42));draw=ImageDraw.Draw(body)
+            draw.rounded_rectangle((0,0,1819,764),radius=16,fill=(18,40,51),outline=(74,95,100),width=1)
+            caption_height=20+36*len(lines) if lines else 0
+            area=(1784,729-caption_height)
+            with Image.open(asset_path(item)) as original:
+                photo=ImageOps.contain(original.convert('RGB'),area,Image.Resampling.LANCZOS)
+            body.paste(photo,(18+(area[0]-photo.width)//2,18+(area[1]-photo.height)//2))
+            if lines:
+                y=765-caption_height
+                draw.line((28,y-10,1792,y-10),fill=(99,113,111),width=1)
+                for index,line in enumerate(lines):
+                    draw.text((28,y+index*36),line,font=font(27),fill=(249,238,211))
+            self.cards[key]=body
+        result=image.copy();result.paste(self.cards[key],(50,170));return result
+
     def frame(self,scene,t):
         image=self.base.frame(scene,t)
         if self.data.get('visual_style')=='history':
@@ -105,10 +138,10 @@ class InsetVisuals:
             image=self.make_room(image,scene)
         for item in scene.get('image_insets',[]):
             start,end=interval(scene,item)
-            if not start<=t<end:continue
+            if not scene.get('_still') and not start<=t<end:continue
             tile,x,y=self.card(item)
             fade=min(.35,(end-start)/4)
-            opacity=min(1,(t-start)/max(.001,fade),(end-t)/max(.001,fade))
+            opacity=1 if scene.get('_still') else min(1,(t-start)/max(.001,fade),(end-t)/max(.001,fade))
             if opacity<1:
                 tile=tile.copy();tile.putalpha(tile.getchannel('A').point(lambda a:round(a*opacity)))
             image=image.convert('RGBA');image.alpha_composite(tile,(x,y))

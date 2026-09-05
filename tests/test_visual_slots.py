@@ -49,6 +49,41 @@ def test_inventory_includes_people_places_and_authored_artwork():
     assert pack["auto_visual_assets"][0]["name"]=="Città"
 
 
+def test_recovered_scene_has_required_replaceable_background_and_public_warning():
+    pid,work,packpath=make_project(review_visuals=True);pack=store.read_json(packpath)
+    recovery={'version':1,'placeholder':True,'reason':'Destinazione non coerente con il testo.',
+              'omitted_items':[{'data':{'private':'original movement'}}]}
+    pack['visual_direction']={'version':1,'map_led':True}
+    pack['scenes'][0].update(scene_type='event_focus',title='Scena da completare',visual_recovery=recovery)
+    pack['metadata']={'visual_warnings':[{'scene_index':0,'scene_id':'01','scene_title':'Scena da completare',**recovery}]}
+    visual_slots.prepare(pack);visual_slots.materialize(pack,work,[])
+    store.write_json(packpath,pack);store.update(pid,status='review')
+    result=visual_slots.status(pid)
+    slot=next(x for x in result['slots'] if x['id']=='visual-background-01')
+    assert slot['required'] and slot['enabled'] and not slot['optional'] and slot['has_preview']
+    assert pack['scenes'][0]['background_asset_id']==slot['id']
+    assert result['awaiting_review'] and result['visual_warnings'][0]['slot_id']==slot['id']
+    assert 'omitted_items' not in result['visual_warnings'][0]
+    uploaded=media.upload(image_bytes('green'),'mappa-personale.png')
+    replacement=media.save(uploaded['id'],media.MediaEdit(title='Mappa personale',bindings=[{'kind':'scene','label':'Scena da completare'}],rights='test'))
+    changed=visual_slots.materialize(pack,work,[replacement],replacements_only=True)
+    assert '01' in changed
+    assert next(x for x in pack['user_media'] if x['id']==slot['id'])['origin']=='user_replacement'
+
+
+def test_recovery_placeholder_can_be_approved_without_an_image(monkeypatch):
+    pid,work,packpath=make_project(review_visuals=True);pack=store.read_json(packpath)
+    pack['scenes'][0].update(scene_type='event_focus',title='Scena da completare',
+        visual_recovery={'version':1,'placeholder':True,'reason':'Percorso non disponibile.'})
+    visual_slots.prepare(pack);visual_slots.materialize(pack,work,[]);store.write_json(packpath,pack)
+    store.update(pid,status='review');started=[]
+    monkeypatch.setattr(runner,'enqueue',started.append)
+    runner.approve_visual_review(pid)
+    assert started==[pid] and (store.JOBS/pid/'checkpoints/visual-review.approved.json').is_file()
+    final=store.read_json(packpath)
+    assert final['scenes'][0]['background_asset_id']=='visual-background-01'
+
+
 @pytest.mark.parametrize('payload',[
     '{"extmetadata":', 'null', '[]', '{"extmetadata":null}',
     '{"extmetadata":[]}', '{"extmetadata":{"ObjectName":"broken"}}',
