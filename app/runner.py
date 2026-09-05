@@ -167,8 +167,12 @@ def produce(pid,cfg):
         stage("narration",do_narration)
         narration=store.read_json(cp/"narration.json")
         def do_review():
+            from .visual_recovery import reviewable_outline
+            editorial_plan=reviewable_outline(outline)
             instruction=review_instruction(research)
-            review=llm.structured(system,instruction+"\nSCENEGGIATURA:\n"+json.dumps(narration,ensure_ascii=False)+"\nPIANO VISIVO:\n"+json.dumps(outline,ensure_ascii=False)+"\nFONTI:\n"+ev,Review)
+            if editorial_plan.get('manual_visual_scene_ids'):
+                instruction+='\nLe scene indicate in manual_visual_scene_ids hanno una scheda visuale da completare. La sola mancanza di un’immagine non è un errore storico: verifica comunque testo, date, fonti e interpretazioni, senza inventare elementi per colmare la scheda.'
+            review=llm.structured(system,instruction+"\nSCENEGGIATURA:\n"+json.dumps(narration,ensure_ascii=False)+"\nPIANO VISIVO:\n"+json.dumps(editorial_plan,ensure_ascii=False)+"\nFONTI:\n"+ev,Review)
             review=annotate_review(review,sources,research)
             store.write_json(cp/"review.json",review)
             if not review["acceptable"]:
@@ -180,7 +184,7 @@ def produce(pid,cfg):
                     if {x["index"] for x in batch["scenes"]}!={x["index"] for x in narration[first:first+3]}:raise ValueError("Correzione editoriale incompleta.")
                     repaired+=batch["scenes"]
                 narration[:]=repaired;store.write_json(cp/"narration.json",narration)
-                review=llm.structured(system,instruction+"\nSCENEGGIATURA CORRETTA:\n"+json.dumps(narration,ensure_ascii=False)+"\nPIANO VISIVO:\n"+json.dumps(outline,ensure_ascii=False)+"\nFONTI:\n"+ev,Review)
+                review=llm.structured(system,instruction+"\nSCENEGGIATURA CORRETTA:\n"+json.dumps(narration,ensure_ascii=False)+"\nPIANO VISIVO:\n"+json.dumps(editorial_plan,ensure_ascii=False)+"\nFONTI:\n"+ev,Review)
                 review=annotate_review(review,sources,research)
                 store.write_json(cp/"review.json",review)
                 if not review["acceptable"]:raise ValueError("Revisione storica non superata: "+"; ".join(review["issues"])[:1300]+". Aggiungi fonti o indicazioni e crea una nuova revisione.")

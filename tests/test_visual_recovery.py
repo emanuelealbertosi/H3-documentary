@@ -14,6 +14,19 @@ CORE=Path(__file__).resolve().parents[1]/'pipeline'
 ARCHIVE=json.loads((Path(__file__).parent/'fixtures/visual_recovery_indo_european.json').read_text(encoding='utf-8'))
 
 
+def test_historical_review_sees_real_plan_not_rejected_visual_proposals():
+    from app.visual_recovery import reviewable_outline
+    audit={'placeholder':True,'omitted_items':[{'data':'REJECTED_DESTINATION'}]}
+    original={'title':'Titolo conservato','visual_warnings':[audit],
+              'metadata':{'visual_warnings':[audit],'author':'invariato'},
+              'scenes':[{'event':'Evento conservato','source_ids':['S1'],'movements':[],'visual_recovery':audit}]}
+    before=copy.deepcopy(original);result=reviewable_outline(original)
+    assert 'REJECTED_DESTINATION' not in json.dumps(result)
+    assert result['manual_visual_scene_ids']==['01']
+    assert result['scenes'][0]['event']=='Evento conservato' and result['scenes'][0]['source_ids']==['S1']
+    assert original==before
+
+
 def shape(raw):
     batch=HistorySceneBatch.model_validate(raw).model_dump()
     return movement_endpoints(normalize_inline_visuals(strip_model_recovery(batch)),ARCHIVE['catalog']['places'])

@@ -69,6 +69,7 @@ def test_manual_background_links_and_status_follow_actual_slot_changes():
     assert '/projects/project-1/media?slot=visual-background-scene-2' in result['pending']
     assert 'Scene da completare a mano' in result['pending']
     assert 'La produzione è ferma per la revisione' in result['pending']
+    assert 'Puoi anche premere Continua produzione lasciando la scheda vuota, oppure escluderla da Gestisci.' in result['pending']
     assert 'Immagine collegata' in result['linked'] and 'Immagine collegata' in result['saved']
     assert 'Scene da completare a mano' not in result['linked']
     assert 'Scheda esclusa' in result['excluded']
@@ -120,3 +121,40 @@ def test_project_updates_recovery_panel_and_keeps_existing_review_gate():
     assert "'/visual-approve'" in source
     assert 'Controlla gli eventuali avvisi e le anteprime' in source
     assert 'mappe e immagini automatiche sono completi' not in source
+
+
+def test_known_recovery_reasons_and_combined_elements_use_readable_labels():
+    result = run_js("""
+      const plan="movements[1] termina a 'Capo Malea', ma titolo/event della scena non nominano questa destinazione. La stessa scena deve raccontare esplicitamente la partenza o l’arrivo; altrimenti sposta o rimuovi il movimento.";
+      const known={...warning,element:'movements[0], territory_ids, movements[2], asset_ids, scene_type',reason:plan+' Riferimenti visuali non disponibili: unknown_area, picture_2.'};
+      console.log(JSON.stringify(ui.visualRecoveryHtml('project-1',project,{...visual,visual_warnings:[known]})));
+    """)
+    assert '<strong>Percorso, Area, Immagine, Tipo scena</strong>' in result
+    assert 'Il percorso verso Capo Malea non è descritto in questa scena; è stato escluso per evitare una freccia incoerente.' in result
+    assert 'Un’area o un’immagine prevista non è disponibile.' in result
+    for technical in ('movements[', 'territory_ids', 'asset_ids', 'scene_type', 'titolo/event', 'unknown_area', 'picture_2'):
+        assert technical not in result
+
+
+def test_recovery_background_preview_uses_whole_scene_without_changing_normal_insets():
+    result = run_js("""
+      const mediaSource=readFileSync('static/media.js','utf8');
+      const media=await import('data:text/javascript;base64,'+Buffer.from(mediaSource).toString('base64'));
+      const makeBox=()=>{const img={style:{}},caption={style:{}};return {style:{width:'25%'},img,caption,querySelector:name=>name==='img'?img:caption}};
+      const recovered={...slot,required:true,recovery_reason:'Percorso omesso.',layout:{x:.71,y:.21,width:.25,fit:'cover'}};
+      const before=JSON.stringify(recovered),box=makeBox();
+      const applied=media.applyRecoveryBackgroundPreview(box,recovered);
+      const normal=[];
+      for(const candidate of [{...recovered,source_type:'person'},{...recovered,required:false},{...recovered,recovery_reason:''}]){
+        const inset=makeBox();normal.push({applied:media.applyRecoveryBackgroundPreview(inset,candidate),width:inset.style.width,fit:inset.img.style.objectFit||''});
+      }
+      console.log(JSON.stringify({applied,style:box.style,fit:box.img.style.objectFit,caption:box.caption.style.display,unchanged:before===JSON.stringify(recovered),normal}));
+    """)
+    assert result['applied'] and result['unchanged']
+    assert float(result['style']['width'].rstrip('%')) == pytest.approx(1820 / 1920 * 100)
+    assert float(result['style']['height'].rstrip('%')) == pytest.approx(765 / 1080 * 100)
+    assert result['fit'] == 'contain' and result['caption'] == 'none'
+    assert all(item == {'applied': False, 'width': '25%', 'fit': ''} for item in result['normal'])
+    source = (ROOT / 'static/media.js').read_text(encoding='utf-8')
+    assert "${recoveryBackground?'<p class=\"tiny muted\">Immagine dell’intera scena · posizione automatica." in source
+    assert 'if(recoveryBackground)return;\n    const saveLayout' in source

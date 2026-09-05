@@ -20,6 +20,17 @@ def strip_model_recovery(batch):
     return batch
 
 
+def reviewable_outline(outline):
+    """Keep rejected proposals in the audit, out of the historical review."""
+    result=copy.deepcopy(outline)
+    placeholders=[f'{index+1:02}' for index,scene in enumerate(result.get('scenes',[]))
+                  if (scene.get('visual_recovery') or {}).get('placeholder')]
+    strip_model_recovery(result)
+    if isinstance(result.get('metadata'),dict):result['metadata'].pop('visual_warnings',None)
+    if placeholders:result['manual_visual_scene_ids']=placeholders
+    return result
+
+
 def normalize_inline_visuals(batch):
     """Lift complete declarations from scenes without guessing their references."""
     from .outline_normalization import collections
