@@ -16,6 +16,7 @@ from .tts_routes import router as tts_router,preview_router
 from .presentations import router as presentation_router,project_mutation
 from .review_editor import router as review_editor_router
 from .final_review import router as final_review_router
+from .models import ProjectTitleEdit
 
 @asynccontextmanager
 async def lifespan(app):
@@ -133,6 +134,13 @@ def new_project(value:ProjectRequest):
     return store.project(p["id"])
 @app.get("/api/projects/{pid}")
 def get_project(pid:str):return store.project(pid)
+@app.patch("/api/projects/{pid}/title")
+def rename_project(pid:str,value:ProjectTitleEdit):
+    # A display label can change during production without changing its inputs.
+    with store.LOCK:
+        store.project(pid)
+        store.update(pid,display_title=value.title)
+        return store.project(pid)
 @app.get("/api/projects/{pid}/events")
 def get_events(pid:str,after:int=0):
     store.project(pid);return store.events(pid,after)

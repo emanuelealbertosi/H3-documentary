@@ -4,6 +4,8 @@
 
 Il progetto riunisce DocumentariAI Studio e il suo motore già funzionante. Il renderer, le animazioni, il TTS e i formati delle battaglie sono conservati. Non richiede una cartella DocumentariAI separata, Python già installato, FFmpeg di sistema o un editor video.
 
+Il titolo del progetto si modifica con un clic, sia nella libreria sia nella sua pagina. **Invio**, il segno di spunta o un clic fuori dal campo salvano il nome; **Esc** annulla. Il nome visualizzato è separato dall'argomento della produzione e non richiede di rigenerare il film.
+
 **Novità 1.17.0:** sul film completato premi **Riapri revisione**, correggi facoltativamente testo, luoghi e immagini, poi **Aggiorna questo video**. Il progetto resta lo stesso: vengono rigenerate soltanto le parti interessate e le loro dipendenze, riutilizzando gli audio e le clip intatti. La ricerca non riparte. Il film precedente resta disponibile fino alla verifica dell'aggiornamento e viene conservato in una copia locale. Guida: [Revisione finale](docs/REVISIONE.md).
 
 **Novità 1.14.0:** scegli interpretazione, velocità e pause della voce e confrontale con una prova normale prima di produrre il video. Nel progetto puoi anche creare una **presentazione PDF**, compatta o didattica, con il testo narrato originale facoltativo e fonti e crediti inclusi. L’esportazione usa le scene già preparate e conserva i PDF precedenti. Guide: [voce e server TTS](docs/TTS_API.md) e [presentazioni PDF](docs/PRESENTAZIONI.md).

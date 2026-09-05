@@ -1,5 +1,12 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.17.1: titoli dei progetti modificabili direttamente dalla libreria
+e dalla pagina del film. **51 test mirati superati**, inclusi persistenza dopo
+inizializzazione, nomi vuoti/lunghi rifiutati, conservazione degli input durante
+la produzione ed ereditarietà del titolo per le versioni dello stesso argomento.
+Nel browser su un progetto isolato verificati modifica da entrambe le pagine,
+Invio, salvataggio uscendo dal campo ed Esc. Nessun film dell'utente modificato.
+
 Aggiornamento 1.17.0: revisione facoltativa dei film completati nello stesso
 progetto, senza nuova versione né ricerca LLM. **604 test automatici superati**,
 includendo 50 nuovi controlli su riapertura, snapshot indipendenti, esclusione

@@ -3,6 +3,10 @@ from typing import Literal,Annotated
 from urllib.parse import urlsplit, urlunsplit
 import math,re
 
+class ProjectTitleEdit(BaseModel):
+    title: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
+
+
 class VoiceDelivery(BaseModel):
     style: Literal['original','documentary','calm','engaging','solemn'] = 'original'
     speed: float = Field(1.0,ge=0.85,le=1.15,allow_inf_nan=False)

@@ -41,6 +41,7 @@ def init():
         if "document_ids" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN document_ids TEXT DEFAULT '[]'")
         columns={r[1] for r in c.execute("PRAGMA table_info(projects)")}
+        if "display_title" not in columns:c.execute("ALTER TABLE projects ADD COLUMN display_title TEXT DEFAULT ''")
         if "review_visuals" not in columns:c.execute("ALTER TABLE projects ADD COLUMN review_visuals INTEGER DEFAULT 0")
         if "family_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN family_id TEXT DEFAULT ''")
         if "version" not in columns:c.execute("ALTER TABLE projects ADD COLUMN version INTEGER DEFAULT 1")
@@ -114,6 +115,7 @@ def create(req,*,family_id='',version=1,parent_id=''):
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
     allowed={"topic","minutes","documentary_type","status","stage","progress","error","result","notes","source_urls","use_media","review_visuals","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config","tts_delivery","processing_started","processing_seconds"}
+    allowed.add('display_title')
     if not fields.keys()<=allowed: raise ValueError("Campi non consentiti")
     fields["updated"]=now()
     fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls","document_ids","tts_config","tts_delivery") else v for k,v in fields.items()}
@@ -166,6 +168,8 @@ def clone_completed(pid, request=None):
                 use_media=bool(old.get('use_media')),review_visuals=bool(old.get('review_visuals')),use_documents=bool(old.get('use_documents')),document_ids=old.get('document_ids',[]),
                 documentary_type=old.get('documentary_type') or 'auto',tts_engine='default')
         new=create(request,family_id=family,version=version,parent_id=old['id'])
+        if old.get('display_title') and request.topic==old['topic']:
+            update(new['id'],display_title=old['display_title'])
         if not supplied:
             update(new['id'],tts_engine=old.get('tts_engine','kokoro'),tts_reference_id=old.get('tts_reference_id',''),
                    tts_profile_id=old.get('tts_profile_id',''),tts_config=old.get('tts_config',{}),tts_delivery=old.get('tts_delivery',{}),use_media=old.get('use_media',1))

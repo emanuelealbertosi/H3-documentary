@@ -132,6 +132,38 @@ def test_voice_reference_upload_and_project_selection(client):
     assert status['voices'][0]['id']==voice['id'] and status['voices'][0]['name']=='MiaVoce'
     project=client.post('/api/projects',json={'topic':'Battaglia di prova','start':False,'tts_engine':'chatterbox','tts_reference_id':voice['id']}).json()
     assert project['tts_engine']=='chatterbox' and project['tts_reference_id']==voice['id']
+def test_rename_changes_only_display_title_during_production(client):
+    p=store.create(ProjectRequest(topic='Espansione romana',start=False))
+    store.update(p['id'],status='running',progress=42,result={'sha256':'old-film'})
+    before=store.project(p['id'])
+    response=client.patch('/api/projects/'+p['id']+'/title',json={'title':'  Roma: una storia  '})
+    assert response.status_code==200
+    after=client.get('/api/projects/'+p['id']).json()
+    assert after['display_title']=='Roma: una storia'
+    assert all(after[key]==value for key,value in before.items() if key not in ('display_title','updated'))
+    assert client.get('/api/projects').json()[0]['display_title']==after['display_title']
+
+
+def test_title_validation_does_not_erase_saved_name(client):
+    p=store.create(ProjectRequest(topic='Rinascimento italiano',start=False))
+    url='/api/projects/'+p['id']+'/title'
+    assert client.patch(url,json={'title':'Firenze'}).status_code==200
+    for value in ('   ','x'*201,None):
+        assert client.patch(url,json={'title':value}).status_code==422
+    assert store.project(p['id'])['display_title']=='Firenze'
+    store.init()
+    assert store.project(p['id'])['display_title']=='Firenze'
+
+
+def test_custom_title_follows_same_topic_versions_only(client):
+    p=store.create(ProjectRequest(topic='Rinascimento italiano',start=False))
+    store.update(p['id'],status='completed',display_title='Le città delle idee')
+    clone=store.clone_completed(p['id'])
+    assert clone['display_title']=='Le città delle idee' and clone['version']==2
+    changed=store.clone_completed(p['id'],ProjectRequest(topic='Battaglia di Waterloo',start=False))
+    assert not changed['display_title'] and changed['topic']=='Battaglia di Waterloo'
+
+
 def test_create_draft_and_preserve_on_revision(client):
     p=client.post("/api/projects",json={"topic":"Battaglia di prova","minutes":5,"start":False}).json()
     assert p["status"]=="draft"
