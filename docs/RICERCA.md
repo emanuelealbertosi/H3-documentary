@@ -1,5 +1,19 @@
 # Ricerca ibrida e provenienza
 
+## Recupero dei piani non validi (1.13.1)
+
+La correzione non ripete indefinitamente la stessa richiesta. Se il modello restituisce due volte gli stessi dati con lo stesso errore, la pianificazione generale passa dal gruppo di due scene a una scena per volta, indicando il problema e il solo frammento rifiutato da rivedere. Le scene già approvate restano immutate. Negli altri passaggi, l’eventuale ultimo tentativo cambia istruzione ed elimina l’eco del JSON sbagliato. Il budget di richieste, il limite token e i parametri del server restano quelli configurati.
+
+Prima di richiamare il modello, un controllo locale risolve un caso strutturale preciso degli itinerari: un movimento `journey` identico è presente in due scene adiacenti dello stesso periodo, ma soltanto una ne racconta la destinazione. Se origine, destinazione, coordinate, semantica, fonti e tutti gli altri campi coincidono, rimuove il doppione dalla scena non pertinente e mantiene intatto il percorso nella scena che lo racconta. Sono ignorate nel confronto soltanto le etichette derivate e il numero di paragrafo (`cue`), che può differire tra arrivo e partenza.
+
+Il recupero richiede un’unica scena destinataria, focus coerenti e un altro movimento o una sequenza di tappe nella scena di partenza; non crea mappe vuote. Rotte diverse, ritorni, eserciti, migrazioni, periodi diversi e casi ambigui restano da correggere con il modello. La regola opera sul solo gruppo ancora da approvare, senza riscrivere checkpoint, eventi o narrazione. Ogni intervento compare nel diario e in `structural_repairs` del checkpoint `outline-progress.json`.
+
+I controlli sul piano e sulla narrazione riconoscono anche forme brevi come “Sirene” per “Isola delle Sirene”, solo se ricavate da un prefisso geografico italiano previsto e univoche nel catalogo. Non vengono cercate somiglianze vaghe, inventati sinonimi o modificate coordinate. Nomi brevi ambigui, troppo corti o semplici indicazioni cardinali non sono accettati.
+
+Il piano corretto passa nuovamente la validazione completa. Se una singola scena resta non valida, il progetto si ferma conservando i passaggi riusciti. **Riprendi** continua da quelli: ripartire da zero non è necessario per questo tipo di errore. Le modifiche al programma entrano in uso dopo il riavvio dell’app; una produzione già in corso mantiene il codice caricato all’avvio.
+
+## Politica delle fonti
+
 La modalità predefinita `hybrid` cerca prima sul web. Se non acquisisce almeno tre pagine da due domini diversi, di cui almeno uno esterno a Wikipedia, prosegue con le pagine disponibili e la conoscenza del modello configurato. Zero pagine è ammesso. Questo criterio misura disponibilità e varietà delle fonti, non la verità dei fatti.
 
 `strict`, selezionabile in Amministrazione, conserva il blocco precedente. Non cambia la connessione al modello, non richiede SearXNG e non installa servizi aggiuntivi. Le configurazioni precedenti senza `research_mode` usano il nuovo valore predefinito.

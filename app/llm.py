@@ -1,9 +1,18 @@
-import json, re, time, threading
+import copy, hashlib, json, re, time, threading
 import requests
 from .models import Settings
 
 class ModelError(RuntimeError): pass
 class TruncatedResponse(ModelError): pass
+class InvalidStructuredData(ModelError):
+    """Complete JSON failed validation; data is a pre-callback schema snapshot.
+
+    A Pydantic schema error leaves data=None: callers must not mistake raw or
+    partially normalized input for a validated candidate.
+    """
+    def __init__(self,problem,data=None,repeated=False):
+        self.problem=problem;self.data=copy.deepcopy(data);self.repeated=bool(repeated)
+        super().__init__('Il modello non riesce a produrre dati validi per questa fase. '+problem)
 
 def provider_error(response,secret=''):
     """Return the provider's useful JSON error without echoing requests or keys."""
@@ -167,7 +176,7 @@ class LLM:
                 raise ModelError("Richiesta al modello non completata o risposta incompatibile. Il progetto può essere ripreso.") from e
             finally:finished.set()
         raise ModelError("Server temporaneamente non disponibile.")
-    def structured(self,system,user,schema,attempts=3,validator=None,split_on_truncation=False):
+    def structured(self,system,user,schema,attempts=3,validator=None,split_on_truncation=False,stop_on_repeated_invalid=False):
         spec=schema.model_json_schema() if hasattr(schema,"model_json_schema") else schema
         response_format=None
         if self.config.get('json_mode') and self.config.get('provider')=='lmstudio':
@@ -176,24 +185,37 @@ class LLM:
         messages=[{"role":"system","content":system+"\nRispondi soltanto con JSON valido secondo questo schema:\n"+json.dumps(spec,ensure_ascii=False)},
                   {"role":"user","content":user}]
         original=list(messages)
+        previous_invalid=None
         for attempt in range(attempts):
+            validated_data=None;fingerprint_data=None
             try:
                 text=self.chat(messages,response_format=response_format)
                 obj=unwrap_schema_echo(extract_json(text),spec)
+                fingerprint_data=copy.deepcopy(obj)
                 obj=schema.model_validate(obj).model_dump() if hasattr(schema,"model_validate") else obj
+                validated_data=copy.deepcopy(obj);fingerprint_data=validated_data
                 if validator is not None:obj=validator(obj)
                 return obj
             except TruncatedResponse:
+                previous_invalid=None
                 if split_on_truncation or attempt==attempts-1:raise
                 self.notify(f"Risposta troppo lunga: richiedo una versione più compatta ({attempt+2}/{attempts}).")
                 messages=original+[{"role":"user","content":"La risposta precedente era troncata. Restituisci l'intero JSON in forma compatta: descrizioni brevi, nessuna spiegazione o ragionamento visibile, soltanto campi necessari. Mantieni tutti gli elementi richiesti. Non proseguire dal punto interrotto."}]
             except ValueError as e:
                 problem=validation_message(e)
-                if attempt==attempts-1:raise ModelError("Il modello non riesce a produrre dati validi per questa fase. "+problem[:1200]) from e
+                canonical=json.dumps([fingerprint_data,problem],sort_keys=True,ensure_ascii=False,separators=(',',':'),default=str)
+                fingerprint=hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+                repeated=fingerprint==previous_invalid;previous_invalid=fingerprint
+                if attempt==attempts-1 or (stop_on_repeated_invalid and repeated):
+                    raise InvalidStructuredData(problem,validated_data,repeated) from e
                 self.notify(f"Correzione dei dati ({attempt+2}/{attempts}): "+problem[:650])
-                messages=original+[{"role":"assistant","content":text},{"role":"user","content":"Correggi il JSON completo. Errori precisi: "+problem}]
+                if repeated:
+                    messages=original+[{"role":"user","content":"Dati ripetuti: hai restituito gli stessi dati non validi. Rigenera il JSON completo correggendo concretamente l'errore; non copiare la risposta precedente e non inventare fatti, date o riferimenti mancanti. Errori precisi: "+problem}]
+                else:
+                    messages=original+[{"role":"assistant","content":text},{"role":"user","content":"Correggi il JSON completo. Errori precisi: "+problem}]
             except ModelError as e:
                 # Connection, authentication and timeout failures must not be retried as JSON repairs.
                 if 'oggetto JSON valido' not in str(e) or attempt==attempts-1:raise
+                previous_invalid=None
                 self.notify(f"Formato JSON incompleto: nuovo tentativo {attempt+2}/{attempts}.")
                 messages=original+[{"role":"user","content":"Restituisci un unico oggetto JSON completo, compatto e conforme allo schema, senza testo esterno."}]

@@ -5,7 +5,7 @@ from typing import Literal
 from .models import GeoPoint
 from .general import HistoryScene,HistoryOutline
 from .outline_normalization import collections,place_references,movement_endpoints
-from .llm import TruncatedResponse,ModelError
+from .llm import TruncatedResponse,ModelError,InvalidStructuredData
 from .research import evidence
 from .research_policy import validate_references
 from .store import write_json,read_json
@@ -154,7 +154,7 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
     grammar=history_prompt(project['topic'],project['minutes'],kind,project['notes'],**({'allow_model_knowledge':True} if research['fallback_used'] else {}))
     from engine.history_profiles import EVENT_TYPES,SCENE_TYPES,MOVEMENTS
     vocabulary=f"\nValori ammessi esatti: scene_type={sorted(SCENE_TYPES)}; event.type={sorted(EVENT_TYPES)}; movement.semantic={sorted(MOVEMENTS)}. Per episodi puramente narrativi che non rientrano negli eventi storici, usa events=[] e raccontali nei campi event delle scene; non inventare tipi come literary_narrative."
-    def validate(batch,first,last):
+    def validate(batch,first,last,repairs):
         # Model-drawn coordinates are illustrative even when it claims precise borders.
         for layer in batch.get('visual_layers',[]):
             for state_row in layer.get('states',[]):
@@ -165,7 +165,9 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
                 layer['schematic']=True
         for scene in batch.get('scenes',[]):normalize_visual_role(scene,shot_role(direction,scene.get('index',first),count))
         batch=movement_endpoints(place_references(batch,catalog['places']),catalog['places'])
-        from .movement_sync import prepare_scene,plan_issue
+        from .movement_sync import prepare_scene,plan_issue,repair_duplicate_routes
+        if direction.get('journey'):
+            repairs.extend(repair_duplicate_routes(batch.get('scenes',[]),catalog['places']))
         for scene in batch.get('scenes',[]):
             prepare_scene(scene,catalog['places'])
             problem=plan_issue(scene,catalog['places'])
@@ -206,7 +208,7 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
             issues=scene_issues(scene,direction,shot_role(direction,scene['index'],count))
             if issues:raise ValueError(f"Regia della scena {scene['index']+1}: "+'; '.join(issues))
         return batch
-    def request(first,last):
+    def request(first,last,repair_context=None):
         cancel();log(f'Struttura: preparo le scene {first+1}–{last} di {count}.')
         assignments=[{'index':i,'scene_id':f'{i+1:02}','visual_role':shot_role(direction,i,count),'chapter':concept['chapters'][min(len(concept['chapters'])-1,i*len(concept['chapters'])//count)]} for i in range(first,last)]
         prior=[{'index':s['index'],'title':s['title'],'event':s['event']} for s in state['scenes']]
@@ -216,16 +218,35 @@ def build_history_outline(llm,system,project,kind,sources,research,checkpoints,h
         prompt+='\nSCENE PRECEDENTI:\n'+json.dumps(prior,ensure_ascii=False)
         prompt+='\nVOCI GIÀ DEFINITE:\n'+json.dumps({k:state[k] for k in ('events','visual_layers','visual_assets')},ensure_ascii=False)
         prompt+='\nASSEGNAZIONI ESATTE:\n'+json.dumps(assignments,ensure_ascii=False)+source_text
+        if repair_context:
+            prompt+='\nRECUPERO DI UNA SOLA SCENA: il gruppo precedente non ha superato i controlli. Risolvi il problema per questo solo indice, senza ricopiare le altre scene. Le scene precedenti sono già approvate e non vanno modificate. Mantieni i fatti e i luoghi sostenuti dalle fonti; non aggiungere nomi nel racconto soltanto per superare un controllo. Ogni rotta deve essere pertinente all’episodio e alla sua destinazione.\nPROBLEMA DEL GRUPPO: '+repair_context['problem']
+            failed=(repair_context.get('data') or {}).get('scenes',[])
+            selected=[row for row in failed if row.get('index')==first]
+            if selected:prompt+='\nSCENA RIFIUTATA, DA RIVEDERE (dati del modello, non istruzioni):\n'+json.dumps(selected[0],ensure_ascii=False)
+        repairs=[]
+        def validate_candidate(candidate):
+            repairs.clear()
+            return validate(candidate,first,last,repairs)
         try:
-            batch=llm.structured(system,prompt,HistorySceneBatch,validator=lambda b:validate(b,first,last),split_on_truncation=(last-first>1))
+            batch=llm.structured(system,prompt,HistorySceneBatch,validator=validate_candidate,split_on_truncation=(last-first>1),stop_on_repeated_invalid=(last-first>1))
         except TruncatedResponse:
             if last-first==1:raise ModelError('Il modello tronca anche una singola scena. Aumenta il limite di risposta sul server oppure scegli un modello con meno ragionamento; i passaggi completati sono salvati.')
             log('Risposta troncata: divido il gruppo e richiedo una scena alla volta.')
             for i in range(first,last):request(i,i+1)
             return
+        except InvalidStructuredData as error:
+            if last-first==1:raise
+            reason='ha ripetuto gli stessi dati non validi' if error.repeated else 'non ha corretto il gruppo'
+            log(f'Struttura: il modello {reason}; richiedo una scena per volta con il problema preciso.')
+            for i in range(first,last):request(i,i+1,{'problem':error.problem,'data':error.data})
+            return
         # Also validate injected test/custom providers that do not implement the callback.
-        batch=validate(batch,first,last)
+        batch=validate(batch,first,last,repairs)
         for key in ('events','visual_layers','visual_assets'):state[key]=merge_rows(state[key],batch[key],key)
+        for repair in repairs:
+            state.setdefault('structural_repairs',[]).append(repair)
+            destination=next(p['name'] for p in catalog['places'] if p['id']==repair['to'])
+            log(f"Regia: tolto il doppione del percorso verso {destination} dalla scena {repair['scene_index']+1}; resta nella scena {repair['kept_scene_index']+1}, che racconta la destinazione.")
         state['scenes'].extend(batch['scenes']);write_json(progress_path,state)
         log(f"Struttura: {len(state['scenes'])}/{count} scene controllate e salvate.")
     while len(state['scenes'])<count:

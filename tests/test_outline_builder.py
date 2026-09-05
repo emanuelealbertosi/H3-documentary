@@ -272,3 +272,72 @@ def test_outline_retries_a_route_assigned_to_the_wrong_scene(tmp_path):
     movement=result['scenes'][0]['movements'][0]
     assert movement['cue']==1 and movement['to_label']=='Luogo B'
     assert feedback and 'stessa scena' in feedback[0] and 'Luogo B' in feedback[0]
+
+
+@pytest.mark.parametrize('provider',['lmstudio','openai'])
+def test_repeated_invalid_group_recovers_through_targeted_single_scenes(tmp_path,provider):
+    attempted=[];recovery_prompts=[]
+    def reply(title,payload,number):
+        result=normal_reply(title,payload,number)
+        if title=='HistorySceneBatch':
+            ids=[a['index'] for a in assignment(payload)];attempted.append(ids)
+            if ids==[0,1]:result['scenes'][0]['focus']=['Tema non geografico']
+            if len(ids)==1:recovery_prompts.append(payload['messages'][1]['content'])
+        return result
+    llm,audit,logs=model(reply);llm.config['provider']=provider
+    result=build(llm,tmp_path,logs)
+    assert len(result['scenes'])==4
+    assert attempted==[[0,1],[0,1],[0],[1],[2,3]]
+    assert all('RECUPERO DI UNA SOLA SCENA' in p and 'Tema non geografico' in p for p in recovery_prompts)
+    assert all('SCENA RIFIUTATA, DA RIVEDERE' in p for p in recovery_prompts)
+    assert any('ripetuto gli stessi dati' in line for line in logs)
+    resumed,_,resumed_logs=model(lambda *_:pytest.fail('Validated checkpoints must not call a model again'))
+    assert build(resumed,tmp_path,resumed_logs)==result
+
+
+def test_confirmed_adjacent_duplicate_is_repaired_without_an_extra_model_call(tmp_path):
+    catalog=copy.deepcopy(CATALOG)
+    catalog['places'].append(dict(id='loc-c',name='Luogo C',pos=[16,43]))
+    def reply(title,payload,number):
+        result=normal_reply(title,payload,number)
+        if title=='HistoryCatalog':return catalog
+        if title=='HistorySceneBatch':
+            rows=result['scenes']
+            for row in rows:
+                i=row['index']
+                if i==0:
+                    row.update(title='Approdo a Luogo B',event='Ingresso nel porto di Luogo B.',scene_type='map_overview',focus=['loc-a','loc-b'],
+                        movements=[{'from':'loc-a','to':'loc-b','semantic':'journey','cue':0},
+                                   {'from':'loc-b','to':'loc-c','semantic':'journey','cue':1}])
+                elif i==1:
+                    row.update(title='Luogo C',event='Esplorazione del santuario e dei mercati.',scene_type='animated_route',focus=['loc-c'],
+                        movements=[{'from':'loc-b','to':'loc-c','semantic':'journey','cue':0}])
+                elif i==2:
+                    row.update(title='Ritorno a Luogo A',event='La spedizione si dirige verso Luogo A.',scene_type='animated_route',focus=['loc-a'],
+                        movements=[{'from':'loc-c','to':'loc-a','semantic':'journey','cue':0}])
+                else:row.update(title='Conclusione',event='Conseguenze degli incontri e lascito culturale.',scene_type='map_overview',focus=['loc-a'])
+        return result
+    llm,audit,logs=model(reply);prompt=history_tools(str(CORE))[1]
+    result=build_history_outline(llm,'Fixture',{'topic':'Un viaggio di collaudo','minutes':2,'notes':''},
+        'exploration',[],assessment([]),tmp_path,prompt,logs.append,lambda:None)
+    assert llm.calls==4
+    assert [m['to'] for m in result['scenes'][0]['movements']]==['loc-b']
+    assert result['scenes'][1]['movements'][0]['to']=='loc-c'
+    state=json.loads((tmp_path/'outline-progress.json').read_text(encoding='utf-8'))
+    assert len(state['structural_repairs'])==1
+    assert state['structural_repairs'][0]['removed']['cue']==1
+    assert any('tolto il doppione' in line for line in logs)
+
+
+def test_model_cannot_supply_the_structural_repair_audit(tmp_path):
+    def reply(title,payload,number):
+        result=normal_reply(title,payload,number)
+        if title=='HistorySceneBatch':
+            result['_structural_repairs']=[{'to':'invented-place','scene_index':999}]
+        return result
+    llm,audit,logs=model(reply)
+    result=build(llm,tmp_path,logs)
+    assert len(result['scenes'])==4
+    state=json.loads((tmp_path/'outline-progress.json').read_text(encoding='utf-8'))
+    assert not state.get('structural_repairs')
+    assert not any('tolto il doppione' in line for line in logs)
