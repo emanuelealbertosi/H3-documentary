@@ -3,7 +3,7 @@ import hashlib, io, re, secrets, shutil, unicodedata, warnings
 from pathlib import Path
 from typing import Literal
 from PIL import Image, ImageOps, UnidentifiedImageError
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_serializer
 from . import store
 from pipeline.engine.image_rights import license_policy, manual_allowed, usage_for
 
@@ -16,12 +16,32 @@ class Binding(BaseModel):
     label: str = Field(min_length=2, max_length=120)
     aliases: list[str] = Field(default_factory=list, max_length=12)
 
+class SlideComposition(BaseModel):
+    model_config=ConfigDict(extra='forbid',allow_inf_nan=False)
+    mode: Literal['inset','box','fullscreen']='fullscreen'
+    x: float=Field(.1,ge=0,le=1)
+    y: float=Field(.22,ge=0,le=1)
+    width: float=Field(.8,ge=.1,le=1)
+    height: float=Field(.62,ge=.1,le=1)
+    fit: Literal['contain','cover']='contain'
+    effect: Literal['fixed','zoom_in','zoom_out','scroll_left','scroll_right','scroll_up','scroll_down']='fixed'
+    fade: bool=False
+    show_text: bool=True
+
+
 class Layout(BaseModel):
     model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
     x: float = Field(.71, ge=.02, le=.80)
     y: float = Field(.21, ge=.19, le=.65)
     width: float = Field(.25, ge=.16, le=.36)
     fit: Literal['contain','cover'] = 'contain'
+    slide: SlideComposition | None = None
+
+    @model_serializer(mode='wrap')
+    def serialize(self,handler):
+        data=handler(self)
+        if self.slide is None:data.pop('slide',None)
+        return data
 
 class MediaEdit(BaseModel):
     model_config = ConfigDict(extra='forbid', str_strip_whitespace=True)

@@ -139,7 +139,7 @@ def test_known_recovery_reasons_and_combined_elements_use_readable_labels():
 def test_recovery_background_preview_uses_whole_scene_without_changing_normal_insets():
     result = run_js("""
       const mediaSource=readFileSync('static/media.js','utf8');
-      const media=await import('data:text/javascript;base64,'+Buffer.from(mediaSource).toString('base64'));
+      const media=await import((await import('node:url')).pathToFileURL(process.cwd()+'/static/media.js'));
       const makeBox=()=>{const img={style:{}},caption={style:{}};return {style:{width:'25%'},img,caption,querySelector:name=>name==='img'?img:caption}};
       const recovered={...slot,required:true,recovery_reason:'Percorso omesso.',layout:{x:.71,y:.21,width:.25,fit:'cover'}};
       const before=JSON.stringify(recovered),box=makeBox();

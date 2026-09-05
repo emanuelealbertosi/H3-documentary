@@ -61,6 +61,9 @@ def portrait(path,framing=None):
 
 class Visuals:
     def __new__(cls,timeline):
+        if timeline.get('presentation_mode')=='slides':
+            from .slide_visuals import SlideVisuals
+            return SlideVisuals(timeline)
         # BEGIN H3 IMAGE INSETS
         if timeline.get('user_media'):
             from .image_insets import InsetVisuals

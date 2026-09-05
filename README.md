@@ -4,6 +4,8 @@
 
 Il progetto riunisce DocumentariAI Studio e il suo motore già funzionante. Il renderer, le animazioni, il TTS e i formati delle battaglie sono conservati. Non richiede una cartella DocumentariAI separata, Python già installato, FFmpeg di sistema o un editor video.
 
+**Novità 1.18.0 — Slide senza mappa:** scegli la composizione nella creazione o nelle impostazioni per la prossima versione. Ogni scena parte da uno sfondo nero con miniature; nella revisione puoi caricare uno sfondo personale, scegliere riquadro o tutto schermo, adattamento, dimensioni, zoom, scorrimento e dissolvenza. Voce e montaggio restano automatici. [Guida alle slide](docs/SLIDE.md).
+
 Il titolo del progetto si modifica con un clic, sia nella libreria sia nella sua pagina. **Invio**, il segno di spunta o un clic fuori dal campo salvano il nome; **Esc** annulla. Il nome visualizzato è separato dall'argomento della produzione e non richiede di rigenerare il film.
 
 **Novità 1.17.0:** sul film completato premi **Riapri revisione**, correggi facoltativamente testo, luoghi e immagini, poi **Aggiorna questo video**. Il progetto resta lo stesso: vengono rigenerate soltanto le parti interessate e le loro dipendenze, riutilizzando gli audio e le clip intatti. La ricerca non riparte. Il film precedente resta disponibile fino alla verifica dell'aggiornamento e viene conservato in una copia locale. Guida: [Revisione finale](docs/REVISIONE.md).

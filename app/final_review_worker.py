@@ -21,7 +21,7 @@ def render_plan(previous,current,changed,geography_changed=False):
     old={s['id']:s for s in previous['scenes']};new={s['id']:s for s in current['scenes']}
     if list(old)!=list(new):raise ValueError('La revisione finale mantiene numero e ordine delle scene.')
     affected=set(changed);reasons=[]
-    sequence=current.get('visual_style')=='history' and (
+    sequence=current.get('presentation_mode')=='slides' or current.get('visual_style')=='history' and (
         current.get('visual_direction') or current.get('metadata',{}).get('visual_direction',{})).get('timeline_mode')=='sequence'
     timing_changed=any(any(old[sid].get(key)!=new[sid].get(key) for key in ('start','end','duration','frames')) for sid in old)
     if timing_changed and not sequence:
@@ -31,7 +31,7 @@ def render_plan(previous,current,changed,geography_changed=False):
         ignored={'start','end','audio'}
         if {k:v for k,v in scene.items() if k not in ignored}!={k:v for k,v in old[sid].items() if k not in ignored}:
             affected.add(sid)
-    if geography_changed:
+    if geography_changed and current.get('presentation_mode')!='slides':
         nonmap={'timeline','person_intro','event_focus','comparison','data_visualization','quote','artwork','document','transition','summary'}
         direction=current.get('visual_direction') or current.get('metadata',{}).get('visual_direction',{})
         for sid,scene in new.items():
@@ -39,7 +39,7 @@ def render_plan(previous,current,changed,geography_changed=False):
                 direction.get('map_led') and scene.get('scene_type') in {'event_focus','summary'}):affected.add(sid)
         reasons.append('La base geografica è cambiata: aggiorno le scene che mostrano la mappa.')
     # These shared fields affect frame content outside the edited scene itself.
-    for key in ('maps','short_title','historical_period','visual_direction','factions','boundary_report','atlas_locator'):
+    for key in ('maps','short_title','historical_period','visual_direction','factions','boundary_report','atlas_locator','presentation_mode'):
         if previous.get(key)!=current.get(key):
             affected.update(old);reasons.append('Un elemento grafico comune è cambiato: '+key+'.')
     if not affected<=set(old):raise ValueError('La revisione cita una scena non presente nel film.')
@@ -129,7 +129,7 @@ def run_revision(pid,cfg,revision_id):
         stage('Applicazione delle correzioni',12)
         command('validate')
         geography_rebuilt=False
-        if report['geography_modified']:
+        if report['geography_modified'] and pack.get('presentation_mode')!='slides':
             if _geography_covered(work,geo,original_geography):log('Le posizioni corrette sono coperte dalla mappa esistente: riuso i raster.')
             else:
                 stage('Aggiornamento delle mappe interessate',18)
@@ -183,7 +183,7 @@ def run_revision(pid,cfg,revision_id):
             raise ValueError('Una clip da conservare è cambiata: pubblicazione annullata.')
         stage('Rimontaggio del video aggiornato',86);command('finalize')
         stage('Verifica integrale del video aggiornato',94);command('verify')
-        checker='tools/check_history_final.py' if pack.get('documentary_schema_version')==2 or pack.get('visual_style')=='history' else 'tools/check_atlas_final.py'
+        checker='tools/check_slides_final.py' if pack.get('presentation_mode')=='slides' else 'tools/check_history_final.py' if pack.get('documentary_schema_version')==2 or pack.get('visual_style')=='history' else 'tools/check_atlas_final.py'
         run(pid,python,work,[checker,pack['slug']],cancel,log)
         verification_path=work/'output'/pack['verification_dir']/'report.json'
         verification=store.read_json(verification_path)

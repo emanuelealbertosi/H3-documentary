@@ -74,6 +74,7 @@ def _scene_points(scene,places,pack):
 
 
 def _refit(pack,changed,affected,geo):
+    if pack.get('presentation_mode')=='slides':return geo
     from .compiler import fit
     from pipeline.engine.history_geography import atlas_config
     places={p['id']:p for p in places_for(pack)}

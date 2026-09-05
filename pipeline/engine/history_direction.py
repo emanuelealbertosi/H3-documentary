@@ -4,7 +4,9 @@ import re,unicodedata
 MAP_SCENES={'map_overview','animated_route','territorial_change','city_focus','network_map','battle'}
 
 
-def direction_for(topic,kind,basis='history'):
+def direction_for(topic,kind,basis='history',presentation_mode='map'):
+    if presentation_mode=='slides':
+        return {'version':1,'presentation_mode':'slides','journey':False,'map_led':False,'auto_persons':True,'timeline_mode':'sequence' if basis=='literary_tradition' else 'historical'}
     text=''.join(c for c in unicodedata.normalize('NFKD',topic.lower()) if not unicodedata.combining(c))
     journey=kind=='exploration' or bool(re.search(r'\bviaggi\w*|\bitinerar\w*|\bperiplo\b|\brientr\w*|\btraversat\w*|\bspostament\w*|\britorno.*(?:ulisse|odisseo|itaca)|\b(?:ulisse|odisse[ao]).*(?:ritorn\w*|rientr\w*|itaca)|\bodisse[ao]\b',text))
     return {'version':1,'movement_sync':1,'territory_style':2,'territory_mode':'territory' if kind=='territorial_expansion' else 'influence' if kind=='political_history' else '',
@@ -19,6 +21,8 @@ def shot_role(direction,index,count):
 
 
 def direction_prompt(direction):
+    if direction.get('presentation_mode')=='slides':
+        return '''REGIA VISIVA: presentazione SENZA MAPPA. Ogni scena è una slide nera con titolo, breve fatto e miniature pertinenti; l'utente può sostituire lo sfondo con una propria immagine. Usa event_focus, person_intro o summary. Collega person_ids ai protagonisti citati, focus ai luoghi reali noti e asset_ids soltanto a immagini documentate. Non richiedere coordinate per luoghi non identificati. Non progettare mappe, grafici o rotte: movements=[], territory_ids=[], visual_layers=[], network vuoto. Conserva successione narrativa, fonti, cause e conseguenze; non inventare dati per riempire una slide.'''
     text='''REGIA VISIVA: il piano deve descrivere cosa cambia sullo schermo, oltre al racconto.
 Ogni scena di mappa deve avere luoghi pertinenti, movimenti, reti o territori visibili: vietate mappe vuote che ereditano il luogo precedente.
 animated_route richiede movements con almeno due punti distinti, oppure schematic_journey. person_ids attiva un ritratto in riquadro anche sulle mappe e sulle schede.
@@ -48,6 +52,8 @@ def recovered_placeholder(scene):
 
 
 def scene_issues(scene,direction,role=None):
+    if direction.get('presentation_mode')=='slides':
+        return []
     kind=scene.get('scene_type');issues=[]
     focus=scene.get('location_ids',scene.get('focus',[]))
     moves=scene.get('movements',[]);net=scene.get('network') or {};journey=scene.get('schematic_journey')

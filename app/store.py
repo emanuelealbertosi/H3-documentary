@@ -41,6 +41,7 @@ def init():
         if "document_ids" not in {r[1] for r in c.execute("PRAGMA table_info(projects)")}:
             c.execute("ALTER TABLE projects ADD COLUMN document_ids TEXT DEFAULT '[]'")
         columns={r[1] for r in c.execute("PRAGMA table_info(projects)")}
+        if 'presentation_mode' not in columns:c.execute("ALTER TABLE projects ADD COLUMN presentation_mode TEXT DEFAULT 'map'")
         if "display_title" not in columns:c.execute("ALTER TABLE projects ADD COLUMN display_title TEXT DEFAULT ''")
         if "review_visuals" not in columns:c.execute("ALTER TABLE projects ADD COLUMN review_visuals INTEGER DEFAULT 0")
         if "family_id" not in columns:c.execute("ALTER TABLE projects ADD COLUMN family_id TEXT DEFAULT ''")
@@ -97,7 +98,7 @@ def request_fields(req):
         tts_config=snapshot(profile)
     reference=req.tts_reference_id or (cfg.get('tts_reference_id','') if req.tts_engine=='default' and engine in ('chatterbox','api') else '')
     delivery=req.tts_delivery.model_dump() if req.tts_delivery is not None else VoiceDelivery.model_validate(cfg.get('tts_delivery',{})).model_dump()
-    return {'topic':req.topic,'minutes':req.minutes,'notes':req.notes,'source_urls':req.source_urls,
+    return {'presentation_mode':req.presentation_mode,'topic':req.topic,'minutes':req.minutes,'notes':req.notes,'source_urls':req.source_urls,
             'documentary_type':req.documentary_type,'use_media':req.use_media,'review_visuals':req.review_visuals,
             'use_documents':req.use_documents,'document_ids':req.document_ids,'tts_engine':engine,
             'tts_reference_id':reference,'tts_profile_id':profile,'tts_config':tts_config,'tts_delivery':delivery}
@@ -112,10 +113,11 @@ def create(req,*,family_id='',version=1,parent_id=''):
         c.execute("UPDATE projects SET tts_engine=?,tts_reference_id=?,tts_profile_id=?,tts_config=?,tts_delivery=? WHERE id=?",
                   (fields['tts_engine'],fields['tts_reference_id'],fields['tts_profile_id'],json.dumps(fields['tts_config'],ensure_ascii=False),json.dumps(fields['tts_delivery']),pid))
         c.execute("UPDATE projects SET family_id=?,version=?,parent_id=? WHERE id=?",(family_id or pid,max(1,int(version)),parent_id,pid))
+        c.execute("UPDATE projects SET presentation_mode=? WHERE id=?",(fields['presentation_mode'],pid))
     (JOBS/pid).mkdir();return project(pid)
 def update(pid,**fields):
     allowed={"topic","minutes","documentary_type","status","stage","progress","error","result","notes","source_urls","use_media","review_visuals","use_documents","document_ids","tts_engine","tts_reference_id","tts_profile_id","tts_config","tts_delivery","processing_started","processing_seconds"}
-    allowed.add('display_title')
+    allowed.update(('display_title','presentation_mode'))
     if not fields.keys()<=allowed: raise ValueError("Campi non consentiti")
     fields["updated"]=now()
     fields={k:json.dumps(v,ensure_ascii=False) if k in ("result","source_urls","document_ids","tts_config","tts_delivery") else v for k,v in fields.items()}
@@ -164,7 +166,7 @@ def clone_completed(pid, request=None):
             version=int(c.execute('SELECT COALESCE(MAX(version),0)+1 FROM projects WHERE family_id=?',(family,)).fetchone()[0])
         supplied=request is not None
         if request is None:
-            request=ProjectRequest(topic=old['topic'],minutes=old['minutes'],notes=old['notes'],source_urls=old['source_urls'],start=False,
+            request=ProjectRequest(topic=old['topic'],minutes=old['minutes'],notes=old['notes'],source_urls=old['source_urls'],start=False,presentation_mode=old.get('presentation_mode','map'),
                 use_media=bool(old.get('use_media')),review_visuals=bool(old.get('review_visuals')),use_documents=bool(old.get('use_documents')),document_ids=old.get('document_ids',[]),
                 documentary_type=old.get('documentary_type') or 'auto',tts_engine='default')
         new=create(request,family_id=family,version=version,parent_id=old['id'])

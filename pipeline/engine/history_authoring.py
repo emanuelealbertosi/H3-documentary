@@ -43,19 +43,21 @@ Non richiedere API ulteriori, non produrre codice eseguibile. Il risultato è un
 def compile_outline(outline,narration,sources,project,settings):
     o=copy.deepcopy(outline);slug=project.get('slug','film-'+project['id']);kind=o['documentary_type']
     direction=o.get('visual_direction') or direction_for(project.get('topic','')+' '+project.get('notes',''),kind,o.get('narrative_basis','history'))
+    if project.get('presentation_mode')=='slides':direction=direction_for(project.get('topic',''),kind,o.get('narrative_basis','history'),'slides')
     rows={r['index']:r for r in narration}
     if set(rows)!=set(range(len(o['scenes']))):raise ValueError('Sceneggiatura incompleta')
     places=o.get('places',o.get('locations',[]));by_id={p['id']:p for p in places}
     from .history_territories import scene_area_points,area_view
     areas=direction.get('territory_style')==2
     all_area_points=[p for s in o['scenes'] for p in scene_area_points(o,s)] if areas else []
-    overview=area_view([p['pos'] for p in places]+all_area_points) if all_area_points else fit([p['pos'] for p in places]) if places else [12,43,45]
+    slides=project.get('presentation_mode')=='slides'
+    overview=[12,43,45] if slides else area_view([p['pos'] for p in places]+all_area_points) if all_area_points else fit([p['pos'] for p in places]) if places else [12,43,45]
     scenes=[];prev=overview
     for i,s in enumerate(o['scenes']):
         n=rows[i];focus=s.get('focus',s.get('location_ids',[]))
         points=[by_id[k]['pos'] for k in focus]+[p for m in s.get('movements',[]) for p in m['points']]
         area_points=scene_area_points(o,s) if areas else []
-        view=area_view(points+area_points) if area_points else fit(points) if points else prev
+        view=prev if slides else area_view(points+area_points) if area_points else fit(points) if points else prev
         scenes.append({**s,'id':f'{i+1:02}','location_ids':focus,'sources':s.get('source_ids',s.get('sources',[])),
                        'lines':n['lines'],'facts':[n['fact']],'kicker':n['kicker'],'camera_start':prev,'camera_end':view})
         prev=view
@@ -91,9 +93,12 @@ def compile_outline(outline,narration,sources,project,settings):
     if not project['minutes']*wpm*.82<=words<=project['minutes']*wpm*1.18:raise ValueError('Lunghezza della sceneggiatura non adatta alla durata')
     from .research_provenance import apply_context
     apply_context(d,settings.get('research_context'))
+    if slides:
+        d['presentation_mode']='slides'
+        d['map_notice']='Slide senza mappa; provenienza delle immagini nei crediti.'
     d=normalize_document(d)
     validate_document(d)
     require_coverage(d)
     views=[overview]+[s['camera_end'] for s in scenes]
-    geo=atlas_config(views)
+    geo={} if slides else atlas_config(views)
     return d,geo

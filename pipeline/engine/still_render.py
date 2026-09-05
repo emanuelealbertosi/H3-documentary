@@ -22,7 +22,7 @@ def local_asset(workspace,value):
 @contextmanager
 def workspace_context(workspace):
     """CLI-only context; never used inside the multithreaded application process."""
-    root=Path(workspace).resolve();names=['common','cartography','visuals','atlas','history_visuals','image_insets','history_schema']
+    root=Path(workspace).resolve();names=['common','cartography','visuals','atlas','history_visuals','image_insets','history_schema','slide_visuals']
     modules=[importlib.import_module(__package__+'.'+name) for name in names]
     previous=[]
     visuals=modules[2];atlas=modules[3]
@@ -78,6 +78,7 @@ def _points(data,scene,at):
 
 
 def _fit_camera(data,scene,at):
+    if data.get('presentation_mode')=='slides':return
     points=_points(data,scene,at)
     if not points:return
     if data.get('visual_style') in ('atlas','history'):

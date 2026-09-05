@@ -122,6 +122,8 @@ def produce(pid,cfg):
         store.update(pid,result={**store.project(pid)['result'],'research':research})
         if research['fallback_used']:log(research['notice'])
         system=author_system(system,research)
+        if p.get('presentation_mode')=='slides':
+            system+='\nPresentazione senza mappa: racconta attraverso slide, immagini e personaggi. Non servono rotte, frecce, schieramenti o confini; non inventare coordinate per argomenti astratti.'
         detect,history_prompt,history_compile=history_tools(cfg["pipeline_path"])
         if research['fallback_used']:prepare_hybrid_engine(work,src,cp)
         kind=p.get("documentary_type","auto")
@@ -162,7 +164,7 @@ def produce(pid,cfg):
         if kind=='battle':
             manually_reviewed=packpath.is_file() and bool(store.read_json(packpath).get('metadata',{}).get('editorial_review'))
             if manually_reviewed:log('Correzioni manuali conservate: uso il piano di battaglia già approvato senza nuova geocodifica o riscrittura.')
-            else:outline=enrich_battle_outline(llm,system,outline,cp,log,cancel)
+            elif p.get('presentation_mode')!='slides':outline=enrich_battle_outline(llm,system,outline,cp,log,cancel)
         if outline.get('narrative_basis')=='literary_tradition':
             system+='\nIl documentario racconta una tradizione letteraria o mitologica. Dichiara questa cornice, distingui luoghi accertati e localizzazioni leggendarie e non trasformare episodi narrativi in fatti storici verificati.'
         def do_narration():
@@ -195,7 +197,7 @@ def produce(pid,cfg):
         # Write once after successful review. Later visual repairs are retained on resume.
         if not packpath.exists():
             compile_outline_data,compile_sources=outline,sources
-            if kind!='battle':
+            if kind!='battle' and p.get('presentation_mode')!='slides':
                 from .boundaries import prepare as prepare_boundaries
                 compile_outline_data,compile_sources=prepare_boundaries(outline,sources,work,cp,cfg.get('boundary_usage','commercial'),log,cancel)
             compiler=compile_pack if kind=="battle" else history_compile
@@ -224,6 +226,8 @@ def produce(pid,cfg):
             log('Controllo del passaggio al motore grafico prima di preparare asset e mappe.')
             cmd('validate')
         def geography():
+            if pack.get('presentation_mode')=='slides':
+                log('Modalità slide: nessuna mappa da scaricare o preparare.');return
             if reuse_atlas(work,src,geo):log("Mappe compatibili già disponibili: riuso i raster in sola lettura.")
             else:
                 run(pid,python,work,["tools/acquire_atlas.py","--config",georel],cancel,log,max_hours=3)
@@ -259,8 +263,9 @@ def produce(pid,cfg):
                 # The first call creates a disposable estimated timeline. Layout
                 # then receives the same data shape used after measured speech.
                 cmd('preview')
-                if kind=='battle':run(pid,python,work,[str(ROOT/'app/layout_worker.py'),str(packpath)],cancel,log)
-                else:run(pid,python,work,['tools/history_layout.py',rel],cancel,log)
+                if pack.get('presentation_mode')!='slides':
+                    if kind=='battle':run(pid,python,work,[str(ROOT/'app/layout_worker.py'),str(packpath)],cancel,log)
+                    else:run(pid,python,work,['tools/history_layout.py',rel],cancel,log)
                 cmd('preview')
                 store.write_json(draft,{'completed':store.now(),'timing':'estimated'})
             state=visual_slots.status(pid)
@@ -292,10 +297,11 @@ def produce(pid,cfg):
             cmd("voice")
         stage("voice",voice)
         def preview():
-            if kind=="battle":run(pid,python,work,[str(ROOT/"app/layout_worker.py"),str(packpath)],cancel,log)
-            else:run(pid,python,work,["tools/history_layout.py",rel],cancel,log)
+            if pack.get('presentation_mode')!='slides':
+                if kind=="battle":run(pid,python,work,[str(ROOT/"app/layout_worker.py"),str(packpath)],cancel,log)
+                else:run(pid,python,work,["tools/history_layout.py",rel],cancel,log)
             cmd("preview")
-            if cfg.get("vision") and not pack.get('user_media'):
+            if cfg.get("vision") and not pack.get('user_media') and pack.get('presentation_mode')!='slides':
                 images=visual_review_images(work/"build"/slug/"previews")
                 for first in range(0,len(images),4):
                     cancel();content=[{"type":"text","text":"Controlla la leggibilità di queste mappe. Rispondi JSON: {acceptable:boolean, issues:[string]}. Rileva solo difetti visivi gravi: testi importanti sovrapposti, luoghi focali fuori campo, immagini corrotte. Non giudicare la verità dei fatti dalla sola immagine."}]
@@ -315,11 +321,12 @@ def produce(pid,cfg):
         stage("finalize",lambda:cmd("finalize"))
         def verify():
             cmd("verify")
-            run(pid,python,work,["tools/check_history_final.py" if kind!="battle" else "tools/check_atlas_final.py",slug],cancel,log)
+            checker='tools/check_slides_final.py' if pack.get('presentation_mode')=='slides' else "tools/check_history_final.py" if kind!="battle" else "tools/check_atlas_final.py"
+            run(pid,python,work,[checker,slug],cancel,log)
         stage("verify",verify)
         report=store.read_json(work/"output"/pack["verification_dir"]/"report.json")
         elapsed=store.pause_processing(pid)
-        store.update(pid,status="completed",stage="Documentario completato",progress=100,error="",result={"duration":report["video_duration"],"bytes":report["bytes"],"sha256":report["sha256"],"llm_calls":llm.calls,"visual_ai_review":bool(cfg["vision"] and not pack.get('user_media')),"research":pack.get('research',research)},processing_seconds=elapsed)
+        store.update(pid,status="completed",stage="Documentario completato",progress=100,error="",result={"duration":report["video_duration"],"bytes":report["bytes"],"sha256":report["sha256"],"llm_calls":llm.calls,"visual_ai_review":bool(cfg["vision"] and not pack.get('user_media') and pack.get('presentation_mode')!='slides'),"research":pack.get('research',research)},processing_seconds=elapsed)
         log("Video pronto: MP4, sottotitoli, fonti, sceneggiatura, timeline, crediti e rapporto di verifica.")
     except Cancelled:
         store.pause_processing(pid);store.update(pid,status="cancelled",stage="Interrotto",error="Puoi riprendere dai passaggi già completati.");log("Produzione interrotta. Materiali conservati.")

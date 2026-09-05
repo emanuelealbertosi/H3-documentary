@@ -34,7 +34,7 @@ def repair_pack(path,workspace,log=lambda _:None):
     backup=path.with_name(path.stem+'.before-focus-fix-'+stamp+path.suffix)
     shutil.copy2(path,backup)
     write_json(path,normalized)
-    if coordinate_changes:
+    if coordinate_changes and pack.get('presentation_mode')!='slides':
         geopath=path.with_name('geography.json')
         views=[normalized.get('overview')]+[scene.get('camera_end') for scene in normalized.get('scenes',[])]
         views=[view for view in views if isinstance(view,list) and len(view)==3]

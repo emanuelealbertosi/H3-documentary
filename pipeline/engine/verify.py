@@ -46,7 +46,8 @@ def verify(timeline):
     report['final_loudness']=measured
     assert -17.5<float(measured['input_i'])<-14.5,measured
     assert float(measured['input_tp'])<-.5,measured
-    assert not black,black
+    report['intentional_black_canvas']=timeline.get('presentation_mode')=='slides'
+    if not report['intentional_black_canvas']:assert not black,black
     # Extract actual encoded frames, including the opening and closing cards.
     movie_av=av.open(str(movie));stream=movie_av.streams.video[0];shots=[]
     samples=[('opening',2.8),*[(s['id'],s['start']+s['duration']*.63) for s in timeline['scenes']],('ending',timeline['duration']-1.3)]
@@ -73,7 +74,7 @@ def verify(timeline):
       f'Differenza durata audio/video: {abs(audio_duration-video_duration):.4f} s.',
       f'Loudness integrata: {measured["input_i"]} LUFS; picco reale: {measured["input_tp"]} dBTP.',
       f'{report["chapters"]} capitoli incorporati, una traccia sottotitoli italiana e file SRT separato.',
-      'Nessun intervallo nero non previsto più lungo di 0,45 s.',
+      'Sfondo nero intenzionale nella modalità slide; intervalli rilevati conservati nel rapporto.' if report['intentional_black_canvas'] else 'Nessun intervallo nero non previsto più lungo di 0,45 s.',
       f'Fotogrammi estratti dal file finale in {qa.relative_to(ROOT)}; controllo visivo del contact sheet e dei fotogrammi a risoluzione piena.',
       f'SHA-256: `{report["sha256"]}`.']
     (qa/'report.md').write_text('\n\n'.join(summary),encoding='utf-8')

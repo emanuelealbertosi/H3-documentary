@@ -56,12 +56,16 @@ def apply_options(pack, selected, layouts=None):
         slot=next((item for item in slots if item["id"]==slot_id),None)
         if slot is None:continue
         layout=media.Layout.model_validate(layout).model_dump()
-        entry=next((item for item in pack.get("user_media",[]) if item.get("id")==slot_id),None)
+        previous_layout=slot.get('layout')
+        slot['layout']=layout
+        media_id=slot.get('existing_media_id') or slot_id
+        entry=next((item for item in pack.get("user_media",[]) if item.get("id")==media_id),None)
+        if entry is None and previous_layout!=layout:changed_scenes.update(use['scene_id'] for use in slot['uses'])
         if entry is not None and entry.get("layout")!=layout:
             entry["layout"]=layout;changed_scenes.update(use["scene_id"] for use in slot["uses"])
         for scene in pack.get("scenes",[]):
             for inset in scene.get("image_insets",[]):
-                if inset.get("asset_id")==slot_id and inset.get("layout")!=layout:
+                if inset.get("asset_id")==media_id and inset.get("layout")!=layout:
                     inset["layout"]=layout;changed_scenes.add(scene["id"])
     if changed_scenes:pack["_pending_visual_layout_scenes"]=sorted(changed_scenes)
     pack["visual_slots"] = slots
@@ -174,21 +178,23 @@ def derive(pack):
             "label": asset.get("title", asset["id"]), "uses": uses, "path": asset["path"],
             "aliases": media.subject_aliases(asset),
             "source_path": asset["path"], "source_type": "visual_asset", "wikipedia_page": asset.get("wikipedia_page", ""),
-            "required": True, "optional": False, "enabled": bool(old.get("enabled", True))})
+            "required": True, "optional": False, "enabled": bool(old.get("enabled", True)),
+            **({'layout':old.get('layout') or asset['layout']} if old.get('layout') or asset.get('layout') else {})})
     # Non-map cards deliberately use a dark editorial canvas. Expose that canvas
     # as an optional slot so the user can keep it or supply one full-scene image
     # before speech synthesis and the expensive render begin.
     direction = pack.get("visual_direction") or pack.get("metadata", {}).get("visual_direction", {})
+    slides=pack.get('presentation_mode')=='slides'
     for scene in pack.get("scenes", []):
         kind = scene.get("scene_type", "")
         recovery = scene.get('visual_recovery') or {}
         manual = isinstance(recovery, dict) and recovery.get('placeholder') is True and recovery.get('version') == 1
         map_led = bool(direction.get("map_led") and kind in {"event_focus", "summary"})
-        if pack.get("documentary_schema_version") != 2 and pack.get("schema_version") != 2:
+        if not slides and pack.get("documentary_schema_version") != 2 and pack.get("schema_version") != 2:
             continue
-        if (kind not in NONMAP_SCENES or map_led) and not manual:
+        if not slides and (kind not in NONMAP_SCENES or map_led) and not manual:
             continue
-        if kind in {"artwork", "document"} and scene.get("asset_ids"):
+        if not slides and kind in {"artwork", "document"} and scene.get("asset_ids"):
             continue
         ident = f"visual-background-{_safe(str(scene['id']))}"
         old = existing.get(ident, {})
@@ -206,6 +212,11 @@ def derive(pack):
             slot['aliases'] = [scene.get('title',str(scene['id']))]
         if old.get("replacement_media_id"):
             slot["replacement_media_id"] = old["replacement_media_id"]
+        if old.get('layout'):slot['layout']=old['layout']
+        if slides:
+            slot.update(required=True,optional=False,enabled=bool(old.get('enabled',True)),label='Sfondo · '+scene.get('title',str(scene['id'])))
+            slot.pop('recovery_reason',None)
+            slot['aliases']=[scene.get('title',str(scene['id']))]
         slots.append(slot)
     for item in pack.get("user_media", []):
         if not isinstance(item, dict) or str(item.get("id", "")).startswith("visual-"):
@@ -224,7 +235,7 @@ def derive(pack):
             "aliases": list(binding.get("aliases", [])),
             "path": item["path"], "source_path": item["path"], "source_type": "manual_media",
             "existing_media_id": item["id"], "wikipedia_page": "", "required": True, "optional": False,
-            "enabled": bool(old.get("enabled", True))})
+            "enabled": bool(old.get("enabled", True)),"layout":item.get('layout',{})})
     return slots
 
 
@@ -447,6 +458,8 @@ def materialize(pack, work, records=None, replacements_only=False, media_root=No
             continue
         if slot.get("source_type") == "visual_asset":
             asset = next(x for x in pack.get("visual_assets", []) if x["id"] == slot["subject_id"])
+            if slot.get('layout') and asset.get('layout')!=slot['layout']:
+                asset['layout']=slot['layout'];changed_scenes.update(use['scene_id'] for use in slot['uses'])
             was_placeholder = bool(asset.get("placeholder"))
             if slot["subject_id"] in pack.get("disabled_visual_asset_ids", []):
                 changed_scenes.update(use["scene_id"] for use in slot["uses"])
@@ -538,7 +551,9 @@ def materialize(pack, work, records=None, replacements_only=False, media_root=No
             "path": slot["path"], "image_sha256": current_sha, "sha256": current_sha,
             "origin": origin, "subject_kind": slot["kind"], "subject_id": slot["subject_id"],
             "bindings": [{"kind": slot["kind"], "label": slot["label"], "aliases": []}],
-            "layout": {"x": .71, "y": .21, "width": .25, "fit": "cover" if slot.get("source_type") == "scene_background" else "contain"},
+            "layout": slot.get('layout') or old_entries.get(slot['id'],{}).get('layout') or {
+                "x": .71, "y": .21, "width": .25, "fit": "cover" if slot.get("source_type") == "scene_background" else "contain",
+                **({'slide':media.SlideComposition().model_dump()} if pack.get('presentation_mode')=='slides' and slot.get('source_type')=='scene_background' else {})},
             "visual_state": state, **credit,
         }
         automatic.append(entry)
@@ -635,7 +650,7 @@ def status(pid):
     for slot in slots:
         saved_enabled = bool(slot.get("enabled", not slot.get("optional")))
         enabled = selected.get(slot["id"], saved_enabled)
-        entry = entries.get(slot["id"], {})
+        entry = entries.get(slot.get('existing_media_id') or slot["id"], {})
         path = packpath.parents[2] / entry.get("path", slot["path"])
         if not path.is_file() and slot.get("source_path"):
             path = packpath.parents[2] / slot["source_path"]
@@ -649,15 +664,18 @@ def status(pid):
         replacement = next((x for x in records if enabled and x.get("enabled") and x.get("id") not in current_ids and _binding_match(x, slot)), None)
         if not enabled:state = "disabled"
         elif slot.get("optional") and state in ("missing", "empty"):state = "blank"
-        saved_layout=media.Layout.model_validate(entry.get("layout", {})).model_dump()
+        default_layout={'slide':media.SlideComposition().model_dump()} if pack.get('presentation_mode')=='slides' and slot.get('source_type')=='scene_background' else {}
+        saved_layout=media.Layout.model_validate(entry.get("layout", slot.get('layout',default_layout))).model_dump()
         layout=layout_choices.get(slot["id"],saved_layout)
         credit=_credit(info,slot["label"],state)
         result.append({**slot, "enabled": enabled, "state": state, "pending_option": enabled != saved_enabled,
                        "pending_layout": layout != saved_layout, "layout": layout, **credit,
                        "replacement_ready": bool(replacement), "has_preview": path.is_file(),
                        "replacement_title": replacement.get("title", "") if replacement else "",
+                       "replacement_media_id_pending": replacement.get('id','') if replacement else '',
                        "scene_ids": sorted({u["scene_id"] for u in slot["uses"]})})
     return {
+        "presentation_mode":pack.get('presentation_mode','map'),
         "ready": bool(result), "completed": p["status"] == "completed", "awaiting_review": p["status"] == "review" and bool(p.get("review_visuals")), "slots": result,
         "visual_warnings": [{**{k:w[k] for k in ('scene_index','scene_id','scene_title','element','reason','placeholder') if k in w},
                               'slot_id': 'visual-background-'+_safe(str(w.get('scene_id') or f"{w.get('scene_index',0)+1:02}")) if w.get('placeholder') else ''}

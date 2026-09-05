@@ -25,13 +25,17 @@ def render_scenes(timeline,only=None,preview_seconds=None,jobs=2):
     files=['visuals.py','cartography.py','render.py']+(['atlas.py'] if timeline.get('visual_style')=='atlas' else [])
     if timeline.get('visual_style')=='history':files+=['atlas.py','history_visuals.py','history_schema.py','history_profiles.py']
     source=''.join((ROOT/'engine'/f).read_text(encoding='utf-8') for f in files)
+    if timeline.get('presentation_mode')=='slides':source+=(ROOT/'engine/slide_visuals.py').read_text(encoding='utf-8')
     # BEGIN H3 IMAGE INSETS
     if timeline.get('user_media'):
         from .image_insets import signature
         source+=(ROOT/'engine/image_insets.py').read_text(encoding='utf-8')+json.dumps(signature(timeline))
     # END H3 IMAGE INSETS
     asset_signature=None
-    if timeline.get('visual_style') in ('atlas','history'):
+    if timeline.get('presentation_mode')=='slides':
+        paths=[p['path'] for p in timeline.get('visual_assets',[]) if p.get('path')]
+        asset_signature=[(p,(ROOT/p).stat().st_size,(ROOT/p).stat().st_mtime_ns) for p in paths]
+    if timeline.get('visual_style') in ('atlas','history') and timeline.get('presentation_mode')!='slides':
         atlas=read_json(ROOT/timeline['atlas'])
         paths=[timeline['atlas']]+[p for layer in atlas['layers'] for p in layer['levels']]+[layer['alpha'] for layer in atlas['layers'] if 'alpha' in layer]
         asset_signature=[(p,(ROOT/p).stat().st_size,(ROOT/p).stat().st_mtime_ns) for p in paths]
@@ -43,6 +47,7 @@ def render_scenes(timeline,only=None,preview_seconds=None,jobs=2):
         output=folder/f'{scene["id"]}.mp4'; manifest=folder/f'{scene["id"]}.render.json'
         frames=min(scene['frames'],round(preview_seconds*timeline['fps'])) if preview_seconds else scene['frames']
         key=fingerprint([scene,timeline['maps'],source,frames,asset_signature])
+        if timeline.get('presentation_mode')=='slides':key=fingerprint([key,{k:v for k,v in timeline.items() if k!='scenes'}])
         if timeline.get('visual_style')=='history':key=fingerprint([key,{k:v for k,v in timeline.items() if k!='scenes'}])
         if output.exists() and manifest.exists() and read_json(manifest)['fingerprint']==key:
             print('Cached scene',scene['id'],flush=True);continue

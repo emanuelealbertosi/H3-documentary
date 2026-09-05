@@ -1,5 +1,28 @@
 # Verifica della distribuzione
 
+Aggiornamento 1.18.0: modalità **Slide senza mappa**, indipendente dal tipo di
+racconto. Suite completa: **617 test superati**; dopo gli ultimi controlli
+aggiuntivi, **60 test mirati superati** su slide, distribuzione e immagini.
+I nuovi casi coprono migrazione del database, nuove versioni, layout precedenti,
+background per ogni scena, sostituzioni e inquadrature delle miniature manuali,
+compilatori senza limiti cartografici, riuso delle clip non modificate e rendering
+PDF senza atlante. Nessun modello remoto o locale chiamato nei collaudi.
+
+Prova reale separata dai lavori dell’utente: MP4 H.264 **1920×1080, 16 secondi,
+12 fps, 192 fotogrammi**, quattro slide con immagini e audio procedurali.
+Sfondo nero con miniatura, foto a tutto schermo con zoom, riquadro con scorrimento,
+immagine intera e dissolvenza; tutti i fotogrammi e l’audio decodificati, capitoli,
+sottotitoli e sincronizzazione verificati. Loudness misurata **−15,98 LUFS**.
+Nessun asset geografico presente nel workspace; PDF esportato con la stessa
+composizione. Ispezionati i fotogrammi estratti dal film. È una prova tecnica,
+non una verifica di ricerca storica o qualità del TTS.
+
+Nel browser: selezione della modalità e pausa di revisione proposta, scelta di
+uno sfondo, controlli di composizione, effetto e adattamento persistenti cambiando
+scena e riaprendo la pagina, sfondo nero effettivo nell’editor, nessun errore JS.
+Le etichette degli slot vuoti mantengono ora l’altezza dei normali collegamenti.
+I report e i materiali QA rimangono locali e non entrano nella distribuzione.
+
 Aggiornamento 1.17.1: titoli dei progetti modificabili direttamente dalla libreria
 e dalla pagina del film. **51 test mirati superati**, inclusi persistenza dopo
 inizializzazione, nomi vuoti/lunghi rifiutati, conservazione degli input durante

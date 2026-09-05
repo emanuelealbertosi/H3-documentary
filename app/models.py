@@ -54,6 +54,7 @@ class Settings(BaseModel):
         return urlunsplit((p.scheme,p.netloc,path,"",""))
 
 class ProjectRequest(BaseModel):
+    presentation_mode: Literal['map','slides'] = 'map'
     topic: str = Field(min_length=4, max_length=300)
     minutes: int = Field(10, ge=2, le=60)
     notes: str = Field("", max_length=5000)

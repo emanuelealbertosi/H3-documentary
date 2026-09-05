@@ -69,8 +69,9 @@ def compile_pack(outline,narration,sources,project,settings):
         if not set(s["source_ids"])<=sid:raise ValueError("La scena cita una fonte mai consultata.")
         if not s['source_ids'] and not settings.get('research_context',{}).get('fallback_used'):
             raise ValueError("La scena non indica fonti consultate.")
-    overview=fit([p["pos"] for p in o["places"]],pad=1.6,min_width=.45)
-    poses=[fit([places[x]["pos"] for x in s["focus"]]+[p for r in s["routes"] for p in r["points"]],pad=1.75,min_width=.075) for s in o["scenes"]]
+    slides=project.get('presentation_mode')=='slides'
+    overview=[12,43,45] if slides else fit([p["pos"] for p in o["places"]],pad=1.6,min_width=.45)
+    poses=[copy.deepcopy(overview) for _ in o['scenes']] if slides else [fit([places[x]["pos"] for x in s["focus"]]+[p for r in s["routes"] for p in r["points"]],pad=1.75,min_width=.075) for s in o["scenes"]]
     poses[0]=overview;poses[-1]=overview
     slug="film-"+project["id"]
     commanders={c["id"]:dict(name=c["name"],subtitle=c["role"],side=commander_side(c),portrait="assets/portraits/"+slug+"/"+c["id"]+".jpg",wikipedia_page=c["wikipedia_page"],
@@ -123,5 +124,8 @@ def compile_pack(outline,narration,sources,project,settings):
         territorial_note="Nord in alto. Base fisica moderna, percorsi schematici. Nessun confine attuale è presentato come storico.",
         map_notice="Mappe illustrative su base fisica moderna; percorsi e orari incerti sono segnalati.",
         extra_credits=CREDIT+(" OpenStreetMap contributors (ODbL); geocodifica Nominatim. https://www.openstreetmap.org/copyright/" if any('Nominatim' in p.get('note','') for p in o['places']) else ''),assets=[],scenes=scenes)
-    geo=geography_for_views(overview,poses)
+    if slides:
+        pack['presentation_mode']='slides'
+        pack['extra_credits']='Slide senza mappa. Provenienza delle immagini nelle rispettive attribuzioni.'
+    geo={} if slides else geography_for_views(overview,poses)
     return pack,geo

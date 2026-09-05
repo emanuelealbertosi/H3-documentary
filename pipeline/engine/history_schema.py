@@ -141,7 +141,9 @@ def adapt(doc):
     d['commanders']={p['id']:{**p,'subtitle':p.get('role',''),'side':'neutral','portrait_note':[p.get('role',''),p.get('period','')]} for p in d.get('persons',[]) if p.get('portrait')}
     d['factions']=[{**e,'label':e.get('name',e['id']),'color':e.get('color',[239,185,93]),'estimate':e.get('estimate',''),'commander':''} for e in d.get('entities',[])]
     d['maps']={'campaign':dict(center=[15,43],scale=[100,100],seed=41,landmarks=[],roads=[],rivers=[],ridges=[],forests=[],zones=[])}
-    overview=d['overview'] if d.get('overview') else fit([p['pos'] for p in d.get('locations',[])]);d['atlas_locator']=overview
+    slides=d.get('presentation_mode')=='slides'
+    if slides:d['extra_credits']=doc.get('extra_credits','Slide senza mappa. Provenienza delle immagini nelle rispettive attribuzioni.')
+    overview=d['overview'] if d.get('overview') else [12,43,45] if slides else fit([p['pos'] for p in d.get('locations',[])]);d['atlas_locator']=overview
     previous=overview
     for i,s in enumerate(d['scenes']):
         s['scene_type']=choose_scene(s,kind,i)
@@ -151,7 +153,7 @@ def adapt(doc):
         from .history_territories import modern_areas,scene_area_points,area_view
         area_points=scene_area_points(d,s) if modern_areas(d) else []
         points=[d['places'][p]['pos'] for p in s.get('location_ids',[])]+area_points
-        view=s['camera_end'] if s.get('camera_end') else area_view(points) if area_points else fit(points)
+        view=previous if slides else s['camera_end'] if s.get('camera_end') else area_view(points) if area_points else fit(points)
         s.setdefault('camera_start',previous);s.setdefault('camera_end',view)
         s.setdefault('camera_keys',[{'at':0,'view':s['camera_start']},{'at':.30,'view':view},{'at':1,'view':view}]);previous=view
         s.setdefault('visible_places',s.get('location_ids',[]));s.setdefault('label_offsets',{})

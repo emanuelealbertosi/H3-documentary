@@ -1,4 +1,5 @@
 /* Local image library, semantic bindings and a faithful 16:9 inset position editor. */
+import {prepareSlideStage,mountSlideEditor} from './slide-composition.js?v=1.18.0';
 const kinds={person:'Persona',place:'Luogo',topic:'Argomento',event:'Evento',entity:'Popolo / organizzazione',scene:'Scena'};
 const icons={person:'♙',place:'⌖',topic:'◈',event:'◷',entity:'⚑',scene:'▣'};
 export const isRecoveryBackground=item=>item?.source_type==='scene_background'&&item.required===true&&typeof item.recovery_reason==='string'&&Boolean(item.recovery_reason.trim());
@@ -21,6 +22,8 @@ export async function mediaPage({api,esc,toast,projectId}) {
   const root=document.querySelector('#app');
   const item=()=>items.find(x=>x.id===selected);
   const visualItem=()=>project?.visual?.slots?.find(x=>x.id===selectedSlot);
+  const slideMode=()=>project?.visual?.presentation_mode==='slides';
+  const visualUrl=v=>v.replacement_media_id_pending?'/api/media/'+v.replacement_media_id_pending+'/image':`/api/projects/${projectId}/visual-slots/${encodeURIComponent(v.id)}/image`;
   const defaultLayout=()=>({x:.71,y:.21,width:.25,fit:'contain'});
   const activeItem=()=>{const v=visualItem();return v?{...v,title:v.title||v.label,layout:v.layout||defaultLayout(),visual:true}:item();};
   function persist(m,redraw=false){
@@ -50,7 +53,7 @@ export async function mediaPage({api,esc,toast,projectId}) {
   async function bind(mid,b){const m=items.find(x=>x.id===mid);if(!m)return;
     selected=mid;selectedSlot='';linkTarget=-1;m.enabled=true;items=[m,...items.filter(x=>x.id!==mid)];
     if(!m.bindings.some(x=>sameBinding(x,b)))m.bindings.push({kind:b.kind,label:b.label,aliases:b.aliases||[]});
-    await persist(m);await enableProjectMedia();await activateTarget(b);if(projectId)project=await api('/projects/'+projectId+'/media');draw();toast('Immagine collegata a '+b.label+'. Sarà riutilizzata nei prossimi progetti.');
+    await persist(m);await enableProjectMedia();await activateTarget(b);if(projectId)project=await api('/projects/'+projectId+'/media');if(b.visual_slot_id)selectedSlot=b.visual_slot_id;draw();toast('Immagine collegata a '+b.label+'. Sarà riutilizzata nei prossimi progetti.');
   }
   async function unbindTarget(b){
     const linked=linkedItems(b);if(!linked.length)return;
@@ -70,7 +73,9 @@ export async function mediaPage({api,esc,toast,projectId}) {
         if(binding){m.bindings=[{kind:binding.kind,label:binding.label,aliases:binding.aliases||[]}];await persist(m);await enableProjectMedia();await activateTarget(binding);linkTarget=-1;}
       }catch(e){toast(e.message);}
     }
-    if(projectId)project=await api('/projects/'+projectId+'/media');if(!disposed)draw();
+    if(projectId)project=await api('/projects/'+projectId+'/media');
+    if(binding?.visual_slot_id)selectedSlot=binding.visual_slot_id;
+    if(!disposed)draw();
   }
   function dropzone(el,onDrop){
     el.ondragover=e=>{e.preventDefault();el.classList.add('drag-over');e.dataTransfer.dropEffect='copy';};
@@ -103,13 +108,13 @@ export async function mediaPage({api,esc,toast,projectId}) {
         ${items.some(x=>!x.enabled)?`<details><summary>Immagini archiviate</summary><div class="media-archived">${items.filter(x=>!x.enabled).map(x=>`<button class="secondary" data-restore="${x.id}">Ripristina ${esc(x.title)}</button>`).join('')}</div></details>`:''}
       </section>
       <div class="media-workspace" style="--media-target-width:${targetColumnWidth}px"><section class="card media-targets"><span class="eyebrow">02 · COLLEGA</span><h2>A chi o a cosa?</h2><p class="tiny muted">Un’immagine può avere più collegamenti. Aggiungi un nome, poi trascinaci sopra l’immagine.</p>
-        ${m&&!selectedSlot?`<button class="media-selected-drag" draggable="true" data-mid="${m.id}" aria-label="Trascina immagine selezionata"><img draggable="false" src="/api/media/${m.id}/thumb" alt=""><span><small>IMMAGINE SELEZIONATA</small><b>${esc(m.title)}</b><i>Trascinami su un soggetto ↓</i></span></button>`:v?`<div class="media-selected-drag visual-selected">${v.has_preview?`<img src="/api/projects/${projectId}/visual-slots/${encodeURIComponent(v.id)}/image" alt="">`:`<span class="visual-blank">＋</span>`}<span><small>ELEMENTO DEL PROGETTO</small><b>${esc(v.label)}</b><i>Le modifiche compaiono a destra →</i></span></div>`:''}
+        ${m&&!selectedSlot?`<button class="media-selected-drag" draggable="true" data-mid="${m.id}" aria-label="Trascina immagine selezionata"><img draggable="false" src="/api/media/${m.id}/thumb" alt=""><span><small>IMMAGINE SELEZIONATA</small><b>${esc(m.title)}</b><i>Trascinami su un soggetto ↓</i></span></button>`:v?`<div class="media-selected-drag visual-selected">${(v.has_preview||v.replacement_ready)?`<img src="${visualUrl(v)}" alt="">`:`<span class="visual-blank">＋</span>`}<span><small>ELEMENTO DEL PROGETTO</small><b>${esc(v.label)}</b><i>Le modifiche compaiono a destra →</i></span></div>`:''}
         <div class="media-target-list">${ts.map((b,i)=>{const attached=linkedItems(b),featured=attached[0];return `<div class="media-target-row"><button class="media-target ${attached.length?'linked':''} ${selectedSlot===b.visual_slot_id?'selected-slot':''} ${b.visual_state?'visual-'+b.visual_state:''}" data-target="${i}" aria-label="${b.visual_slot_id?'Apri':'Seleziona'} ${esc(b.label)}">${featured?`<img loading="lazy" src="/api/media/${featured.id}/thumb" alt="">`:b.visual_slot_id&&b.visual_has_preview?`<img loading="lazy" src="/api/projects/${projectId}/visual-slots/${encodeURIComponent(b.visual_slot_id)}/image" alt="">`:`<span>${icons[b.kind]||'◈'}</span>`}<div><small>${b.visual_slot_id?(b.optional?'SUGGERITA':'OBBLIGATORIA')+' · ':''}${esc(kinds[b.kind]||b.kind)}${b.visual_state?' · '+({blank:'PLACEHOLDER',missing:'DA COMPLETARE',empty:'SFONDO FACOLTATIVO',disabled:'ESCLUSA',available:'TROVATA',user:'PERSONALIZZATA'}[b.visual_state]||'NEL FILM'):''}</small><strong>${esc(b.label)}</strong>${attached.length?`<em>${attached.length} ${attached.length===1?'immagine collegata':'immagini collegate'}</em>`:b.scene_ids?.length?`<em>${b.scene_ids.length} ${b.scene_ids.length===1?'scena':'scene'}</em>`:''}</div></button><div class="media-target-actions"><button class="media-binding-toggle ${attached.length?'linked':''}" data-binding-modal="${i}">${attached.length?'Cambia':'Collega'}</button>${attached.length?`<button data-target-unbind="${i}">Scollega</button>`:''}${b.visual_slot_id?`<button class="visual-slot-toggle ${b.enabled?'enabled':''}" data-visual-toggle="${esc(b.visual_slot_id)}" data-visual-enabled="${b.enabled?'true':'false'}" ${b.visual_editable?'':'disabled title="Disponibile al termine della produzione"'}>${b.visual_editable?(b.enabled?'Escludi':b.optional?'Attiva':'Ripristina'):'Dopo il film'}</button>`:''}</div></div>`}).join('')||'<div class="media-empty">Crea il primo collegamento qui sopra.</div>'}</div>
         <details ${!ts.length?'open':''}><summary>+ Nuovo collegamento</summary><form id="target-form"><label for="target-kind">Tipo di collegamento</label><select id="target-kind">${Object.entries(kinds).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select><label for="target-label">Nome del soggetto</label><input id="target-label" required minlength="2" maxlength="120" placeholder="Es. Annibale, Roma, commercio"><button class="secondary" type="submit">+ Crea collegamento</button></form></details>
         <p class="tiny muted">La comparsa segue i nomi e le varianti presenti nelle frasi narrate. Un collegamento “Scena” segue il titolo della scena.</p>
       </section><button id="media-column-resizer" class="media-column-resizer" type="button" role="separator" aria-orientation="vertical" aria-valuemin="320" aria-valuemax="640" aria-valuenow="${targetColumnWidth}" aria-label="Ridimensiona la colonna dei collegamenti" title="Trascina per allargare o restringere la colonna"><span aria-hidden="true">↔</span></button><section class="media-editor"><div class="media-section-title"><div><span class="eyebrow">03 · COMPONI</span><h2>${recoveryBackground?'L’immagine della scena':'Il riquadro nel video'}</h2></div><span id="media-save-state" class="tiny muted" role="status">Salvato sul PC</span></div>
         <div id="inset-stage" class="inset-stage"${recoveryBackground?' style="background:#122833"':''}><div class="inset-stage-heading"><span>ATLANTE STORICO</span><b>Una finestra sul racconto</b></div><div class="inset-stage-timeline"><span>●</span><i></i><span>◷</span><i></i><span>●</span></div>
-        ${shown&&(!shown.visual||shown.has_preview)?`<div id="inset-box" class="inset-box" tabindex="${recoveryBackground?-1:0}" role="group" aria-label="${recoveryBackground?'Immagine dell’intera scena · posizione automatica':'Riquadro immagine: trascina o usa i tasti freccia'}"><img draggable="false" src="${shown.visual?`/api/projects/${projectId}/visual-slots/${encodeURIComponent(shown.id)}/image`:`/api/media/${shown.id}/image`}" alt="${esc(shown.title)}"><span>${esc(shown.title)}</span></div>`:`<div class="inset-stage-placeholder">${v?'Nessuna immagine recuperata per '+esc(v.label)+'. Caricane una dal pannello qui sotto.':'Seleziona un’immagine per posizionare il riquadro.'}</div>`}</div>
+        ${shown&&(!shown.visual||(shown.has_preview||shown.replacement_ready))?`<div id="inset-box" class="inset-box" tabindex="${recoveryBackground?-1:0}" role="group" aria-label="${recoveryBackground?'Immagine dell’intera scena · posizione automatica':'Riquadro immagine: trascina o usa i tasti freccia'}"><img draggable="false" src="${shown.visual?visualUrl(shown):`/api/media/${shown.id}/image`}" alt="${esc(shown.title)}"><span>${esc(shown.title)}</span></div>`:`<div class="inset-stage-placeholder">${v?'Nessuna immagine recuperata per '+esc(v.label)+'. Caricane una dal pannello qui sotto.':'Seleziona un’immagine per posizionare il riquadro.'}</div>`}</div>
         <p class="tiny muted">${recoveryBackground?'Immagine dell’intera scena · posizione automatica. Viene mostrata intera nell’area centrale, conservando titoli e cronologia. L’anteprima è indicativa: controlla anche le anteprime della scena nel progetto.':'Anteprima di posizione su una mappa dimostrativa · 16:9. Trascina il riquadro; i tasti freccia permettono piccoli spostamenti.'}</p>
         ${v?`<div class="card media-inspector visual-inspector"><div class="media-section-title"><div><small class="eyebrow">${v.optional?'SUGGERITA':'OBBLIGATORIA'} · ${esc(kinds[v.kind]||v.kind)}</small><h2>${esc(v.label)}</h2></div><button class="text-link" data-visual-toggle="${esc(v.id)}" data-visual-enabled="${v.enabled?'true':'false'}" ${project.visual.editable?'':'disabled'}>${v.enabled?'Escludi dal film':'Ripristina nel film'}</button></div>
           <div class="visual-editor-actions"><label class="button secondary media-file-label" for="visual-replace">Sostituisci immagine</label><input class="visually-hidden" id="visual-replace" type="file" accept="image/jpeg,image/png,image/webp"><span class="tiny muted">Puoi caricare una nuova immagine anche durante la produzione; verrà preparata per la revisione o per la versione successiva.</span></div>
@@ -153,6 +158,7 @@ export async function mediaPage({api,esc,toast,projectId}) {
     resizer.ondblclick=()=>applyColumnWidth(380,true);
     resizer.onkeydown=e=>{let value=null;if(e.key==='ArrowLeft')value=targetColumnWidth-20;if(e.key==='ArrowRight')value=targetColumnWidth+20;if(e.key==='Home')value=320;if(e.key==='End')value=columnLimit();if(value!==null){e.preventDefault();applyColumnWidth(value,true);}};
     if(revealRequestedSlot){revealRequestedSlot=false;requestAnimationFrame(()=>root.querySelector('.media-target.selected-slot')?.scrollIntoView({block:'center',behavior:'smooth'}));}
+    if(slideMode())prepareSlideStage(root,shown);
     if(!shown)return;
     position();
     if(m&&!v){
@@ -162,6 +168,17 @@ export async function mediaPage({api,esc,toast,projectId}) {
       root.querySelectorAll('[data-unbind]').forEach(el=>el.onclick=()=>{m.bindings.splice(+el.dataset.unbind,1);persist(m,true);});
       root.querySelectorAll('[data-alias]').forEach(el=>el.onchange=()=>{m.bindings[+el.dataset.alias].aliases=el.value.split(',').map(x=>x.trim()).filter(Boolean).slice(0,12);persist(m);});
       for(const k of ['title','credit','source','rights']){const input=root.querySelector('#image-'+k);input.onchange=()=>{m[k]=input.value.trim()||(k==='title'?'Immagine':'');position();persist(m);};if(k==='title')input.oninput=()=>{m.title=input.value.trim()||'Immagine';position();};}
+    }
+    if(slideMode()){
+      mountSlideEditor(root,shown,{editable:!v||project.visual.editable,onError:e=>toast(e.message),save:()=>{
+        if(!v)return persist(m);
+        const body=JSON.stringify({layout:shown.layout});
+        const label=root.querySelector('#media-save-state');if(label)label.textContent='Salvataggio…';
+        saving=saving.catch(()=>{}).then(()=>api('/projects/'+projectId+'/visual-slots/'+encodeURIComponent(v.id),{method:'PUT',body})).then(()=>{
+          if(!disposed){const label=root.querySelector('#media-save-state');if(label)label.textContent='Salvato sul PC';}
+        }).catch(e=>{if(!disposed){toast(e.message);const label=root.querySelector('#media-save-state');if(label)label.textContent='Errore di salvataggio: riprova';}throw e;});
+        return saving;
+      }});return;
     }
     if(recoveryBackground)return;
     const saveLayout=async()=>{if(v){try{await api('/projects/'+projectId+'/visual-slots/'+encodeURIComponent(v.id),{method:'PUT',body:JSON.stringify({layout:shown.layout})});project=await api('/projects/'+projectId+'/media');toast('Inquadratura salvata.');}catch(e){toast(e.message);}}else await persist(m);};
