@@ -1,4 +1,4 @@
-import array,hashlib,json,subprocess,wave
+import array,hashlib,json,subprocess,sys,wave
 from pathlib import Path
 
 CORE=Path(__file__).resolve().parents[1]/'pipeline'
@@ -15,7 +15,8 @@ pack={'target_minutes':5,'max_voice_tempo':1.22,'external_max_voice_tempo':1.15}
 assert select_voice_tempo(pack,'tts_api',438.8,18.6)==1.15
 assert select_voice_tempo(pack,'kokoro',438.8,18.6)==1.22
 """
-    subprocess.run([str(CORE/'.venv/Scripts/python.exe'),'-c',code,str(CORE)],check=True,capture_output=True,text=True)
+    result=subprocess.run([sys.executable,'-c',code,str(CORE)],capture_output=True,text=True)
+    assert result.returncode==0,result.stdout+'\n'+result.stderr
 
 
 def test_external_voice_manifest_feeds_timeline_without_piper(tmp_path):
@@ -42,4 +43,5 @@ assert timeline['voice_engine']=='chatterbox'
 assert timeline['scenes'][0]['cues'][0]['text']=='Questa frase arriva dalla sintesi esterna.'
 assert (narration.ROOT/timeline['scenes'][0]['audio']).is_file()
 """
-    subprocess.run([str(CORE/'.venv/Scripts/python.exe'),'-c',code,str(CORE),str(tmp_path)],check=True,capture_output=True,text=True)
+    result=subprocess.run([sys.executable,'-c',code,str(CORE),str(tmp_path)],capture_output=True,text=True)
+    assert result.returncode==0,result.stdout+'\n'+result.stderr

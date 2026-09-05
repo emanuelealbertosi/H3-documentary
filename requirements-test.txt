@@ -1,0 +1,6 @@
+# App suite plus the engine libraries exercised by the external-audio tests.
+# Versions match pipeline/requirements-lock.txt. No voice models are downloaded.
+-r requirements-lock.txt
+scipy==1.18.1
+piper-tts==1.7.0
+pathvalidate==3.3.1

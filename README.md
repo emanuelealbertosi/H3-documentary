@@ -182,10 +182,13 @@ Se l'app non si avvia, consulta `data/install.log` e `data/server.stderr.log`. U
 ## Sviluppo e licenze
 
 ```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-test.txt
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -X utf8 tests/production_smoke.py
 ```
 
-Il secondo comando realizza un filmato di prova con ricerca e LLM simulati esplicitamente, cartografia scaricata e produzione audio/video reali. Non certifica la qualità di un modello remoto. I test automatici GitHub eseguono la suite leggera, senza scaricare modelli vocali o renderizzare documentari.
+La suite usa Python 3.13 e Node.js 24, anche su un checkout pulito: `requirements-test.txt` aggiunge le librerie del motore necessarie ai test audio, senza dipendere dal runtime privato `pipeline/.venv`. I test usano l’interprete che esegue pytest. I controlli GitHub partono sui branch e sulle pull request; i tag di rilascio non duplicano l’esecuzione dello stesso commit.
+
+L’ultimo comando realizza un filmato di prova con ricerca e LLM simulati esplicitamente, cartografia scaricata e produzione audio/video reali. Richiede l’installazione completa dell’app e non certifica la qualità di un modello remoto. I test automatici GitHub eseguono la suite leggera, senza scaricare modelli vocali o renderizzare documentari.
 
 Codice del progetto: MIT, conservando gli avvisi originali. Dipendenze, pesi e asset mantengono le proprie licenze: [THIRD_PARTY.md](THIRD_PARTY.md). Il runtime Python viene ottenuto tramite [uv](https://docs.astral.sh/uv/guides/install-python/); release uv e file vocali sono fissati e verificati tramite checksum.
