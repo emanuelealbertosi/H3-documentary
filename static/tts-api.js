@@ -1,4 +1,4 @@
-import {normalizeDelivery,previewText} from './voice-delivery.js?v=1.15.1';
+import {normalizeDelivery,previewText} from './voice-delivery.js?v=1.16.0';
 const providers={
  openai:{name:'OpenAI compatibile',base_url:'http://localhost:8000/v1',model:'tts-1',voice:'',format:'mp3',timeout:180,hint:'Per server locali che espongono POST /v1/audio/speech.'},
  higgs:{name:'Higgs TTS remoto',base_url:'http://localhost:8095/v1',model:'',voice:'',format:'wav',timeout:900,hint:'Contratto Higgs Audio v3: H3 carica il modello prima della sintesi e lo scarica al termine. Il server HTTP resta attivo.'},
@@ -27,6 +27,12 @@ export function bindReference(engineId,referenceId,tts){
 }
 
 function number(id,fallback){const value=+q('#'+id).value;return Number.isFinite(value)?value:fallback}
+function generationSeed(provider){
+ if(provider!=='higgs'||!q('#tts-api-keep-seed').checked)return -1;
+ const input=q('#tts-api-seed'),value=Number(input.value);
+ if(!String(input.value).trim()||!Number.isInteger(value)||value<0||value>2147483647)throw Error('Il seed deve essere un numero intero tra 0 e 2147483647.');
+ return value;
+}
 function formValue(){
  const provider=q('#tts-api-provider').value;
  return {
@@ -34,7 +40,7 @@ function formValue(){
   base_url:q('#tts-api-url').value.trim(),model:q('#tts-api-model').value.trim(),voice:q('#tts-api-voice').value.trim(),
   language:q('#tts-api-language').value.trim(),response_format:q('#tts-api-format').value,timeout:number('tts-api-timeout',180),
   temperature:number('tts-api-temperature',1),top_p:number('tts-api-top-p',.95),top_k:number('tts-api-top-k',50),
-  seed:number('tts-api-seed',-1),max_new_tokens:number('tts-api-max-tokens',2048),style_protocol:provider==='higgs'&&q('#tts-api-style-protocol').checked?'higgs_tags':'none',
+  seed:generationSeed(provider),max_new_tokens:number('tts-api-max-tokens',2048),style_protocol:provider==='higgs'&&q('#tts-api-style-protocol').checked?'higgs_tags':'none',
   api_key:q('#tts-api-key').value,clear_api_key:q('#tts-api-clear').checked
  };
 }
@@ -63,6 +69,11 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
    <div class="field"><label for="tts-api-model">Modello</label><input id="tts-api-model"><span class="hint">Facoltativo per il server Higgs descritto nella specifica.</span></div>
    <div class="field"><label for="tts-api-voice">Voce / voice ID persistente</label><input id="tts-api-voice"><span class="hint">Lascia vuoto per la voce predefinita o per usare un campione one-shot.</span></div>
   </div>
+  <div id="tts-higgs-seed" class="hidden">
+   <label class="check"><input id="tts-api-keep-seed" type="checkbox" aria-describedby="tts-api-seed-hint"> Mantieni lo stesso seed tra le frasi</label>
+   <p id="tts-api-seed-hint" class="tiny muted">Riduce la casualità tra le frasi. Per un narratore coerente scegli anche una voce salvata o lo stesso campione one-shot: il seed da solo non garantisce lo stesso timbro.</p>
+   <div class="field"><label for="tts-api-seed">Seed conservato</label><input id="tts-api-seed" type="number" min="0" max="2147483647" step="1" aria-describedby="tts-api-seed-state"><span id="tts-api-seed-state" class="hint" role="status"></span></div>
+  </div>
   <div class="form-grid">
    <div class="field"><label for="tts-api-language">Lingua</label><input id="tts-api-language" value="it-IT"></div>
    <div class="field"><label for="tts-api-format">Formato restituito</label><select id="tts-api-format"><option value="wav">WAV</option><option value="mp3">MP3</option><option value="flac">FLAC</option><option value="ogg">OGG</option></select></div>
@@ -74,7 +85,7 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
   <details id="tts-higgs-options"><summary>Parametri di generazione Higgs</summary>
    <label class="check"><input id="tts-api-style-protocol" type="checkbox"> Indicazioni espressive Higgs 3</label><p class="tiny muted">Attiva solo se il tuo server riconosce le indicazioni espressive. Verifica con la prova d’ascolto. Il testo del documentario resta invariato.</p>
    <div class="form-grid"><div class="field"><label for="tts-api-temperature">Temperature</label><input id="tts-api-temperature" type="number" min="0" max="2" step="0.05"></div><div class="field"><label for="tts-api-top-p">Top P</label><input id="tts-api-top-p" type="number" min="0" max="1" step="0.01"></div></div>
-   <div class="form-grid"><div class="field"><label for="tts-api-top-k">Top K</label><input id="tts-api-top-k" type="number" min="0" max="1000"></div><div class="field"><label for="tts-api-seed">Seed</label><input id="tts-api-seed" type="number" min="-1"><span class="hint">-1 lascia il risultato casuale.</span></div></div>
+   <div class="field"><label for="tts-api-top-k">Top K</label><input id="tts-api-top-k" type="number" min="0" max="1000"></div>
    <div class="field"><label for="tts-api-max-tokens">Token audio massimi</label><input id="tts-api-max-tokens" type="number" min="64" max="32768"></div>
   </details>
   <label class="check"><input id="tts-api-clear" type="checkbox"> Rimuovi la credenziale salvata</label>
@@ -96,8 +107,14 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
  </section>`;
 
  const selected=()=>profiles.find(x=>x.id===q('#tts-api-profile').value);
+ const updateSeed=()=>{
+  const fixed=q('#tts-api-provider').value==='higgs'&&q('#tts-api-keep-seed').checked;
+  q('#tts-api-seed').disabled=!fixed;
+  q('#tts-api-seed-state').textContent=fixed?'Lo stesso valore viene inviato per ogni frase, anche nella prova d’ascolto.':'Casualità del server attiva (seed -1). Riattivando la spunta ritrovi il numero scelto.';
+ };
  const showHiggs=()=>{
   const higgs=q('#tts-api-provider').value==='higgs';
+  q('#tts-higgs-seed').classList.toggle('hidden',!higgs);
   q('#tts-higgs-options').classList.toggle('hidden',!higgs);
   q('#tts-higgs-controls').classList.toggle('hidden',!(higgs&&q('#tts-api-profile').value));
  };
@@ -105,12 +122,15 @@ export function mountTtsAdmin(target,initial,{toast,reload,voices=[],selectedPro
   const preset=profile||providers[q('#tts-api-provider').value];
   q('#tts-api-name').value=profile?.name||'';q('#tts-api-url').value=preset.base_url;q('#tts-api-model').value=preset.model||'';q('#tts-api-voice').value=preset.voice||'';
   q('#tts-api-language').value=profile?.language||'it-IT';q('#tts-api-format').value=profile?.response_format||preset.format||'mp3';q('#tts-api-timeout').value=profile?.timeout||preset.timeout||180;
-  q('#tts-api-temperature').value=profile?.temperature??1;q('#tts-api-top-p').value=profile?.top_p??.95;q('#tts-api-top-k').value=profile?.top_k??50;q('#tts-api-seed').value=profile?.seed??-1;q('#tts-api-max-tokens').value=profile?.max_new_tokens??2048;
+  q('#tts-api-temperature').value=profile?.temperature??1;q('#tts-api-top-p').value=profile?.top_p??.95;q('#tts-api-top-k').value=profile?.top_k??50;q('#tts-api-max-tokens').value=profile?.max_new_tokens??2048;
+  const seed=profile?(profile.seed??-1):(q('#tts-api-provider').value==='higgs'?42:-1);
+  q('#tts-api-keep-seed').checked=seed>=0;q('#tts-api-seed').value=seed>=0?seed:42;updateSeed();
   q('#tts-api-style-protocol').checked=profile?.style_protocol==='higgs_tags';
   q('#tts-api-key').value='';q('#tts-api-clear').checked=false;
   q('#tts-api-key-hint').textContent=profile?.has_api_key?'Credenziale salvata e cifrata. Lascia vuoto per conservarla.':'Lascia vuoto sulla LAN privata se il server non richiede autenticazione.';
   q('#tts-api-hint').textContent=providers[q('#tts-api-provider').value].hint;q('#tts-api-delete').classList.toggle('hidden',!profile);showHiggs();
  };
+ q('#tts-api-keep-seed').onchange=updateSeed;
  q('#tts-api-profile').onchange=e=>{const p=profiles.find(x=>x.id===e.target.value);if(p){q('#tts-api-provider').value=p.provider;apply(p)}else apply(null)};
  q('#tts-api-provider').onchange=()=>{q('#tts-api-profile').value='';apply(null)};
  const initialProfile=profiles.find(x=>x.id===selectedProfileId)||profiles[0];

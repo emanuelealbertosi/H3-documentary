@@ -322,12 +322,32 @@ def synthesis_key(pack,scene_id,index,spoken,work):
         values.append({key:{**asset,'sha256':hashlib.sha256((Path(work)/asset['path']).read_bytes()).hexdigest()} for key,asset in fragments.items()})
     return _fingerprint(values)[:18]
 
+def _higgs_synthesis_details(config,reference,log):
+    """Record the requested identity controls, never a determinism guarantee."""
+    if config.get('provider')!='higgs':return {}
+    seed=config.get('seed',-1)
+    seed=-1 if seed in ('',None) else int(seed)
+    details={'seed':seed,'seed_mode':'fixed' if seed>=0 else 'random'}
+    if seed>=0:log(f'Higgs: seed fisso {seed} per tutti i segmenti.')
+    else:log('Higgs: seed casuale (-1); il timbro può variare tra i segmenti.')
+    if reference:
+        details['reference_sha256']=hashlib.sha256(Path(reference).read_bytes()).hexdigest()
+        log('Higgs: lo stesso campione vocale sarà allegato a tutti i segmenti.')
+    elif config.get('voice'):
+        details['voice']=config['voice']
+        label=' '.join(str(config['voice']).split())[:120]
+        log(f'Higgs: voce registrata selezionata «{label}».')
+    else:
+        log('Higgs: nessun campione o voce registrata selezionato. Il seed fisso da solo non garantisce lo stesso narratore; scegli un riferimento vocale per stabilizzare il timbro.')
+    return details
+
 def synthesize_pack(pack,project,work,cancel,log):
     config=project.get('tts_config') or pack.get('voice_api')
     if not isinstance(config,dict):raise ValueError('Il progetto non contiene la configurazione del server TTS.')
     profile_id=project.get('tts_profile_id') or config.get('id')
     api_key=secret_for(profile_id)
     reference=Path(work)/pack['voice_reference'] if pack.get('voice_reference') else None
+    synthesis_details=_higgs_synthesis_details(config,reference,log)
     lines=[(scene,i,line) for scene in pack['scenes'] for i,line in enumerate(scene['lines'])]
     out=Path(work)/'build'/pack['slug']/'voice';out.mkdir(parents=True,exist_ok=True)
     pending=[]
@@ -368,8 +388,8 @@ def synthesize_pack(pack,project,work,cancel,log):
                     cache_items[f'{scene["id"]}:{index}']['delivery']=report
                     # Persist provenance before publishing the cached WAV, so a
                     # later interrupted cue does not lose the fallback record.
-                    store.write_json(manifest,{'version':1,'backend':'tts_api','items':cache_items})
+                    store.write_json(manifest,{'version':1,'backend':'tts_api','items':cache_items,**({'synthesis':synthesis_details} if synthesis_details else {})})
                 temporary.replace(target)
             log(f'TTS API: segmento {done}/{len(lines)} pronto.')
-    (out/'external-voice-cache.json').write_text(json.dumps({'version':1,'backend':'tts_api','items':cache_items},ensure_ascii=False,indent=2),encoding='utf-8')
+    (out/'external-voice-cache.json').write_text(json.dumps({'version':1,'backend':'tts_api','items':cache_items,**({'synthesis':synthesis_details} if synthesis_details else {})},ensure_ascii=False,indent=2),encoding='utf-8')
     return len(lines)

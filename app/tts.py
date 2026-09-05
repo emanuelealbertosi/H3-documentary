@@ -106,6 +106,9 @@ def configure_pack(pack,project,work,pipeline_path):
             from .tts_api import snapshot
             config=snapshot(profile_id)
         stable={key:config.get(key) for key in ('id','provider','base_url','model','voice','language','response_format','temperature','top_p','top_k','seed','max_new_tokens')}
+        # A recording is part of the voice identity even when its transcript
+        # and the provider profile are unchanged. Keep unreferenced keys stable.
+        if record:stable['reference_sha256']=record['sha256']
         if config.get('provider')=='higgs' and config.get('style_protocol')=='higgs_tags':
             stable['style_protocol']='higgs_tags'
             if delivery['style']!='original':stable.update(delivery_style=delivery['style'],delivery_style_revision=1)

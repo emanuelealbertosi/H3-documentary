@@ -103,6 +103,34 @@ Google accetta nel campo credenziale un token OAuth temporaneo o il contenuto JS
 
 ## Ripresa e cache
 
+### Conservare il seed e il narratore con Higgs
+
+Nel profilo Higgs, sotto **Voce / voice ID persistente**, la spunta
+**Mantieni lo stesso seed tra le frasi** invia un unico numero a ogni segmento,
+anche nei tentativi successivi e nelle richieste di cloning. Puoi scegliere un
+intero da 0 a 2.147.483.647. I nuovi profili Higgs propongono 42; i profili già
+salvati conservano la propria scelta. Disattivando la spunta si invia `-1`, che
+lascia la generazione casuale secondo il contratto del server personale.
+
+Il seed controlla la casualità della sintesi: **non identifica una persona e non
+garantisce lo stesso timbro con testi diversi**. Per un narratore riconoscibile
+seleziona lo stesso campione vocale nel progetto oppure una voce persistente
+registrata sul server. H3 invia il medesimo campione e la sua trascrizione per
+ogni frase. Il modello supporta entrambe le forme di condizionamento:
+[voci e riferimento audio nella documentazione Boson](https://docs.boson.ai/models/higgs-tts/overview).
+
+Il diario della produzione indica il seed e il tipo di riferimento effettivi.
+Se mancano sia il campione sia la voce persistente, segnala che il timbro può
+variare. La ripresa conserva la configurazione congelata nel progetto, anche se
+nel frattempo hai cambiato il profilo in Amministrazione. Per applicare il nuovo
+profilo a un film concluso, selezionalo nelle impostazioni della nuova versione.
+Il video già prodotto rimane invariato.
+
+Il controllo è specifico del contratto Higgs remoto: non vengono inviati parametri
+seed non supportati agli altri provider. Kokoro e Chatterbox mantengono il loro
+comportamento precedente. I test del trasporto HTTP verificano ciò che H3 invia;
+la qualità e la coerenza del timbro restano da ascoltare sul server scelto.
+
 Ogni risposta viene limitata a 25 MB, decodificata con FFmpeg e normalizzata in WAV PCM mono a 24 kHz. La pipeline misura poi la durata reale e crea cue, timeline e montaggio con lo stesso codice usato dalle voci locali. Ogni frase valida viene memorizzata prima di richiedere la successiva: dopo un timeout o un’interruzione, **Riprendi** riusa l’audio già pronto.
 
 La configurazione della lettura viene conservata come `tts_delivery` nell’app e come `voice_delivery` nel pack del motore. La selezione entra nei dati usati per il riuso dell’audio; un cambiamento di stile non viene confuso con la voce precedente. La configurazione iniziale e i vecchi pack senza questi campi restano compatibili.
